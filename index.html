@@ -152,16 +152,16 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // 1. 만약 이 주소(databaseURL)로도 접속이 안 된다면 Firebase 콘솔에서 실제 주소를 확인해야 합니다.
-const firebaseConfig = {
-  apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
-  authDomain: "cad-afterschool-2026.firebaseapp.com",
-  databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com/
-  projectId: "cad-afterschool-2026",
-  storageBucket: "cad-afterschool-2026.firebasestorage.app",
-  messagingSenderId: "812762265008",
-  appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
-};
+    // ✅ 따옴표 누락 수정됨
+    const firebaseConfig = {
+      apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
+      authDomain: "cad-afterschool-2026.firebaseapp.com",
+      databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com/",
+      projectId: "cad-afterschool-2026",
+      storageBucket: "cad-afterschool-2026.firebasestorage.app",
+      messagingSenderId: "812762265008",
+      appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -179,13 +179,13 @@ const firebaseConfig = {
     document.getElementById('btnBackToPostsFromDetail').onclick = () => showView('view-folder-detail');
     document.getElementById('btnAddComment').onclick = addComment;
 
-    // ★ 폴더 생성 (오류 발생 시 원인 팝업 띄움)
+    // 폴더 생성
     document.getElementById('btnCreateFolder').onclick = () => {
         const folderName = prompt('새로운 과제 폴더의 이름을 입력하세요:');
         if (folderName && folderName.trim()) {
             push(ref(db, 'folders'), { name: folderName.trim() })
             .catch((error) => {
-                alert("폴더 생성 실패!\n\n원인: " + error.message + "\n\n※ 해결방법:\nFirebase 홈페이지 > Realtime Database > '규칙(Rules)' 탭에서 .read와 .write가 모두 true로 설정되어 있는지 확인하세요.");
+                alert("폴더 생성 실패!\n\n원인: " + error.message);
             });
         }
     };
@@ -205,13 +205,13 @@ const firebaseConfig = {
     }
     function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    // 데이터 수신 (오류 발생 시 알림)
+    // 데이터 수신
     onValue(ref(db, 'folders'), (snap) => {
         folders = []; snap.forEach(c => folders.push({ id: c.key, ...c.val() }));
         renderFolders();
     }, (error) => {
         document.getElementById('folderLoading').innerText = "데이터 연결 실패!";
-        alert("데이터베이스 연결 권한이 없습니다.\nFirebase Realtime Database 규칙(Rules)을 확인해주세요.");
+        alert("데이터베이스 연결 권한이 없습니다.\nFirebase Rules를 확인해주세요.");
     });
 
     onValue(ref(db, 'posts'), (snap) => {
@@ -227,8 +227,14 @@ const firebaseConfig = {
 
     function renderFolders(){
         const list = document.getElementById('folderList'); list.innerHTML = '';
-        const sorted = [...folders].sort((a,b)=>a.name.localeCompare(b.name));
+        
+        // ✅ 이름이 없는 불량 데이터가 섞여있을 때 앱이 멈추는 것을 방지
+        const sorted = [...folders]
+            .filter(f => f && f.name) 
+            .sort((a,b) => String(a.name).localeCompare(String(b.name)));
+            
         if(sorted.length===0){ list.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return; }
+        
         sorted.forEach(f=>{
             const div = document.createElement('div'); div.className='folder-item';
             div.innerHTML = `<div class="folder-info" onclick="openFolder('${f.id}','${f.name}')">

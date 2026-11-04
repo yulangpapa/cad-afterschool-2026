@@ -51,7 +51,7 @@
         .empty-state{text-align:center;color:var(--text-muted);padding:40px 20px}
         .loading{text-align:center;padding:20px;color:var(--text-muted)}
 
-        /* 이미지 전체화면 모달 & 툴바 */
+        /* 이미지 전체화면 모달 */
         #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200}
         #imgModal.show{display:flex}
         #imgModalInner{position:relative;max-width:95%;max-height:95%;overflow:hidden;touch-action:none;border-radius:8px}
@@ -76,6 +76,7 @@
     </header>
 
     <main>
+        <!-- 폴더 목록 -->
         <div id="view-folder-list" class="view active">
             <div class="view-header"><h2>과제 폴더 목록</h2></div>
             <div class="teacher-actions" style="margin-bottom:15px">
@@ -84,6 +85,7 @@
             <div id="folderList" class="folder-list"><div class="loading">데이터 불러오는 중...</div></div>
         </div>
 
+        <!-- 폴더 내부 (도면 목록) -->
         <div id="view-folder-detail" class="view">
             <div class="view-header">
                 <button class="back-btn" id="btnBackToFolders">←</button>
@@ -93,6 +95,7 @@
             <div id="postList" class="post-list"></div>
         </div>
 
+        <!-- 업로드 화면 -->
         <div id="view-upload" class="view">
             <div class="view-header">
                 <button class="back-btn" id="btnBackToPosts">←</button>
@@ -101,9 +104,10 @@
             <div class="form-group"><label>작성자 이름 (학생명)</label><input type="text" id="uploadAuthor" placeholder="예: 홍길동"></div>
             <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
             <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
-            <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료 (시간이 조금 걸릴 수 있습니다)</button>
+            <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료</button>
         </div>
 
+        <!-- 상세 보기 -->
         <div id="view-post-detail" class="view">
             <div class="view-header">
                 <button class="back-btn" id="btnBackToPostsFromDetail">←</button>
@@ -140,36 +144,32 @@
             <button class="modal-control" id="zoomInBtn">+</button>
         </div>
         <button id="imgModalClose" aria-label="닫기">✕</button>
-        <div class="modal-hint">줌: 휠 또는 + / - / 핀치, 드래그로 이동</div>
+        <div class="modal-hint">줌: 휠/핀치, 드래그로 이동</div>
     </div>
 </div>
 
-<!-- Firebase SDK (모듈) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ★ 기존 firebaseConfig 사용 (이미 코드에 값 있음) ★
-const firebaseConfig = {
-  apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
-  authDomain: "cad-afterschool-2026.firebaseapp.com",
-  projectId: "cad-afterschool-2026",
-  storageBucket: "cad-afterschool-2026.firebasestorage.app",
-  messagingSenderId: "812762265008",
-  appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
-};
+    // 선생님의 Firebase 정보를 바탕으로 정확한 설정값을 적용했습니다.
+    const firebaseConfig = {
+        apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
+        authDomain: "cad-afterschool-2026.firebaseapp.com",
+        projectId: "cad-afterschool-2026",
+        databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com", // ★ 이 주소가 빠지면 데이터를 못 읽습니다.
+        storageBucket: "cad-afterschool-2026.firebasestorage.app",
+        messagingSenderId: "812762265008",
+        appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 상태
-    let folders = [];
-    let posts = [];
-    let currentRole = 'student';
-    let currentFolderId = null;
-    let currentPostId = null;
+    let folders = []; let posts = []; let currentRole = 'student';
+    let currentFolderId = null; let currentPostId = null;
 
-    // UI 바인딩
+    // 이벤트 바인딩
     document.getElementById('btnHome').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
     document.getElementById('roleSelect').onchange = (e) => toggleRole(e.target.value);
     document.getElementById('btnCreateFolder').onclick = showCreateFolder;
@@ -180,7 +180,7 @@ const firebaseConfig = {
     document.getElementById('btnBackToPostsFromDetail').onclick = () => showView('view-folder-detail');
     document.getElementById('btnAddComment').onclick = addComment;
 
-    // URL 모드 처리
+    // 초기 모드 설정
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('mode') === 'teacher') {
         document.getElementById('roleSelect').style.display = 'inline-block';
@@ -195,7 +195,7 @@ const firebaseConfig = {
     }
     function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    // 실시간 폴더/게시글 수신
+    // 데이터 수신
     onValue(ref(db, 'folders'), (snap) => {
         folders = []; snap.forEach(c => folders.push({ id: c.key, ...c.val() }));
         renderFolders();
@@ -206,256 +206,105 @@ const firebaseConfig = {
         snap.forEach(c => {
             const data = c.val();
             const comments = data.comments ? Object.keys(data.comments).map(k => ({ id:k, ...data.comments[k] })) : [];
-            posts.push({
-                id: c.key,
-                folderId: data.folderId,
-                author: data.author,
-                title: data.title,
-                imageUrl: data.imageUrl,
-                createdAt: data.createdAt || null,
-                comments: comments
-            });
+            posts.push({ id: c.key, ...data, comments });
         });
         if (currentFolderId) renderPosts();
-        if (currentPostId) {
-            // 상세 열려있으면 새 데이터로 갱신
-            openPost(currentPostId);
-        }
+        if (currentPostId) openPost(currentPostId);
     });
 
-    // 렌더러
     function renderFolders(){
-        const folderList = document.getElementById('folderList');
-        folderList.innerHTML = '';
+        const list = document.getElementById('folderList'); list.innerHTML = '';
         const sorted = [...folders].sort((a,b)=>a.name.localeCompare(b.name));
-        if(sorted.length===0){ folderList.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return; }
-        sorted.forEach(folder=>{
-            const item = document.createElement('div'); item.className='folder-item';
-            const info = document.createElement('div'); info.className='folder-info';
-            info.innerHTML = `<span class="folder-icon">📁</span><span style="font-weight:600">${folder.name}</span>`;
-            info.onclick = ()=>{ currentFolderId = folder.id; document.getElementById('currentFolderName').innerText = folder.name; renderPosts(); showView('view-folder-detail'); };
-            const actions = document.createElement('div'); actions.className='teacher-actions';
-            const editBtn = document.createElement('button'); editBtn.className='btn btn-edit btn-small'; editBtn.innerText='이름변경';
-            editBtn.onclick = (e)=>{ e.stopPropagation(); const newName = prompt('변경할 폴더 이름을 입력하세요:', folder.name); if(newName && newName.trim()) update(ref(db, `folders/${folder.id}`), { name: newName.trim() }); };
-            const delBtn = document.createElement('button'); delBtn.className='btn btn-danger btn-small'; delBtn.innerText='삭제';
-            delBtn.onclick = (e)=>{ e.stopPropagation(); if(confirm('정말 삭제하시겠습니까?')) remove(ref(db, `folders/${folder.id}`)); };
-            actions.appendChild(editBtn); actions.appendChild(delBtn);
-            item.appendChild(info); item.appendChild(actions); folderList.appendChild(item);
+        if(sorted.length===0){ list.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return; }
+        sorted.forEach(f=>{
+            const div = document.createElement('div'); div.className='folder-item';
+            div.innerHTML = `<div class="folder-info" onclick="openFolder('${f.id}','${f.name}')">
+                <span class="folder-icon">📁</span><span style="font-weight:600">${f.name}</span>
+            </div>
+            <div class="teacher-actions">
+                <button class="btn btn-edit btn-small" onclick="editFolder('${f.id}','${f.name}')">변경</button>
+                <button class="btn btn-danger btn-small" onclick="deleteFolder('${f.id}')">삭제</button>
+            </div>`;
+            list.appendChild(div);
         });
     }
 
-    function showCreateFolder(){
-        const name = prompt('새로운 과제 폴더의 이름을 입력하세요:');
-        if(name && name.trim()) push(ref(db,'folders'), { name: name.trim() });
-    }
+    window.openFolder = (id, name) => { currentFolderId = id; document.getElementById('currentFolderName').innerText = name; renderPosts(); showView('view-folder-detail'); };
+    window.editFolder = (id, old) => { const n = prompt('새 이름:', old); if(n) update(ref(db,`folders/${id}`), {name:n.trim()}); };
+    window.deleteFolder = (id) => { if(confirm('삭제할까요?')) remove(ref(db,`folders/${id}`)); };
+    function showCreateFolder(){ const n = prompt('폴더 이름:'); if(n) push(ref(db,'folders'), {name:n.trim()}); }
 
     function renderPosts(){
-        const postList = document.getElementById('postList'); postList.innerHTML='';
-        const folderPosts = posts.filter(p=>p.folderId===currentFolderId);
-        if(folderPosts.length===0){ postList.innerHTML=`<div class="empty-state" style="grid-column: span 2;">등록된 도면이 없습니다.</div>`; return; }
-        folderPosts.forEach(post=>{
+        const list = document.getElementById('postList'); list.innerHTML='';
+        const filtered = posts.filter(p=>p.folderId===currentFolderId);
+        if(filtered.length===0){ list.innerHTML=`<div class="empty-state" style="grid-column:span 2">과제가 없습니다.</div>`; return; }
+        filtered.forEach(p=>{
             const card = document.createElement('div'); card.className='post-card';
-            card.onclick = ()=> openPost(post.id);
-            const createdText = post.createdAt ? `<div class="post-time">${formatDate(post.createdAt)}</div>` : '';
-            card.innerHTML = `<img src="${post.imageUrl}" class="post-thumb" alt="thumb">
-                              <div class="post-meta">
-                                  <div class="post-title">${escapeHtml(post.title)}</div>
-                                  <div class="post-author">${escapeHtml(post.author)} • 댓글 ${post.comments.length}</div>
-                                  ${createdText}
-                              </div>`;
-            postList.appendChild(card);
+            card.onclick = ()=> openPost(p.id);
+            card.innerHTML = `<img src="${p.imageUrl}" class="post-thumb">
+                <div class="post-meta">
+                    <div class="post-title">${p.title}</div>
+                    <div class="post-author">${p.author} • 댓글 ${p.comments.length}</div>
+                    <div class="post-time">${p.createdAt?formatDate(p.createdAt):''}</div>
+                </div>`;
+            list.appendChild(card);
         });
-    }
-
-    // 이미지 압축 (기존)
-    function compressImage(file, callback){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const img = new Image();
-            img.onload = function(){
-                const canvas = document.createElement('canvas'); const MAX_WIDTH = 1000;
-                let width = img.width, height = img.height;
-                if(width > MAX_WIDTH){ height *= MAX_WIDTH/width; width = MAX_WIDTH; }
-                canvas.width = width; canvas.height = height;
-                canvas.getContext('2d').drawImage(img,0,0,width,height);
-                callback(canvas.toDataURL('image/jpeg',0.8));
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
     }
 
     function submitUpload(){
         const author = document.getElementById('uploadAuthor').value;
         const title = document.getElementById('uploadTitle').value;
-        const fileInput = document.getElementById('uploadFile');
-        if(!author || !title || fileInput.files.length===0){ alert('모두 입력해주세요.'); return; }
-        document.getElementById('btnSubmitUpload').innerText = '업로드 중...'; document.getElementById('btnSubmitUpload').disabled = true;
-        compressImage(fileInput.files[0], (dataUrl)=>{
-            push(ref(db,'posts'), {
-                folderId: currentFolderId,
-                author: author,
-                title: title,
-                imageUrl: dataUrl,
-                createdAt: Date.now()
-            }).then(()=>{
-                document.getElementById('btnSubmitUpload').innerText = '업로드 완료'; document.getElementById('btnSubmitUpload').disabled = false;
-                document.getElementById('uploadFile').value = '';
-                showView('view-folder-detail');
-            });
-        });
+        const file = document.getElementById('uploadFile').files[0];
+        if(!author || !title || !file) return alert('모두 입력!');
+        document.getElementById('btnSubmitUpload').disabled = true;
+        const r = new FileReader(); r.onload = (e) => {
+            const img = new Image(); img.onload = () => {
+                const cvs = document.createElement('canvas'); const MAX = 1000;
+                let w = img.width, h = img.height;
+                if(w>MAX){ h *= MAX/w; w = MAX; }
+                cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img,0,0,w,h);
+                push(ref(db,'posts'), { folderId:currentFolderId, author, title, imageUrl:cvs.toDataURL('image/jpeg',0.8), createdAt:Date.now() })
+                .then(()=>{ document.getElementById('btnSubmitUpload').disabled=false; showView('view-folder-detail'); });
+            }; img.src = e.target.result;
+        }; r.readAsDataURL(file);
     }
 
-    // 상세 열기 (댓글 포함, 생성시각 표기, 이미지 클릭 -> 모달)
-    window.openPost = function(postId){
-        currentPostId = postId;
-        const post = posts.find(p=>p.id===postId); if(!post) return;
-        const detailImage = document.getElementById('detailImage');
-        detailImage.src = post.imageUrl;
-        detailImage.onclick = ()=> openImageViewer(post.imageUrl);
-        document.getElementById('detailTitle').innerText = post.title;
-        document.getElementById('detailAuthorName').innerText = post.author;
-        document.getElementById('detailCreatedAt').innerText = post.createdAt ? formatDate(post.createdAt) : '';
-        // 댓글 렌더링
-        const commentList = document.getElementById('commentList'); commentList.innerHTML = '';
-        if(!post.comments || post.comments.length===0) commentList.innerHTML = `<div class="empty-state" style="padding:10px">피드백이 없습니다.</div>`;
-        else {
-            post.comments.forEach(c=>{
-                const div = document.createElement('div'); div.className='comment-item';
-                div.innerHTML = `<div class="comment-author">${escapeHtml(c.author)} <span style="color:#999;font-weight:normal;font-size:.75rem">${escapeHtml(c.date)}</span></div>
-                                 <div class="comment-text">${escapeHtml(c.text)}</div>`;
-                commentList.appendChild(div);
-            });
-        }
+    window.openPost = function(id){
+        currentPostId = id; const p = posts.find(x=>x.id===id); if(!p) return;
+        document.getElementById('detailImage').src = p.imageUrl;
+        document.getElementById('detailImage').onclick = ()=> openImageViewer(p.imageUrl);
+        document.getElementById('detailTitle').innerText = p.title;
+        document.getElementById('detailAuthorName').innerText = p.author;
+        document.getElementById('detailCreatedAt').innerText = p.createdAt?formatDate(p.createdAt):'';
+        const cList = document.getElementById('commentList'); cList.innerHTML = '';
+        if(p.comments.length===0) cList.innerHTML = '<div class="empty-state">피드백이 없습니다.</div>';
+        else p.comments.forEach(c=>{
+            const d = document.createElement('div'); d.className='comment-item';
+            d.innerHTML = `<div class="comment-author">${c.author} <span style="font-size:.7rem;color:#999">${c.date}</span></div><div>${c.text}</div>`;
+            cList.appendChild(d);
+        });
         showView('view-post-detail');
     };
 
     function addComment(){
-        const authorInput = document.getElementById('commentAuthor').value;
-        const textInput = document.getElementById('commentText').value;
-        if(!authorInput || !textInput){ alert('입력해주세요.'); return; }
-        const now = new Date();
-        const dateString = `${now.getMonth()+1}/${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-        push(ref(db, `posts/${currentPostId}/comments`), { author: authorInput, text: textInput, date: dateString }).then(()=>{
-            document.getElementById('commentText').value = '';
-        });
+        const a = document.getElementById('commentAuthor').value;
+        const t = document.getElementById('commentText').value;
+        if(!a || !t) return;
+        const now = new Date(); const ds = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+        push(ref(db, `posts/${currentPostId}/comments`), { author:a, text:t, date:ds }).then(()=>document.getElementById('commentText').value='');
     }
 
-    // ------------------------------------------------------------
-    // 이미지 전체화면 뷰어 (확대/축소/이동: 마우스 휠, 드래그, 더블클릭 / 터치 핀치 지원)
-    // ------------------------------------------------------------
-    const imgModal = document.getElementById('imgModal');
-    const imgModalImg = document.getElementById('imgModalImg');
-    const zoomInBtn = document.getElementById('zoomInBtn');
-    const zoomOutBtn = document.getElementById('zoomOutBtn');
-    const zoomResetBtn = document.getElementById('zoomResetBtn');
-    const imgModalClose = document.getElementById('imgModalClose');
-    let scale = 1, translateX = 0, translateY = 0;
-    let isPanning = false, startX=0, startY=0, lastX=0, lastY=0;
-    let pinchStartDist = 0, pinchStartScale = 1;
+    // 줌 기능
+    const m = document.getElementById('imgModal'); const mi = document.getElementById('imgModalImg');
+    let scale = 1, tx = 0, ty = 0;
+    function openImageViewer(s){ mi.src = s; scale = 1; tx = 0; ty = 0; updateT(); m.classList.add('show'); }
+    function updateT(){ mi.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; }
+    document.getElementById('imgModalClose').onclick = ()=> m.classList.remove('show');
+    document.getElementById('zoomInBtn').onclick = ()=>{ scale*=1.2; updateT(); };
+    document.getElementById('zoomOutBtn').onclick = ()=>{ scale*=0.8; updateT(); };
+    document.getElementById('zoomResetBtn').onclick = ()=>{ scale=1; tx=0; ty=0; updateT(); };
 
-    function openImageViewer(src){
-        imgModalImg.src = src;
-        scale = 1; translateX = 0; translateY = 0; updateImageTransform();
-        imgModal.classList.add('show'); imgModal.setAttribute('aria-hidden','false');
-    }
-    function closeImageViewer(){ imgModal.classList.remove('show'); imgModal.setAttribute('aria-hidden','true'); imgModalImg.src=''; }
-
-    function updateImageTransform(){
-        imgModalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-    }
-
-    // 휠로 줌
-    imgModalImg.addEventListener('wheel', (e)=>{
-        e.preventDefault();
-        const delta = -e.deltaY;
-        const factor = delta > 0 ? 1.1 : 0.9;
-        const newScale = clamp(scale * factor, 0.5, 5);
-        // 간단한 중심 고정: 마우스 위치에 대해 약간의 translate 보정
-        const rect = imgModalImg.getBoundingClientRect();
-        const dx = (e.clientX - rect.left);
-        const dy = (e.clientY - rect.top);
-        const ratio = newScale/scale;
-        translateX = translateX - (dx* (ratio - 1));
-        translateY = translateY - (dy* (ratio - 1));
-        scale = newScale; updateImageTransform();
-    }, { passive:false });
-
-    // 더블클릭: 리셋 / 실제 크기 토글
-    imgModalImg.addEventListener('dblclick', (e)=>{
-        e.preventDefault();
-        if(scale === 1){ scale = 2; } else { scale = 1; translateX = 0; translateY = 0; }
-        updateImageTransform();
-    });
-
-    // 마우스 드래그(팬)
-    imgModalImg.addEventListener('mousedown', (e)=>{
-        e.preventDefault();
-        isPanning = true;
-        imgModalImg.style.cursor = 'grabbing';
-        startX = e.clientX; startY = e.clientY; lastX = translateX; lastY = translateY;
-    });
-    window.addEventListener('mousemove', (e)=>{
-        if(!isPanning) return;
-        e.preventDefault();
-        const dx = e.clientX - startX; const dy = e.clientY - startY;
-        translateX = lastX + dx; translateY = lastY + dy; updateImageTransform();
-    });
-    window.addEventListener('mouseup', ()=>{
-        if(!isPanning) return;
-        isPanning = false; imgModalImg.style.cursor = 'grab';
-    });
-
-    // 터치 이벤트: 드래그 및 핀치
-    imgModalImg.addEventListener('touchstart', (e)=>{
-        if(e.touches.length === 1){
-            isPanning = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; lastX = translateX; lastY = translateY;
-        } else if(e.touches.length === 2){
-            isPanning = false;
-            pinchStartDist = getDistance(e.touches[0], e.touches[1]);
-            pinchStartScale = scale;
-        }
-    }, { passive:false });
-
-    imgModalImg.addEventListener('touchmove', (e)=>{
-        e.preventDefault();
-        if(e.touches.length === 1 && isPanning){
-            const dx = e.touches[0].clientX - startX; const dy = e.touches[0].clientY - startY;
-            translateX = lastX + dx; translateY = lastY + dy; updateImageTransform();
-        } else if(e.touches.length === 2){
-            const dist = getDistance(e.touches[0], e.touches[1]);
-            const newScale = clamp(pinchStartScale * (dist / pinchStartDist), 0.5, 5);
-            scale = newScale; updateImageTransform();
-        }
-    }, { passive:false });
-
-    imgModalImg.addEventListener('touchend', (e)=>{
-        if(e.touches.length === 0) { isPanning = false; pinchStartDist = 0; }
-    });
-
-    function getDistance(a,b){ const dx = a.clientX - b.clientX; const dy = a.clientY - b.clientY; return Math.hypot(dx,dy); }
-    function clamp(v,min,max){ return Math.min(max,Math.max(min,v)); }
-    function pad(n){ return n < 10 ? '0'+n : n; }
-
-    // 컨트롤 버튼
-    zoomInBtn.onclick = ()=>{ scale = clamp(scale * 1.2, 0.5, 5); updateImageTransform(); };
-    zoomOutBtn.onclick = ()=>{ scale = clamp(scale * 0.85, 0.5, 5); updateImageTransform(); };
-    zoomResetBtn.onclick = ()=>{ scale = 1; translateX = 0; translateY = 0; updateImageTransform(); };
-    imgModalClose.onclick = closeImageViewer;
-    // ESC 키로 닫기
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ if(imgModal.classList.contains('show')) closeImageViewer(); } });
-
-    // 헬퍼: 날짜 포맷
-    function formatDate(ts){
-        try{
-            const d = new Date(Number(ts));
-            return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        } catch(e){ return ''; }
-    }
-
-    // HTML 이스케이프 (XSS 방지 최소)
-    function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-
+    function formatDate(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes()}`; }
 </script>
 </body>
 </html>

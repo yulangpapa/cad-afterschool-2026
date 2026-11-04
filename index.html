@@ -153,15 +153,15 @@
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // 선생님의 Firebase 정보를 바탕으로 정확한 설정값을 적용했습니다.
-    const firebaseConfig = {
-        apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
-        authDomain: "cad-afterschool-2026.firebaseapp.com",
-        projectId: "cad-afterschool-2026",
-        databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com", // ★ 이 주소가 빠지면 데이터를 못 읽습니다.
-        storageBucket: "cad-afterschool-2026.firebasestorage.app",
-        messagingSenderId: "812762265008",
-        appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
+  authDomain: "cad-afterschool-2026.firebaseapp.com",
+  databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com",
+  projectId: "cad-afterschool-2026",
+  storageBucket: "cad-afterschool-2026.firebasestorage.app",
+  messagingSenderId: "812762265008",
+  appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);

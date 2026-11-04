@@ -25,7 +25,7 @@
         .view-header h2{font-size:1.3rem;flex:1;word-break:break-all}
         .back-btn{background:none;border:0;font-size:1.5rem;color:var(--text-main);cursor:pointer;padding:0 5px}
         .folder-list{display:grid;grid-template-columns:1fr;gap:12px;margin-top:15px}
-        .folder-item{background:var(--card-bg);border:1px solid var(--border);padding:16px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+        .folder-item{background:var(--card-bg);border:1px solid var(--border);padding:16px;border-radius:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
         .folder-info{display:flex;align-items:center;gap:12px;flex:1;cursor:pointer;min-width:0}
         .folder-icon{font-size:1.5rem}
         .folder-name{font-weight:600;word-break:break-all}
@@ -55,13 +55,32 @@
         .loading{text-align:center;padding:20px;color:var(--text-muted)}
 
         /* 이미지 전체화면 모달 */
-        #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200}
+        #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;touch-action:none}
         #imgModal.show{display:flex}
         #imgModalInner{position:relative;max-width:95%;max-height:95%;overflow:hidden;touch-action:none;border-radius:8px}
-        #imgModalImg{display:block;max-width:100%;max-height:100%;transform-origin:0 0;will-change:transform;cursor:grab}
+        #imgModalImg{display:block;max-width:95vw;max-height:90vh;transform-origin:0 0;will-change:transform;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
         #imgModalClose{position:absolute;right:8px;top:8px;background:rgba(255,255,255,.1);color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer}
-        #imgModalControls{position:absolute;left:8px;top:8px;display:flex;gap:6px}
-        .modal-control{background:rgba(255,255,255,.12);color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer}
+        .modal-hint{pointer-events:none;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:999px}
+
+        /* 교사용 현황 표시 */
+        .teacher-only{display:none}
+        .is-teacher .teacher-only{display:block}
+        .folder-item .teacher-only{flex-basis:100%}
+        .status-row{border-top:1px dashed var(--border);padding-top:8px}
+        .status-title{font-size:.8rem;font-weight:700;color:var(--text-muted);margin-bottom:4px}
+        .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;margin:2px 4px 2px 0}
+        .chip.ok{background:#dcfce7;color:#166534}
+        .chip.no{background:#fee2e2;color:#991b1b}
+        .post-status{font-size:.75rem;font-weight:600;margin-top:6px}
+        .post-status.full,.summary-table .ok{color:#166534}
+        .post-status.part,.summary-table .part{color:#b45309}
+        .post-status.zero,.summary-table .no{color:#991b1b}
+        #folderSummary{margin-bottom:15px}
+        .summary-table{width:100%;border-collapse:collapse;font-size:.85rem}
+        .summary-table th,.summary-table td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left}
+        .summary-table td{font-weight:600}
+        .form-group select{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;background:#fff}
+        #commentAuthor{width:100%;border:1px solid var(--border);border-radius:8px;font-size:1rem;background:#fff}
         .modal-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);color:#d1d5db;font-size:.85rem;white-space:nowrap}
     </style>
 </head>
@@ -95,6 +114,7 @@
                 <h2 id="currentFolderName">폴더명</h2>
             </div>
             <button class="btn btn-primary" style="margin-bottom:15px" id="btnShowUpload">+ 2D 도면 업로드</button>
+            <div id="folderSummary" class="teacher-only"></div>
             <div id="postList" class="post-list"></div>
         </div>
 
@@ -104,7 +124,7 @@
                 <button class="back-btn" id="btnBackToPosts">←</button>
                 <h2>과제 업로드</h2>
             </div>
-            <div class="form-group"><label>작성자 이름 (학생명)</label><input type="text" id="uploadAuthor" placeholder="예: 홍길동"></div>
+            <div class="form-group"><label>작성자 이름 (학생명)</label><select id="uploadAuthor"></select></div>
             <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
             <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
             <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료</button>
@@ -124,9 +144,10 @@
             </div>
             <div class="comments-section">
                 <h3>💬 피드백 및 댓글</h3>
+                <div id="commentStatus" class="teacher-only" style="margin-bottom:12px"></div>
                 <div id="commentList" style="margin-bottom:20px"></div>
                 <div class="form-group" style="margin-bottom:8px;">
-                    <input type="text" id="commentAuthor" placeholder="작성자 이름" style="padding:8px">
+                    <select id="commentAuthor" style="padding:8px"></select>
                 </div>
                 <div class="comment-input-area">
                     <input type="text" id="commentText" placeholder="피드백을 남겨주세요">
@@ -141,13 +162,8 @@
 <div id="imgModal" aria-hidden="true">
     <div id="imgModalInner">
         <img id="imgModalImg" src="" alt="확대 이미지">
-        <div id="imgModalControls">
-            <button class="modal-control" id="zoomOutBtn">-</button>
-            <button class="modal-control" id="zoomResetBtn">Reset</button>
-            <button class="modal-control" id="zoomInBtn">+</button>
-        </div>
         <button id="imgModalClose" aria-label="닫기">✕</button>
-        <div class="modal-hint">줌: 휠 또는 +/- 버튼, 드래그로 이동</div>
+        <div class="modal-hint">핀치로 확대 · 드래그로 이동 · 두 번 탭</div>
     </div>
 </div>
 
@@ -185,6 +201,63 @@
     function formatDate(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${pad(d.getMinutes())}`; }
     function showView(id){ document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); $(id).classList.add('active'); }
 
+    // 학생 명단 (명단을 바꾸려면 여기만 수정하세요)
+    const STUDENTS = ['김하율','임도윤','김민기','박재홍','윤부남','이수현','최현식','한지성','황인호'];
+    const TEACHER = '선생님';
+    const norm = (s) => String(s || '').replace(/\s+/g, '');
+
+    function fillNameSelect(sel, names){
+        sel.innerHTML = '';
+        const first = el('option', '', '이름을 선택하세요'); first.value = ''; sel.appendChild(first);
+        names.forEach(n => { const o = el('option', '', n); o.value = n; sel.appendChild(o); });
+    }
+    fillNameSelect($('uploadAuthor'), STUDENTS);
+    fillNameSelect($('commentAuthor'), [...STUDENTS, TEACHER]);
+
+    // 마지막으로 선택한 이름 기억 (폰에서 매번 고르지 않도록)
+    function saveName(v){ try { if (STUDENTS.includes(v)) localStorage.setItem('cad_name', v); } catch (e) {} }
+    function loadName(){ try { return localStorage.getItem('cad_name') || ''; } catch (e) { return ''; } }
+    const savedName = loadName();
+    if (STUDENTS.includes(savedName)) { $('uploadAuthor').value = savedName; $('commentAuthor').value = savedName; }
+    $('uploadAuthor').addEventListener('change', (e) => saveName(e.target.value));
+    $('commentAuthor').addEventListener('change', (e) => saveName(e.target.value));
+
+    // 현황 계산
+    function chip(name, ok){ return el('span', 'chip ' + (ok ? 'ok' : 'no'), (ok ? '✓ ' : '✕ ') + name); }
+    function commenterSet(p){ return new Set(p.comments.map(c => norm(c.author))); }
+    // 게시글 하나에 대해: 댓글을 써야 하는 학생(본인 제외) 중 누가 썼는지
+    function commentStatus(p){
+        const done = commenterSet(p), me = norm(p.author);
+        const targets = STUDENTS.filter(n => n !== me);
+        return { targets, done: targets.filter(n => done.has(n)) };
+    }
+
+    // 교사용: 폴더 안 학생별 현황표
+    function renderFolderSummary(){
+        const box = $('folderSummary'); box.innerHTML = '';
+        if (!currentFolderId) return;
+        const fp = posts.filter(p => p.folderId === currentFolderId);
+        const posted = new Set(fp.map(p => norm(p.author)));
+
+        box.appendChild(el('div', 'status-title', '학생별 현황 (게시 / 다른 학생 글에 쓴 댓글)'));
+        const table = el('table', 'summary-table');
+        const head = el('tr');
+        ['학생', '게시', '댓글'].forEach(t => head.appendChild(el('th', '', t)));
+        table.appendChild(head);
+
+        STUDENTS.forEach((n) => {
+            const others = fp.filter(p => norm(p.author) !== n);
+            const written = others.filter(p => commenterSet(p).has(n)).length;
+            const tr = el('tr');
+            tr.appendChild(el('td', '', n));
+            tr.appendChild(el('td', posted.has(n) ? 'ok' : 'no', posted.has(n) ? '✓ 게시' : '✕ 미게시'));
+            if (others.length === 0) tr.appendChild(el('td', '', '-'));
+            else tr.appendChild(el('td', written === others.length ? 'ok' : written === 0 ? 'no' : 'part', `${written}/${others.length}`));
+            table.appendChild(tr);
+        });
+        box.appendChild(table);
+    }
+
     // ---------- 이벤트 바인딩 ----------
     $('btnHome').onclick = () => { currentFolderId = null; currentPostId = null; showView('view-folder-list'); };
     $('roleSelect').onchange = (e) => toggleRole(e.target.value);
@@ -216,6 +289,9 @@
     function toggleRole(role){
         currentRole = role;
         $('app').classList.toggle('is-teacher', role === 'teacher');
+        const ca = $('commentAuthor');
+        if (role === 'teacher') ca.value = TEACHER;                 // 교사 모드: 댓글 작성자 기본값 '선생님'
+        else if (ca.value === TEACHER) ca.value = STUDENTS.includes(savedName) ? savedName : '';
     }
 
     // ---------- 데이터 수신 ----------
@@ -249,7 +325,8 @@
             const comments = data.comments ? Object.keys(data.comments).map(k => ({ id: k, ...data.comments[k] })) : [];
             posts.push({ id: c.key, ...data, comments });
         });
-        if (currentFolderId) renderPosts();
+        renderFolders();                                       // 폴더별 게시 현황 갱신
+        if (currentFolderId) { renderPosts(); renderFolderSummary(); }
         if (currentPostId) renderPostDetail(currentPostId);   // 화면 전환 없이 내용만 갱신
     }, (error) => {
         console.error(error);
@@ -282,7 +359,13 @@
             delBtn.addEventListener('click', () => deleteFolder(f.id, f.name));
             actions.append(editBtn, delBtn);
 
-            item.append(info, actions);
+            // 교사용: 이 폴더에 누가 게시했는지
+            const posted = new Set(posts.filter(p => p.folderId === f.id).map(p => norm(p.author)));
+            const status = el('div', 'teacher-only status-row');
+            status.appendChild(el('div', 'status-title', `게시 ${STUDENTS.filter(n => posted.has(n)).length}/${STUDENTS.length}`));
+            STUDENTS.forEach(n => status.appendChild(chip(n, posted.has(n))));
+
+            item.append(info, actions, status);
             list.appendChild(item);
         });
     }
@@ -291,6 +374,7 @@
         currentFolderId = id;
         $('currentFolderName').textContent = name;
         renderPosts();
+        renderFolderSummary();
         showView('view-folder-detail');
     }
 
@@ -338,6 +422,8 @@
             meta.appendChild(el('div', 'post-title', p.title || '(제목 없음)'));
             meta.appendChild(el('div', 'post-author', `${p.author || '이름 없음'} • 댓글 ${p.comments.length}`));
             meta.appendChild(el('div', 'post-time', p.createdAt ? formatDate(p.createdAt) : ''));
+            const cs = commentStatus(p);   // 교사용: 댓글 작성 현황
+            meta.appendChild(el('div', 'teacher-only post-status ' + (cs.done.length === cs.targets.length ? 'full' : cs.done.length === 0 ? 'zero' : 'part'), `💬 댓글 ${cs.done.length}/${cs.targets.length}`));
 
             card.append(img, meta);
             list.appendChild(card);
@@ -416,6 +502,11 @@
         $('detailAuthorName').textContent = p.author || '';
         $('detailCreatedAt').textContent = p.createdAt ? formatDate(p.createdAt) : '';
 
+        // 교사용: 누가 댓글을 썼는지 / 안 썼는지
+        const cs = commentStatus(p), sbox = $('commentStatus'); sbox.innerHTML = '';
+        sbox.appendChild(el('div', 'status-title', `댓글 작성 현황 ${cs.done.length}/${cs.targets.length}`));
+        cs.targets.forEach(n => sbox.appendChild(chip(n, cs.done.includes(n))));
+
         const cList = $('commentList'); cList.innerHTML = '';
         if (p.comments.length === 0) cList.appendChild(el('div', 'empty-state', '피드백이 없습니다.'));
         else p.comments.forEach((c) => {
@@ -439,27 +530,71 @@
         .catch(e => alert("댓글 달기 실패: " + e.message));
     }
 
-    // ---------- 이미지 확대 보기 ----------
+    // ---------- 이미지 확대 보기 (핀치 줌 / 드래그 / 두 번 탭) ----------
     const m = $('imgModal'); const mi = $('imgModalImg');
     let scale = 1, tx = 0, ty = 0;
-    function updateT(){ mi.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; }
-    function setScale(s){ scale = Math.min(8, Math.max(0.5, s)); updateT(); }
-    function openImageViewer(s){ mi.src = s; scale = 1; tx = 0; ty = 0; updateT(); m.classList.add('show'); }
+    const MIN_SCALE = 1, MAX_SCALE = 8;
+
+    function updateT(){
+        const W = mi.offsetWidth, H = mi.offsetHeight;
+        if (scale <= 1.001) { scale = 1; tx = 0; ty = 0; }
+        else {   // 이미지가 화면 밖으로 사라지지 않게 이동 범위 제한
+            tx = Math.min(0, Math.max(W - W * scale, tx));
+            ty = Math.min(0, Math.max(H - H * scale, ty));
+        }
+        mi.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+    }
+    // 화면 좌표 (cx, cy)를 기준점으로 확대/축소
+    function zoomAt(newScale, cx, cy){
+        newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+        const r = mi.parentElement.getBoundingClientRect();
+        const px = cx - r.left, py = cy - r.top, k = newScale / scale;
+        tx = px - (px - tx) * k; ty = py - (py - ty) * k;
+        scale = newScale; updateT();
+    }
+    function openImageViewer(s){ mi.src = s; scale = 1; tx = 0; ty = 0; pts.clear(); updateT(); m.classList.add('show'); }
 
     $('imgModalClose').onclick = () => m.classList.remove('show');
     m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('show'); });
-    $('zoomInBtn').onclick = () => setScale(scale * 1.2);
-    $('zoomOutBtn').onclick = () => setScale(scale * 0.8);
-    $('zoomResetBtn').onclick = () => { scale = 1; tx = 0; ty = 0; updateT(); };
+    ['gesturestart', 'gesturechange'].forEach(t => m.addEventListener(t, (e) => e.preventDefault()));   // iOS 사파리 기본 확대 방지
 
-    mi.addEventListener('wheel', (e) => { e.preventDefault(); setScale(scale * (e.deltaY < 0 ? 1.1 : 0.9)); }, { passive: false });
+    // 마우스 휠 (PC)
+    mi.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(scale * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX, e.clientY); }, { passive: false });
 
-    let dragging = false, sx = 0, sy = 0;
-    mi.addEventListener('pointerdown', (e) => { dragging = true; sx = e.clientX - tx; sy = e.clientY - ty; mi.setPointerCapture(e.pointerId); mi.style.cursor = 'grabbing'; });
-    mi.addEventListener('pointermove', (e) => { if (!dragging) return; tx = e.clientX - sx; ty = e.clientY - sy; updateT(); });
-    const endDrag = () => { dragging = false; mi.style.cursor = 'grab'; };
-    mi.addEventListener('pointerup', endDrag);
-    mi.addEventListener('pointercancel', endDrag);
+    // 터치/마우스 포인터: 한 손가락 = 이동, 두 손가락 = 핀치 줌, 두 번 탭 = 확대/원래대로
+    const pts = new Map();
+    let lastDist = 0, lastCx = 0, lastCy = 0, lastTap = 0;
+    function pinchInfo(){
+        const [a, b] = [...pts.values()];
+        return { d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
+    }
+    mi.addEventListener('pointerdown', (e) => {
+        mi.setPointerCapture(e.pointerId);
+        pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pts.size === 2) {
+            const i = pinchInfo(); lastDist = i.d; lastCx = i.cx; lastCy = i.cy; lastTap = 0;
+        } else if (pts.size === 1) {
+            const now = Date.now();
+            if (now - lastTap < 300) {
+                if (scale > 1) { scale = 1; updateT(); } else zoomAt(2.5, e.clientX, e.clientY);
+                lastTap = 0;
+            } else lastTap = now;
+        }
+    });
+    mi.addEventListener('pointermove', (e) => {
+        const p = pts.get(e.pointerId); if (!p) return;
+        if (pts.size === 1 && scale > 1) { tx += e.clientX - p.x; ty += e.clientY - p.y; updateT(); }
+        p.x = e.clientX; p.y = e.clientY;
+        if (pts.size === 2 && lastDist > 0) {
+            const i = pinchInfo();
+            tx += i.cx - lastCx; ty += i.cy - lastCy;               // 두 손가락 중심 이동 = 화면 이동
+            zoomAt(scale * i.d / lastDist, i.cx, i.cy);             // 손가락 간격 변화 = 확대/축소
+            lastDist = i.d; lastCx = i.cx; lastCy = i.cy;
+        }
+    });
+    const endPointer = (e) => { pts.delete(e.pointerId); };
+    mi.addEventListener('pointerup', endPointer);
+    mi.addEventListener('pointercancel', endPointer);
     mi.addEventListener('dragstart', (e) => e.preventDefault());
 </script>
 </body>

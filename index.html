@@ -137,6 +137,7 @@
                 <h2>도면 상세 보기</h2>
             </div>
             <img id="detailImage" class="detail-img" src="" alt="도면 이미지">
+            <div id="detailNote" class="detail-time" style="margin:-8px 0 10px"></div>
             <div id="detailTitle" class="detail-title">제목</div>
             <div id="detailAuthor" class="detail-author">
                 <span id="detailAuthorName">작성자</span>
@@ -169,7 +170,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // ⚠️ Realtime Database 규칙(테스트 모드)은 만료일(2026-12-4) 이후 읽기/쓰기가 모두 막힙니다.
     //    그 전에 Firebase 콘솔 > Realtime Database > 규칙에서 갱신하세요.
@@ -189,6 +190,9 @@
 
     let folders = []; let posts = []; let currentRole = 'student';
     let currentFolderId = null; let currentPostId = null;
+    const fullCache = new Map();      // 게시글 id → 원본 이미지(dataURL), 한 번 받으면 재사용
+    const fullLoading = new Set();    // 현재 받는 중인 id
+    let viewerPostId = null;          // 확대 보기 중인 게시글 id
 
     const $ = (id) => document.getElementById(id);
     function el(tag, cls, text){
@@ -392,7 +396,7 @@
         // 폴더와 그 안의 도면을 한 번에 삭제 (고아 데이터 방지)
         const updates = {};
         updates[`folders/${id}`] = null;
-        related.forEach(p => { updates[`posts/${p.id}`] = null; });
+        related.forEach(p => { updates[`posts/${p.id}`] = null; updates[`images/${p.id}`] = null; });
         update(ref(db), updates).catch(e => alert("삭제 실패: " + e.message));
     }
 
@@ -415,7 +419,7 @@
             card.addEventListener('click', () => openPost(p.id));
 
             const img = el('img', 'post-thumb');
-            img.src = p.imageUrl || '';
+            img.src = p.thumbUrl || p.imageUrl || '';
             img.alt = p.title || '';
 
             const meta = el('div', 'post-meta');
@@ -431,11 +435,14 @@
     }
 
     // ---------- 업로드 ----------
-    const MAX_SIDE = 1800;            // 긴 변 기준 최대 픽셀 (기존: 가로 1000)
-    const TARGET_BYTES = 700 * 1024;  // 목표 용량 약 700KB (넘으면 화질→크기 순으로 조금씩 낮춤)
+    const FULL_SIDE = 2400;                 // 원본: 긴 변 최대 픽셀 (기존 1800)
+    const FULL_BYTES = 1.5 * 1024 * 1024;   // 원본 목표 용량 약 1.5MB (기존 700KB)
+    const THUMB_SIDE = 520;                 // 목록용 썸네일
+    const THUMB_BYTES = 50 * 1024;
 
-    function compressImage(img){
-        let scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));   // 작은 이미지는 키우지 않음
+    // 긴 변 maxSide 이하로 줄이고, 목표 용량을 넘으면 화질 → 크기 순으로 조금씩 낮춤
+    function compressImage(img, maxSide, targetBytes, qualities){
+        let scale = Math.min(1, maxSide / Math.max(img.width, img.height));   // 작은 이미지는 키우지 않음
         let url = '';
         for (let attempt = 0; attempt < 4; attempt++) {
             const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
@@ -444,9 +451,9 @@
             ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);   // 투명 PNG가 검게 저장되는 것 방지
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, w, h);
-            for (const q of [0.92, 0.88, 0.84, 0.8]) {
+            for (const q of qualities) {
                 url = cvs.toDataURL('image/jpeg', q);
-                if (url.length * 0.75 <= TARGET_BYTES) return url;
+                if (url.length * 0.75 <= targetBytes) return url;
             }
             scale *= 0.85;
         }
@@ -470,9 +477,13 @@
             const img = new Image();
             img.onerror = () => { alert('이미지 파일이 아닙니다.'); resetBtn(); };
             img.onload = () => {
-                const imageUrl = compressImage(img);
-
-                push(ref(db, 'posts'), { folderId: currentFolderId, author, title, imageUrl, createdAt: Date.now() })
+                const imageUrl = compressImage(img, FULL_SIDE, FULL_BYTES, [0.95, 0.92, 0.88, 0.84]);
+                const thumbUrl = compressImage(img, THUMB_SIDE, THUMB_BYTES, [0.8, 0.7, 0.6]);
+                const key = push(ref(db, 'posts')).key;   // 키만 먼저 만듦 (아직 저장 안 됨)
+                const updates = {};
+                updates[`posts/${key}`] = { folderId: currentFolderId, author, title, thumbUrl, createdAt: Date.now() };
+                updates[`images/${key}`] = imageUrl;       // 원본은 별도 경로 → 목록 열 때 내려받지 않음
+                update(ref(db), updates)
                 .then(() => {
                     $('uploadTitle').value = ''; $('uploadFile').value = '';   // 이름은 남겨 두어 연속 업로드 편하게
                     resetBtn();
@@ -496,8 +507,12 @@
     function renderPostDetail(id){
         const p = posts.find(x => x.id === id);
         if (!p) return false;
-        $('detailImage').src = p.imageUrl || '';
-        $('detailImage').onclick = () => openImageViewer(p.imageUrl);
+        const dimg = $('detailImage');
+        const shown = fullCache.get(id) || p.thumbUrl || p.imageUrl || '';
+        if (dimg.getAttribute('src') !== shown) dimg.src = shown;   // 실시간 갱신 때 깜빡이지 않게
+        dimg.onclick = () => { viewerPostId = id; openImageViewer(fullCache.get(id) || p.imageUrl || p.thumbUrl); };
+        if (p.thumbUrl && !fullCache.has(id)) { $('detailNote').textContent = '원본 화질 불러오는 중...'; loadFull(id); }
+        else $('detailNote').textContent = '';
         $('detailTitle').textContent = p.title || '';
         $('detailAuthorName').textContent = p.author || '';
         $('detailCreatedAt').textContent = p.createdAt ? formatDate(p.createdAt) : '';
@@ -517,6 +532,22 @@
             cList.appendChild(d);
         });
         return true;
+    }
+
+    // 원본 이미지는 필요할 때만 받아옴 (images/<id>)
+    function loadFull(id){
+        if (fullCache.has(id) || fullLoading.has(id)) return;
+        fullLoading.add(id);
+        get(ref(db, `images/${id}`)).then((snap) => {
+            const v = snap.val();
+            if (typeof v !== 'string') throw new Error('원본 이미지가 없습니다');
+            fullCache.set(id, v);
+            if (currentPostId === id) { $('detailImage').src = v; $('detailNote').textContent = ''; }
+            if (viewerPostId === id && m.classList.contains('show')) mi.src = v;   // 확대 보기 중이면 원본으로 교체
+        }).catch((e) => {
+            console.error(e);
+            if (currentPostId === id) $('detailNote').textContent = '원본을 불러오지 못했습니다 (축소본 표시 중)';
+        }).finally(() => { fullLoading.delete(id); });
     }
 
     function addComment(){
@@ -592,6 +623,7 @@
     }
     function closeViewer(){
         m.classList.remove('show');
+        viewerPostId = null;
         wantLandscape = false;
         try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
         try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {}

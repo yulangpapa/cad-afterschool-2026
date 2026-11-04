@@ -82,7 +82,7 @@
             <div class="teacher-actions" style="margin-bottom:15px">
                 <button class="btn btn-primary" id="btnCreateFolder">+ 새 과제 폴더 만들기</button>
             </div>
-            <div id="folderList" class="folder-list"><div class="loading">데이터 불러오는 중...</div></div>
+            <div id="folderList" class="folder-list"><div class="loading" id="folderLoading">데이터베이스 연결 중...</div></div>
         </div>
 
         <!-- 폴더 내부 (도면 목록) -->
@@ -152,7 +152,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // 선생님의 Firebase 정보를 바탕으로 정확한 설정값을 적용했습니다.
+    // 1. 만약 이 주소(databaseURL)로도 접속이 안 된다면 Firebase 콘솔에서 실제 주소를 확인해야 합니다.
 const firebaseConfig = {
   apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
   authDomain: "cad-afterschool-2026.firebaseapp.com",
@@ -172,13 +172,23 @@ const firebaseConfig = {
     // 이벤트 바인딩
     document.getElementById('btnHome').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
     document.getElementById('roleSelect').onchange = (e) => toggleRole(e.target.value);
-    document.getElementById('btnCreateFolder').onclick = showCreateFolder;
     document.getElementById('btnBackToFolders').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
     document.getElementById('btnShowUpload').onclick = () => showView('view-upload');
     document.getElementById('btnBackToPosts').onclick = () => showView('view-folder-detail');
     document.getElementById('btnSubmitUpload').onclick = submitUpload;
     document.getElementById('btnBackToPostsFromDetail').onclick = () => showView('view-folder-detail');
     document.getElementById('btnAddComment').onclick = addComment;
+
+    // ★ 폴더 생성 (오류 발생 시 원인 팝업 띄움)
+    document.getElementById('btnCreateFolder').onclick = () => {
+        const folderName = prompt('새로운 과제 폴더의 이름을 입력하세요:');
+        if (folderName && folderName.trim()) {
+            push(ref(db, 'folders'), { name: folderName.trim() })
+            .catch((error) => {
+                alert("폴더 생성 실패!\n\n원인: " + error.message + "\n\n※ 해결방법:\nFirebase 홈페이지 > Realtime Database > '규칙(Rules)' 탭에서 .read와 .write가 모두 true로 설정되어 있는지 확인하세요.");
+            });
+        }
+    };
 
     // 초기 모드 설정
     const urlParams = new URLSearchParams(window.location.search);
@@ -195,10 +205,13 @@ const firebaseConfig = {
     }
     function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    // 데이터 수신
+    // 데이터 수신 (오류 발생 시 알림)
     onValue(ref(db, 'folders'), (snap) => {
         folders = []; snap.forEach(c => folders.push({ id: c.key, ...c.val() }));
         renderFolders();
+    }, (error) => {
+        document.getElementById('folderLoading').innerText = "데이터 연결 실패!";
+        alert("데이터베이스 연결 권한이 없습니다.\nFirebase Realtime Database 규칙(Rules)을 확인해주세요.");
     });
 
     onValue(ref(db, 'posts'), (snap) => {
@@ -229,10 +242,15 @@ const firebaseConfig = {
         });
     }
 
+    // 전역 함수 등록
     window.openFolder = (id, name) => { currentFolderId = id; document.getElementById('currentFolderName').innerText = name; renderPosts(); showView('view-folder-detail'); };
-    window.editFolder = (id, old) => { const n = prompt('새 이름:', old); if(n) update(ref(db,`folders/${id}`), {name:n.trim()}); };
-    window.deleteFolder = (id) => { if(confirm('삭제할까요?')) remove(ref(db,`folders/${id}`)); };
-    function showCreateFolder(){ const n = prompt('폴더 이름:'); if(n) push(ref(db,'folders'), {name:n.trim()}); }
+    window.editFolder = (id, old) => { 
+        const n = prompt('새 이름:', old); 
+        if(n) update(ref(db,`folders/${id}`), {name:n.trim()}).catch(e => alert("수정 실패: " + e.message)); 
+    };
+    window.deleteFolder = (id) => { 
+        if(confirm('삭제할까요?')) remove(ref(db,`folders/${id}`)).catch(e => alert("삭제 실패: " + e.message)); 
+    };
 
     function renderPosts(){
         const list = document.getElementById('postList'); list.innerHTML='';
@@ -255,16 +273,29 @@ const firebaseConfig = {
         const author = document.getElementById('uploadAuthor').value;
         const title = document.getElementById('uploadTitle').value;
         const file = document.getElementById('uploadFile').files[0];
-        if(!author || !title || !file) return alert('모두 입력!');
+        if(!author || !title || !file) return alert('모두 입력해주세요!');
+        
         document.getElementById('btnSubmitUpload').disabled = true;
+        document.getElementById('btnSubmitUpload').innerText = '업로드 중...';
+        
         const r = new FileReader(); r.onload = (e) => {
             const img = new Image(); img.onload = () => {
                 const cvs = document.createElement('canvas'); const MAX = 1000;
                 let w = img.width, h = img.height;
                 if(w>MAX){ h *= MAX/w; w = MAX; }
                 cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img,0,0,w,h);
+                
                 push(ref(db,'posts'), { folderId:currentFolderId, author, title, imageUrl:cvs.toDataURL('image/jpeg',0.8), createdAt:Date.now() })
-                .then(()=>{ document.getElementById('btnSubmitUpload').disabled=false; showView('view-folder-detail'); });
+                .then(()=>{ 
+                    document.getElementById('btnSubmitUpload').disabled=false; 
+                    document.getElementById('btnSubmitUpload').innerText = '업로드 완료'; 
+                    showView('view-folder-detail'); 
+                })
+                .catch((error) => {
+                    alert("업로드 실패!\n원인: " + error.message);
+                    document.getElementById('btnSubmitUpload').disabled=false;
+                    document.getElementById('btnSubmitUpload').innerText = '업로드 완료';
+                });
             }; img.src = e.target.result;
         }; r.readAsDataURL(file);
     }
@@ -291,7 +322,9 @@ const firebaseConfig = {
         const t = document.getElementById('commentText').value;
         if(!a || !t) return;
         const now = new Date(); const ds = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
-        push(ref(db, `posts/${currentPostId}/comments`), { author:a, text:t, date:ds }).then(()=>document.getElementById('commentText').value='');
+        push(ref(db, `posts/${currentPostId}/comments`), { author:a, text:t, date:ds })
+        .then(()=>document.getElementById('commentText').value='')
+        .catch(e => alert("댓글 달기 실패: " + e.message));
     }
 
     // 줌 기능

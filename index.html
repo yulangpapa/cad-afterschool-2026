@@ -345,6 +345,28 @@
     }
 
     // ---------- 업로드 ----------
+    const MAX_SIDE = 1800;            // 긴 변 기준 최대 픽셀 (기존: 가로 1000)
+    const TARGET_BYTES = 700 * 1024;  // 목표 용량 약 700KB (넘으면 화질→크기 순으로 조금씩 낮춤)
+
+    function compressImage(img){
+        let scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));   // 작은 이미지는 키우지 않음
+        let url = '';
+        for (let attempt = 0; attempt < 4; attempt++) {
+            const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+            const cvs = document.createElement('canvas'); cvs.width = w; cvs.height = h;
+            const ctx = cvs.getContext('2d');
+            ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);   // 투명 PNG가 검게 저장되는 것 방지
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, w, h);
+            for (const q of [0.92, 0.88, 0.84, 0.8]) {
+                url = cvs.toDataURL('image/jpeg', q);
+                if (url.length * 0.75 <= TARGET_BYTES) return url;
+            }
+            scale *= 0.85;
+        }
+        return url;
+    }
+
     function submitUpload(){
         const author = $('uploadAuthor').value.trim();
         const title = $('uploadTitle').value.trim();
@@ -362,12 +384,9 @@
             const img = new Image();
             img.onerror = () => { alert('이미지 파일이 아닙니다.'); resetBtn(); };
             img.onload = () => {
-                const cvs = document.createElement('canvas'); const MAX = 1000;
-                let w = img.width, h = img.height;
-                if (w > MAX) { h *= MAX / w; w = MAX; }
-                cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+                const imageUrl = compressImage(img);
 
-                push(ref(db, 'posts'), { folderId: currentFolderId, author, title, imageUrl: cvs.toDataURL('image/jpeg', 0.8), createdAt: Date.now() })
+                push(ref(db, 'posts'), { folderId: currentFolderId, author, title, imageUrl, createdAt: Date.now() })
                 .then(() => {
                     $('uploadTitle').value = ''; $('uploadFile').value = '';   // 이름은 남겨 두어 연속 업로드 편하게
                     resetBtn();

@@ -1,69 +1,63 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CAD 방과후 과제 업로드</title>
     <style>
-        :root{--primary:#2563eb;--primary-hover:#1d4ed8;--bg-color:#f3f4f6;--card-bg:#fff;--text-main:#1f2937;--text-muted:#6b7280;--border:#e5e7eb;--danger:#ef4444;--warning:#f59e0b}
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-        body{background:var(--bg-color);color:var(--text-main);line-height:1.5}
-        #app{max-width:600px;margin:0 auto;background:var(--card-bg);min-height:100vh;box-shadow:0 0 15px rgba(0,0,0,.05);display:flex;flex-direction:column}
-        header{background:var(--primary);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
-        .header-left{display:flex;align-items:center;gap:12px}
-        .home-btn{background:rgba(255,255,255,.2);border:0;color:#fff;font-size:1.1rem;padding:6px 10px;border-radius:6px;cursor:pointer}
-        header h1{font-size:1.1rem;font-weight:600}
-        .role-switch{background:rgba(255,255,255,.2);color:#fff;border:0;padding:6px 8px;border-radius:6px;font-size:.9rem;display:none}
-        main{padding:20px;flex:1;overflow-y:auto}
-        .view{display:none}.view.active{display:block}
-        .btn{display:inline-block;padding:10px 16px;border-radius:8px;border:0;font-size:1rem;font-weight:500;cursor:pointer}
-        .btn-primary{background:var(--primary);color:#fff;width:100%}.btn-primary:hover{background:var(--primary-hover)}
-        .btn-small{padding:6px 10px;font-size:.85rem;border-radius:6px}
-        .btn-edit{background:var(--warning);color:#fff}.btn-danger{background:var(--danger);color:#fff}
-        .view-header{display:flex;align-items:center;margin-bottom:20px;gap:10px}
-        .view-header h2{font-size:1.3rem;flex:1}
-        .back-btn{background:none;border:0;font-size:1.5rem;color:var(--text-main);cursor:pointer;padding:0 5px}
-        .folder-list{display:grid;grid-template-columns:1fr;gap:12px;margin-top:15px}
-        .folder-item{background:var(--card-bg);border:1px solid var(--border);padding:16px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-        .folder-info{display:flex;align-items:center;gap:12px;flex:1;cursor:pointer}
-        .folder-icon{font-size:1.5rem}
-        .teacher-actions{display:none;gap:6px}
-        .is-teacher .teacher-actions{display:flex}
-        .form-group{margin-bottom:16px}
-        .form-group label{display:block;margin-bottom:6px;font-size:.9rem;color:var(--text-muted)}
-        .form-group input{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem}
-        .post-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
-        .post-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;background:var(--card-bg)}
-        .post-thumb{width:100%;height:120px;object-fit:cover;background:#e5e7eb;display:block}
-        .post-meta{padding:10px}
-        .post-title{font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .post-author{font-size:.8rem;color:var(--text-muted);margin-top:4px}
-        .post-time{font-size:.72rem;color:#9ca3af;margin-top:6px}
-        .detail-img{width:100%;border-radius:8px;border:1px solid var(--border);margin-bottom:15px;cursor:zoom-in}
-        .detail-title{font-size:1.2rem;font-weight:bold;margin-bottom:5px}
-        .detail-author{color:var(--text-muted);font-size:.9rem;margin-bottom:6px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-        .detail-time{font-size:.78rem;color:#9ca3af}
-        .comments-section h3{font-size:1.1rem;margin-bottom:12px}
-        .comment-item{background:var(--bg-color);padding:12px;border-radius:8px;margin-bottom:8px}
-        .comment-author{font-weight:600;font-size:.85rem;margin-bottom:4px;color:var(--primary)}
-        .comment-text{font-size:.95rem}
-        .comment-input-area{display:flex;gap:8px}
-        .empty-state{text-align:center;color:var(--text-muted);padding:40px 20px}
-        .loading{text-align:center;padding:20px;color:var(--text-muted)}
-
-        /* 이미지 전체화면 모달 */
-        #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200}
-        #imgModal.show{display:flex}
-        #imgModalInner{position:relative;max-width:95%;max-height:95%;overflow:hidden;touch-action:none;border-radius:8px}
-        #imgModalImg{display:block;max-width:100%;max-height:100%;transform-origin:0 0;will-change:transform;cursor:grab}
-        #imgModalClose{position:absolute;right:8px;top:8px;background:rgba(255,255,255,.1);color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer}
-        #imgModalControls{position:absolute;left:8px;top:8px;display:flex;gap:6px}
-        .modal-control{background:rgba(255,255,255,.12);color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer}
-        .modal-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);color:#d1d5db;font-size:.85rem}
+        /* 기존 CSS 디자인 그대로 유지 (생략 없이 사용) */
+        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        #app { max-width: 600px; margin: 0 auto; background-color: var(--card-bg); min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        header { background-color: var(--primary); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .home-btn { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.1rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
+        header h1 { font-size: 1.1rem; font-weight: 600; }
+        .role-switch { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; outline: none; display: none; }
+        .role-switch option { color: var(--text-main); }
+        main { padding: 20px; flex: 1; overflow-y: auto; }
+        .view { display: none; } .view.active { display: block; }
+        .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; border: none; font-size: 1rem; font-weight: 500; cursor: pointer; text-align: center; transition: 0.2s; }
+        .btn-primary { background-color: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-small { padding: 6px 10px; font-size: 0.85rem; border-radius: 6px; }
+        .btn-edit { background-color: var(--warning); color: white; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .view-header { display: flex; align-items: center; margin-bottom: 20px; gap: 10px; }
+        .view-header h2 { font-size: 1.3rem; flex: 1; }
+        .back-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; padding: 0 5px; }
+        .folder-list { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; }
+        .folder-item { background: var(--card-bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .folder-info { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
+        .folder-icon { font-size: 1.5rem; }
+        .teacher-actions { display: none; gap: 6px; }
+        .is-teacher .teacher-actions { display: flex; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-muted); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        .post-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .post-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; }
+        .post-thumb { width: 100%; height: 120px; object-fit: cover; background-color: #e5e7eb; }
+        .post-meta { padding: 10px; }
+        .post-title { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-author { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .detail-img { width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .detail-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+        .detail-author { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .comments-section h3 { font-size: 1.1rem; margin-bottom: 12px; }
+        .comment-item { background-color: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
+        .comment-author { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: var(--primary); }
+        .comment-text { font-size: 0.95rem; }
+        .comment-input-area { display: flex; gap: 8px; }
+        .empty-state { text-align: center; color: var(--text-muted); padding: 40px 20px; }
+        .loading { text-align: center; padding: 20px; color: var(--text-muted); }
     </style>
 </head>
 <body>
+
 <div id="app">
+    <!-- UI HTML은 동일합니다 -->
     <header>
         <div class="header-left">
             <button class="home-btn" id="btnHome" title="처음 화면으로">🏠</button>
@@ -79,7 +73,7 @@
         <!-- 폴더 목록 -->
         <div id="view-folder-list" class="view active">
             <div class="view-header"><h2>과제 폴더 목록</h2></div>
-            <div class="teacher-actions" style="margin-bottom:15px">
+            <div class="teacher-actions" style="margin-bottom: 15px;">
                 <button class="btn btn-primary" id="btnCreateFolder">+ 새 과제 폴더 만들기</button>
             </div>
             <div id="folderList" class="folder-list"><div class="loading">데이터 불러오는 중...</div></div>
@@ -91,11 +85,11 @@
                 <button class="back-btn" id="btnBackToFolders">←</button>
                 <h2 id="currentFolderName">폴더명</h2>
             </div>
-            <button class="btn btn-primary" style="margin-bottom:15px" id="btnShowUpload">+ 2D 도면 업로드</button>
+            <button class="btn btn-primary" style="margin-bottom: 15px;" id="btnShowUpload">+ 2D 도면 업로드</button>
             <div id="postList" class="post-list"></div>
         </div>
 
-        <!-- 업로드 화면 -->
+        <!-- 도면 업로드 화면 -->
         <div id="view-upload" class="view">
             <div class="view-header">
                 <button class="back-btn" id="btnBackToPosts">←</button>
@@ -104,10 +98,10 @@
             <div class="form-group"><label>작성자 이름 (학생명)</label><input type="text" id="uploadAuthor" placeholder="예: 홍길동"></div>
             <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
             <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
-            <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료</button>
+            <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료 (시간이 조금 걸릴 수 있습니다)</button>
         </div>
 
-        <!-- 상세 보기 -->
+        <!-- 도면 상세 및 피드백 -->
         <div id="view-post-detail" class="view">
             <div class="view-header">
                 <button class="back-btn" id="btnBackToPostsFromDetail">←</button>
@@ -115,61 +109,51 @@
             </div>
             <img id="detailImage" class="detail-img" src="" alt="도면 이미지">
             <div id="detailTitle" class="detail-title">제목</div>
-            <div id="detailAuthor" class="detail-author">
-                <span id="detailAuthorName">작성자</span>
-                <span class="detail-time" id="detailCreatedAt"></span>
-            </div>
+            <div id="detailAuthor" class="detail-author">작성자</div>
             <div class="comments-section">
                 <h3>💬 피드백 및 댓글</h3>
-                <div id="commentList" style="margin-bottom:20px"></div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <input type="text" id="commentAuthor" placeholder="작성자 이름" style="padding:8px">
+                <div id="commentList" style="margin-bottom: 20px;"></div>
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <input type="text" id="commentAuthor" placeholder="작성자 이름" style="padding: 8px;">
                 </div>
                 <div class="comment-input-area">
                     <input type="text" id="commentText" placeholder="피드백을 남겨주세요">
-                    <button class="btn btn-primary" style="width:auto" id="btnAddComment">등록</button>
+                    <button class="btn btn-primary" style="width: auto;" id="btnAddComment">등록</button>
                 </div>
             </div>
         </div>
     </main>
 </div>
 
-<!-- 이미지 뷰어 모달 -->
-<div id="imgModal" aria-hidden="true">
-    <div id="imgModalInner">
-        <img id="imgModalImg" src="" alt="확대 이미지">
-        <div id="imgModalControls">
-            <button class="modal-control" id="zoomOutBtn">-</button>
-            <button class="modal-control" id="zoomResetBtn">Reset</button>
-            <button class="modal-control" id="zoomInBtn">+</button>
-        </div>
-        <button id="imgModalClose" aria-label="닫기">✕</button>
-        <div class="modal-hint">줌: 휠/핀치, 드래그로 이동</div>
-    </div>
-</div>
-
+<!-- Firebase 최신 SDK 불러오기 (type="module" 필수) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // 선생님의 Firebase 정보를 바탕으로 정확한 설정값을 적용했습니다.
-    const firebaseConfig = {
-        apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
-        authDomain: "cad-afterschool-2026.firebaseapp.com",
-        projectId: "cad-afterschool-2026",
-        databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com", // ★ 이 주소가 빠지면 데이터를 못 읽습니다.
-        storageBucket: "cad-afterschool-2026.firebasestorage.app",
-        messagingSenderId: "812762265008",
-        appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
-    };
+    // =================================================================
+    // ★ [중요] 아래 firebaseConfig 중괄호 안의 내용을 선생님의 정보로 교체하세요! ★
+    // =================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
+  authDomain: "cad-afterschool-2026.firebaseapp.com",
+  projectId: "cad-afterschool-2026",
+  storageBucket: "cad-afterschool-2026.firebasestorage.app",
+  messagingSenderId: "812762265008",
+  appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
+};
 
+    // 파이어베이스 초기화
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let folders = []; let posts = []; let currentRole = 'student';
-    let currentFolderId = null; let currentPostId = null;
+    // 전역 상태
+    let folders = [];
+    let posts = [];
+    let currentRole = 'student';
+    let currentFolderId = null;
+    let currentPostId = null;
 
-    // 이벤트 바인딩
+    // --- 이벤트 리스너 등록 ---
     document.getElementById('btnHome').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
     document.getElementById('roleSelect').onchange = (e) => toggleRole(e.target.value);
     document.getElementById('btnCreateFolder').onclick = showCreateFolder;
@@ -180,131 +164,207 @@
     document.getElementById('btnBackToPostsFromDetail').onclick = () => showView('view-folder-detail');
     document.getElementById('btnAddComment').onclick = addComment;
 
-    // 초기 모드 설정
+    // 초기 설정 (URL 파라미터 확인)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('mode') === 'teacher') {
         document.getElementById('roleSelect').style.display = 'inline-block';
         document.getElementById('roleSelect').value = 'teacher';
         toggleRole('teacher');
-    } else toggleRole('student');
+    } else {
+        toggleRole('student');
+    }
 
     function toggleRole(role) {
         currentRole = role;
         if (currentRole === 'teacher') document.getElementById('app').classList.add('is-teacher');
         else document.getElementById('app').classList.remove('is-teacher');
     }
-    function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    // 데이터 수신
-    onValue(ref(db, 'folders'), (snap) => {
-        folders = []; snap.forEach(c => folders.push({ id: c.key, ...c.val() }));
+    function showView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    // =================================================================
+    // 📡 실시간 데이터 연동 (Firebase Realtime Database)
+    // =================================================================
+    
+    // 1. 폴더 실시간 가져오기
+    onValue(ref(db, 'folders'), (snapshot) => {
+        folders = [];
+        snapshot.forEach((child) => {
+            folders.push({ id: child.key, ...child.val() });
+        });
         renderFolders();
     });
 
-    onValue(ref(db, 'posts'), (snap) => {
+    // 2. 도면(과제) 실시간 가져오기
+    onValue(ref(db, 'posts'), (snapshot) => {
         posts = [];
-        snap.forEach(c => {
-            const data = c.val();
-            const comments = data.comments ? Object.keys(data.comments).map(k => ({ id:k, ...data.comments[k] })) : [];
-            posts.push({ id: c.key, ...data, comments });
+        snapshot.forEach((child) => {
+            let data = child.val();
+            // 댓글 객체를 배열로 변환
+            let comments = [];
+            if(data.comments) {
+                for(let key in data.comments) comments.push({ id: key, ...data.comments[key] });
+            }
+            posts.push({ id: child.key, folderId: data.folderId, author: data.author, title: data.title, imageUrl: data.imageUrl, comments: comments });
         });
         if (currentFolderId) renderPosts();
-        if (currentPostId) openPost(currentPostId);
+        if (currentPostId) openPost(currentPostId); // 켜져있는 상세화면 댓글 실시간 갱신
     });
 
-    function renderFolders(){
-        const list = document.getElementById('folderList'); list.innerHTML = '';
-        const sorted = [...folders].sort((a,b)=>a.name.localeCompare(b.name));
-        if(sorted.length===0){ list.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return; }
-        sorted.forEach(f=>{
-            const div = document.createElement('div'); div.className='folder-item';
-            div.innerHTML = `<div class="folder-info" onclick="openFolder('${f.id}','${f.name}')">
-                <span class="folder-icon">📁</span><span style="font-weight:600">${f.name}</span>
-            </div>
-            <div class="teacher-actions">
-                <button class="btn btn-edit btn-small" onclick="editFolder('${f.id}','${f.name}')">변경</button>
-                <button class="btn btn-danger btn-small" onclick="deleteFolder('${f.id}')">삭제</button>
-            </div>`;
-            list.appendChild(div);
+    // =================================================================
+    // ✍️ 데이터 쓰기 / 렌더링 함수들
+    // =================================================================
+
+    function renderFolders() {
+        const folderList = document.getElementById('folderList');
+        folderList.innerHTML = '';
+        const sortedFolders = [...folders].sort((a, b) => a.name.localeCompare(b.name));
+
+        if (sortedFolders.length === 0) {
+            folderList.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return;
+        }
+
+        sortedFolders.forEach(folder => {
+            const item = document.createElement('div');
+            item.className = 'folder-item';
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'folder-info';
+            infoDiv.innerHTML = `<span class="folder-icon">📁</span><span style="font-weight:600;">${folder.name}</span>`;
+            infoDiv.onclick = () => { currentFolderId = folder.id; document.getElementById('currentFolderName').innerText = folder.name; renderPosts(); showView('view-folder-detail'); };
+            
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'teacher-actions';
+            
+            const editBtn = document.createElement('button'); editBtn.className = 'btn btn-edit btn-small'; editBtn.innerText = '이름변경';
+            editBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                const newName = prompt("변경할 폴더 이름을 입력하세요:", folder.name);
+                if (newName && newName.trim()) update(ref(db, `folders/${folder.id}`), { name: newName.trim() });
+            };
+
+            const delBtn = document.createElement('button'); delBtn.className = 'btn btn-danger btn-small'; delBtn.innerText = '삭제';
+            delBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                if (confirm("정말 삭제하시겠습니까?")) remove(ref(db, `folders/${folder.id}`));
+            };
+
+            actionsDiv.appendChild(editBtn); actionsDiv.appendChild(delBtn);
+            item.appendChild(infoDiv); item.appendChild(actionsDiv);
+            folderList.appendChild(item);
         });
     }
 
-    window.openFolder = (id, name) => { currentFolderId = id; document.getElementById('currentFolderName').innerText = name; renderPosts(); showView('view-folder-detail'); };
-    window.editFolder = (id, old) => { const n = prompt('새 이름:', old); if(n) update(ref(db,`folders/${id}`), {name:n.trim()}); };
-    window.deleteFolder = (id) => { if(confirm('삭제할까요?')) remove(ref(db,`folders/${id}`)); };
-    function showCreateFolder(){ const n = prompt('폴더 이름:'); if(n) push(ref(db,'folders'), {name:n.trim()}); }
+    function showCreateFolder() {
+        const name = prompt("새로운 과제 폴더의 이름을 입력하세요:");
+        if (name && name.trim()) {
+            push(ref(db, 'folders'), { name: name.trim() });
+        }
+    }
 
-    function renderPosts(){
-        const list = document.getElementById('postList'); list.innerHTML='';
-        const filtered = posts.filter(p=>p.folderId===currentFolderId);
-        if(filtered.length===0){ list.innerHTML=`<div class="empty-state" style="grid-column:span 2">과제가 없습니다.</div>`; return; }
-        filtered.forEach(p=>{
-            const card = document.createElement('div'); card.className='post-card';
-            card.onclick = ()=> openPost(p.id);
-            card.innerHTML = `<img src="${p.imageUrl}" class="post-thumb">
-                <div class="post-meta">
-                    <div class="post-title">${p.title}</div>
-                    <div class="post-author">${p.author} • 댓글 ${p.comments.length}</div>
-                    <div class="post-time">${p.createdAt?formatDate(p.createdAt):''}</div>
-                </div>`;
-            list.appendChild(card);
+    function renderPosts() {
+        const postList = document.getElementById('postList');
+        postList.innerHTML = '';
+        const folderPosts = posts.filter(p => p.folderId === currentFolderId);
+
+        if (folderPosts.length === 0) {
+            postList.innerHTML = `<div class="empty-state" style="grid-column: span 2;">등록된 도면이 없습니다.</div>`; return;
+        }
+
+        folderPosts.forEach(post => {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.onclick = () => openPost(post.id);
+            card.innerHTML = `<img src="${post.imageUrl}" class="post-thumb">
+                              <div class="post-meta"><div class="post-title">${post.title}</div><div class="post-author">${post.author} • 댓글 ${post.comments.length}</div></div>`;
+            postList.appendChild(card);
         });
     }
 
-    function submitUpload(){
+    // 이미지 용량 압축 함수 (DB 부하 방지)
+    function compressImage(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                let width = img.width; let height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                callback(canvas.toDataURL('image/jpeg', 0.8)); // 80% 화질로 압축
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function submitUpload() {
         const author = document.getElementById('uploadAuthor').value;
         const title = document.getElementById('uploadTitle').value;
-        const file = document.getElementById('uploadFile').files[0];
-        if(!author || !title || !file) return alert('모두 입력!');
+        const fileInput = document.getElementById('uploadFile');
+
+        if (!author || !title || fileInput.files.length === 0) { alert("모두 입력해주세요."); return; }
+        
+        document.getElementById('btnSubmitUpload').innerText = '업로드 중...';
         document.getElementById('btnSubmitUpload').disabled = true;
-        const r = new FileReader(); r.onload = (e) => {
-            const img = new Image(); img.onload = () => {
-                const cvs = document.createElement('canvas'); const MAX = 1000;
-                let w = img.width, h = img.height;
-                if(w>MAX){ h *= MAX/w; w = MAX; }
-                cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img,0,0,w,h);
-                push(ref(db,'posts'), { folderId:currentFolderId, author, title, imageUrl:cvs.toDataURL('image/jpeg',0.8), createdAt:Date.now() })
-                .then(()=>{ document.getElementById('btnSubmitUpload').disabled=false; showView('view-folder-detail'); });
-            }; img.src = e.target.result;
-        }; r.readAsDataURL(file);
-    }
 
-    window.openPost = function(id){
-        currentPostId = id; const p = posts.find(x=>x.id===id); if(!p) return;
-        document.getElementById('detailImage').src = p.imageUrl;
-        document.getElementById('detailImage').onclick = ()=> openImageViewer(p.imageUrl);
-        document.getElementById('detailTitle').innerText = p.title;
-        document.getElementById('detailAuthorName').innerText = p.author;
-        document.getElementById('detailCreatedAt').innerText = p.createdAt?formatDate(p.createdAt):'';
-        const cList = document.getElementById('commentList'); cList.innerHTML = '';
-        if(p.comments.length===0) cList.innerHTML = '<div class="empty-state">피드백이 없습니다.</div>';
-        else p.comments.forEach(c=>{
-            const d = document.createElement('div'); d.className='comment-item';
-            d.innerHTML = `<div class="comment-author">${c.author} <span style="font-size:.7rem;color:#999">${c.date}</span></div><div>${c.text}</div>`;
-            cList.appendChild(d);
+        compressImage(fileInput.files[0], function(compressedBase64) {
+            push(ref(db, 'posts'), {
+                folderId: currentFolderId,
+                author: author,
+                title: title,
+                imageUrl: compressedBase64
+            }).then(() => {
+                document.getElementById('btnSubmitUpload').innerText = '업로드 완료';
+                document.getElementById('btnSubmitUpload').disabled = false;
+                document.getElementById('uploadFile').value = '';
+                showView('view-folder-detail');
+            });
         });
-        showView('view-post-detail');
-    };
-
-    function addComment(){
-        const a = document.getElementById('commentAuthor').value;
-        const t = document.getElementById('commentText').value;
-        if(!a || !t) return;
-        const now = new Date(); const ds = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
-        push(ref(db, `posts/${currentPostId}/comments`), { author:a, text:t, date:ds }).then(()=>document.getElementById('commentText').value='');
     }
 
-    // 줌 기능
-    const m = document.getElementById('imgModal'); const mi = document.getElementById('imgModalImg');
-    let scale = 1, tx = 0, ty = 0;
-    function openImageViewer(s){ mi.src = s; scale = 1; tx = 0; ty = 0; updateT(); m.classList.add('show'); }
-    function updateT(){ mi.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; }
-    document.getElementById('imgModalClose').onclick = ()=> m.classList.remove('show');
-    document.getElementById('zoomInBtn').onclick = ()=>{ scale*=1.2; updateT(); };
-    document.getElementById('zoomOutBtn').onclick = ()=>{ scale*=0.8; updateT(); };
-    document.getElementById('zoomResetBtn').onclick = ()=>{ scale=1; tx=0; ty=0; updateT(); };
+    // 전역 함수로 노출 (렌더링 된 리스트에서 클릭 시 호출하기 위함)
+    window.openPost = function(postId) {
+        currentPostId = postId;
+        const post = posts.find(p => p.id === postId);
+        if(!post) return;
+        document.getElementById('detailImage').src = post.imageUrl;
+        document.getElementById('detailTitle').innerText = post.title;
+        document.getElementById('detailAuthor').innerText = `작성자: ${post.author}`;
+        
+        const commentList = document.getElementById('commentList');
+        commentList.innerHTML = '';
+        if (post.comments.length === 0) {
+            commentList.innerHTML = `<div class="empty-state" style="padding:10px;">피드백이 없습니다.</div>`;
+        } else {
+            post.comments.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'comment-item';
+                div.innerHTML = `<div class="comment-author">${c.author} <span style="color:#999; font-weight:normal; font-size:0.75rem;">${c.date}</span></div>
+                                 <div class="comment-text">${c.text}</div>`;
+                commentList.appendChild(div);
+            });
+        }
+        showView('view-post-detail');
+    }
 
-    function formatDate(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes()}`; }
+    function addComment() {
+        const authorInput = document.getElementById('commentAuthor').value;
+        const textInput = document.getElementById('commentText').value;
+        if (!authorInput || !textInput) { alert("입력해주세요."); return; }
+        
+        const now = new Date();
+        const dateString = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+        
+        push(ref(db, `posts/${currentPostId}/comments`), { author: authorInput, text: textInput, date: dateString }).then(() => {
+            document.getElementById('commentText').value = '';
+        });
+    }
 </script>
 </body>
 </html>

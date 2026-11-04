@@ -5,359 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CAD 방과후 과제 업로드</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-        }
-
-        #app {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            min-height: 100vh;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .home-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 1.1rem;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        header h1 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .role-switch {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 6px 8px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            outline: none;
-            display: none; /* 기본적으로 숨김 (URL 파라미터로 제어) */
-        }
+        /* 기존 CSS 디자인 그대로 유지 (생략 없이 사용) */
+        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        #app { max-width: 600px; margin: 0 auto; background-color: var(--card-bg); min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        header { background-color: var(--primary); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .home-btn { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.1rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
+        header h1 { font-size: 1.1rem; font-weight: 600; }
+        .role-switch { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; outline: none; display: none; }
         .role-switch option { color: var(--text-main); }
-
-        main {
-            padding: 20px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        /* Views */
-        .view { display: none; }
-        .view.active { display: block; }
-
-        /* Buttons */
-        .btn {
-            display: inline-block;
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            transition: 0.2s;
-        }
+        main { padding: 20px; flex: 1; overflow-y: auto; }
+        .view { display: none; } .view.active { display: block; }
+        .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; border: none; font-size: 1rem; font-weight: 500; cursor: pointer; text-align: center; transition: 0.2s; }
         .btn-primary { background-color: var(--primary); color: white; width: 100%; }
         .btn-primary:hover { background-color: var(--primary-hover); }
-        
         .btn-small { padding: 6px 10px; font-size: 0.85rem; border-radius: 6px; }
         .btn-edit { background-color: var(--warning); color: white; }
         .btn-danger { background-color: var(--danger); color: white; }
-
-        /* View Header */
-        .view-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
+        .view-header { display: flex; align-items: center; margin-bottom: 20px; gap: 10px; }
         .view-header h2 { font-size: 1.3rem; flex: 1; }
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-main);
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
-        /* Folder List */
-        .folder-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        .folder-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .folder-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            cursor: pointer;
-        }
+        .back-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; padding: 0 5px; }
+        .folder-list { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; }
+        .folder-item { background: var(--card-bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .folder-info { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
         .folder-icon { font-size: 1.5rem; }
-        
-        /* Teacher Actions (수정/삭제 버튼) */
         .teacher-actions { display: none; gap: 6px; }
-        .is-teacher .teacher-actions { display: flex; } /* 교사 모드일때만 보임 */
-
-        /* Forms */
+        .is-teacher .teacher-actions { display: flex; }
         .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        /* Posts List */
-        .post-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        .post-card {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .post-thumb {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            background-color: #e5e7eb;
-        }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-muted); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        .post-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .post-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; }
+        .post-thumb { width: 100%; height: 120px; object-fit: cover; background-color: #e5e7eb; }
         .post-meta { padding: 10px; }
-        .post-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .post-author {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Post Detail */
+        .post-title { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-author { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
         .detail-img { width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
         .detail-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
-        .detail-author {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        /* Comments */
+        .detail-author { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
         .comments-section h3 { font-size: 1.1rem; margin-bottom: 12px; }
-        .comment-item {
-            background-color: var(--bg-color);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
+        .comment-item { background-color: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
         .comment-author { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: var(--primary); }
         .comment-text { font-size: 0.95rem; }
         .comment-input-area { display: flex; gap: 8px; }
         .empty-state { text-align: center; color: var(--text-muted); padding: 40px 20px; }
+        .loading { text-align: center; padding: 20px; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
 <div id="app">
+    <!-- UI HTML은 동일합니다 -->
     <header>
         <div class="header-left">
-            <!-- 홈 버튼 -->
-            <button class="home-btn" onclick="goHome()" title="처음 화면으로">🏠</button>
+            <button class="home-btn" id="btnHome" title="처음 화면으로">🏠</button>
             <h1>CAD 방과후 과제 업로드</h1>
         </div>
-        <!-- 교사/학생 모드 선택 (특정 URL에서만 보임) -->
-        <select id="roleSelect" class="role-switch" onchange="toggleRole()">
+        <select id="roleSelect" class="role-switch">
             <option value="student">학생 모드</option>
             <option value="teacher">교사 모드</option>
         </select>
     </header>
 
     <main>
-        <!-- 1. 메인 폴더 목록 화면 -->
+        <!-- 폴더 목록 -->
         <div id="view-folder-list" class="view active">
-            <div class="view-header">
-                <h2>과제 폴더 목록</h2>
-            </div>
-            
+            <div class="view-header"><h2>과제 폴더 목록</h2></div>
             <div class="teacher-actions" style="margin-bottom: 15px;">
-                <button class="btn btn-primary" onclick="showCreateFolder()">+ 새 과제 폴더 만들기</button>
+                <button class="btn btn-primary" id="btnCreateFolder">+ 새 과제 폴더 만들기</button>
             </div>
-
-            <div id="folderList" class="folder-list"></div>
+            <div id="folderList" class="folder-list"><div class="loading">데이터 불러오는 중...</div></div>
         </div>
 
-        <!-- 2. 폴더 내부 (도면 목록) 화면 -->
+        <!-- 폴더 내부 (도면 목록) -->
         <div id="view-folder-detail" class="view">
             <div class="view-header">
-                <button class="back-btn" onclick="goHome()">←</button>
+                <button class="back-btn" id="btnBackToFolders">←</button>
                 <h2 id="currentFolderName">폴더명</h2>
             </div>
-            
-            <button class="btn btn-primary" style="margin-bottom: 15px;" onclick="showUploadPost()">+ 2D 도면 업로드</button>
-
+            <button class="btn btn-primary" style="margin-bottom: 15px;" id="btnShowUpload">+ 2D 도면 업로드</button>
             <div id="postList" class="post-list"></div>
         </div>
 
-        <!-- 3. 도면 업로드 화면 -->
+        <!-- 도면 업로드 화면 -->
         <div id="view-upload" class="view">
             <div class="view-header">
-                <button class="back-btn" onclick="goBack('view-folder-detail')">←</button>
+                <button class="back-btn" id="btnBackToPosts">←</button>
                 <h2>과제 업로드</h2>
             </div>
-            <div class="form-group">
-                <label>작성자 이름 (학생명)</label>
-                <input type="text" id="uploadAuthor" placeholder="예: 홍길동">
-            </div>
-            <div class="form-group">
-                <label>도면 제목 (또는 설명)</label>
-                <input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성">
-            </div>
-            <div class="form-group">
-                <label>도면 이미지 파일 (JPG, PNG)</label>
-                <input type="file" id="uploadFile" accept="image/*">
-            </div>
-            <button class="btn btn-primary" onclick="submitUpload()">업로드 완료</button>
+            <div class="form-group"><label>작성자 이름 (학생명)</label><input type="text" id="uploadAuthor" placeholder="예: 홍길동"></div>
+            <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
+            <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
+            <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료 (시간이 조금 걸릴 수 있습니다)</button>
         </div>
 
-        <!-- 4. 도면 상세 및 피드백 화면 -->
+        <!-- 도면 상세 및 피드백 -->
         <div id="view-post-detail" class="view">
             <div class="view-header">
-                <button class="back-btn" onclick="goBack('view-folder-detail')">←</button>
+                <button class="back-btn" id="btnBackToPostsFromDetail">←</button>
                 <h2>도면 상세 보기</h2>
             </div>
-            
             <img id="detailImage" class="detail-img" src="" alt="도면 이미지">
             <div id="detailTitle" class="detail-title">제목</div>
-            <div id="detailAuthor" class="detail-author">작성자: 홍길동</div>
-
+            <div id="detailAuthor" class="detail-author">작성자</div>
             <div class="comments-section">
                 <h3>💬 피드백 및 댓글</h3>
                 <div id="commentList" style="margin-bottom: 20px;"></div>
-                
                 <div class="form-group" style="margin-bottom: 8px;">
                     <input type="text" id="commentAuthor" placeholder="작성자 이름" style="padding: 8px;">
                 </div>
                 <div class="comment-input-area">
-                    <input type="text" id="commentText" placeholder="수정사항이나 피드백을 남겨주세요">
-                    <button class="btn btn-primary" style="width: auto;" onclick="addComment()">등록</button>
+                    <input type="text" id="commentText" placeholder="피드백을 남겨주세요">
+                    <button class="btn btn-primary" style="width: auto;" id="btnAddComment">등록</button>
                 </div>
             </div>
         </div>
     </main>
 </div>
 
-<script>
+<!-- Firebase 최신 SDK 불러오기 (type="module" 필수) -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // =================================================================
+    // ★ [중요] 아래 firebaseConfig 중괄호 안의 내용을 선생님의 정보로 교체하세요! ★
+    // =================================================================
+    const firebaseConfig = {
+        apiKey: "여기에 입력",
+        authDomain: "여기에 입력",
+        databaseURL: "여기에 입력 (이게 제일 중요합니다!)",
+        projectId: "여기에 입력",
+        storageBucket: "여기에 입력",
+        messagingSenderId: "여기에 입력",
+        appId: "여기에 입력"
+    };
+
+    // 파이어베이스 초기화
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 전역 상태
+    let folders = [];
+    let posts = [];
     let currentRole = 'student';
     let currentFolderId = null;
     let currentPostId = null;
 
-    let folders = JSON.parse(localStorage.getItem('cad_folders')) || [];
-    let posts = JSON.parse(localStorage.getItem('cad_posts')) || [];
+    // --- 이벤트 리스너 등록 ---
+    document.getElementById('btnHome').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
+    document.getElementById('roleSelect').onchange = (e) => toggleRole(e.target.value);
+    document.getElementById('btnCreateFolder').onclick = showCreateFolder;
+    document.getElementById('btnBackToFolders').onclick = () => { currentFolderId = null; showView('view-folder-list'); };
+    document.getElementById('btnShowUpload').onclick = () => showView('view-upload');
+    document.getElementById('btnBackToPosts').onclick = () => showView('view-folder-detail');
+    document.getElementById('btnSubmitUpload').onclick = submitUpload;
+    document.getElementById('btnBackToPostsFromDetail').onclick = () => showView('view-folder-detail');
+    document.getElementById('btnAddComment').onclick = addComment;
 
-    // 앱 초기화 및 URL 파라미터 체크 (공유 기능)
-    function initApp() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        const roleSelect = document.getElementById('roleSelect');
-        
-        // ?mode=teacher 로 접속했을 때만 교사모드 선택 창 표시
-        if (mode === 'teacher') {
-            roleSelect.style.display = 'inline-block';
-            roleSelect.value = 'teacher';
-        } else {
-            roleSelect.style.display = 'none';
-            roleSelect.value = 'student';
-        }
-        toggleRole();
+    // 초기 설정 (URL 파라미터 확인)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'teacher') {
+        document.getElementById('roleSelect').style.display = 'inline-block';
+        document.getElementById('roleSelect').value = 'teacher';
+        toggleRole('teacher');
+    } else {
+        toggleRole('student');
     }
 
-    function saveData() {
-        localStorage.setItem('cad_folders', JSON.stringify(folders));
-        localStorage.setItem('cad_posts', JSON.stringify(posts));
+    function toggleRole(role) {
+        currentRole = role;
+        if (currentRole === 'teacher') document.getElementById('app').classList.add('is-teacher');
+        else document.getElementById('app').classList.remove('is-teacher');
     }
 
     function showView(viewId) {
@@ -365,40 +186,46 @@
         document.getElementById(viewId).classList.add('active');
     }
 
-    // 홈 버튼 기능
-    function goHome() {
-        currentFolderId = null;
-        showView('view-folder-list');
+    // =================================================================
+    // 📡 실시간 데이터 연동 (Firebase Realtime Database)
+    // =================================================================
+    
+    // 1. 폴더 실시간 가져오기
+    onValue(ref(db, 'folders'), (snapshot) => {
+        folders = [];
+        snapshot.forEach((child) => {
+            folders.push({ id: child.key, ...child.val() });
+        });
         renderFolders();
-    }
+    });
 
-    function goBack(viewId) {
-        showView(viewId);
-        if(viewId === 'view-folder-list') renderFolders();
-        if(viewId === 'view-folder-detail') renderPosts();
-    }
+    // 2. 도면(과제) 실시간 가져오기
+    onValue(ref(db, 'posts'), (snapshot) => {
+        posts = [];
+        snapshot.forEach((child) => {
+            let data = child.val();
+            // 댓글 객체를 배열로 변환
+            let comments = [];
+            if(data.comments) {
+                for(let key in data.comments) comments.push({ id: key, ...data.comments[key] });
+            }
+            posts.push({ id: child.key, folderId: data.folderId, author: data.author, title: data.title, imageUrl: data.imageUrl, comments: comments });
+        });
+        if (currentFolderId) renderPosts();
+        if (currentPostId) openPost(currentPostId); // 켜져있는 상세화면 댓글 실시간 갱신
+    });
 
-    function toggleRole() {
-        currentRole = document.getElementById('roleSelect').value;
-        const app = document.getElementById('app');
-        if (currentRole === 'teacher') {
-            app.classList.add('is-teacher');
-        } else {
-            app.classList.remove('is-teacher');
-        }
-        renderFolders();
-    }
+    // =================================================================
+    // ✍️ 데이터 쓰기 / 렌더링 함수들
+    // =================================================================
 
-    // 폴더 렌더링
     function renderFolders() {
         const folderList = document.getElementById('folderList');
         folderList.innerHTML = '';
-
         const sortedFolders = [...folders].sort((a, b) => a.name.localeCompare(b.name));
 
         if (sortedFolders.length === 0) {
-            folderList.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`;
-            return;
+            folderList.innerHTML = `<div class="empty-state">생성된 과제 폴더가 없습니다.</div>`; return;
         }
 
         sortedFolders.forEach(folder => {
@@ -408,26 +235,26 @@
             const infoDiv = document.createElement('div');
             infoDiv.className = 'folder-info';
             infoDiv.innerHTML = `<span class="folder-icon">📁</span><span style="font-weight:600;">${folder.name}</span>`;
-            infoDiv.onclick = () => openFolder(folder.id, folder.name);
+            infoDiv.onclick = () => { currentFolderId = folder.id; document.getElementById('currentFolderName').innerText = folder.name; renderPosts(); showView('view-folder-detail'); };
             
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'teacher-actions';
             
-            const editBtn = document.createElement('button');
-            editBtn.className = 'btn btn-edit btn-small';
-            editBtn.innerText = '이름변경';
-            editBtn.onclick = (e) => { e.stopPropagation(); editFolder(folder.id); };
+            const editBtn = document.createElement('button'); editBtn.className = 'btn btn-edit btn-small'; editBtn.innerText = '이름변경';
+            editBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                const newName = prompt("변경할 폴더 이름을 입력하세요:", folder.name);
+                if (newName && newName.trim()) update(ref(db, `folders/${folder.id}`), { name: newName.trim() });
+            };
 
-            const delBtn = document.createElement('button');
-            delBtn.className = 'btn btn-danger btn-small';
-            delBtn.innerText = '삭제';
-            delBtn.onclick = (e) => { e.stopPropagation(); deleteFolder(folder.id); };
+            const delBtn = document.createElement('button'); delBtn.className = 'btn btn-danger btn-small'; delBtn.innerText = '삭제';
+            delBtn.onclick = (e) => { 
+                e.stopPropagation(); 
+                if (confirm("정말 삭제하시겠습니까?")) remove(ref(db, `folders/${folder.id}`));
+            };
 
-            actionsDiv.appendChild(editBtn);
-            actionsDiv.appendChild(delBtn);
-
-            item.appendChild(infoDiv);
-            item.appendChild(actionsDiv);
+            actionsDiv.appendChild(editBtn); actionsDiv.appendChild(delBtn);
+            item.appendChild(infoDiv); item.appendChild(actionsDiv);
             folderList.appendChild(item);
         });
     }
@@ -435,70 +262,46 @@
     function showCreateFolder() {
         const name = prompt("새로운 과제 폴더의 이름을 입력하세요:");
         if (name && name.trim()) {
-            folders.push({ id: Date.now().toString(), name: name.trim() });
-            saveData();
-            renderFolders();
+            push(ref(db, 'folders'), { name: name.trim() });
         }
     }
 
-    function editFolder(id) {
-        const folder = folders.find(f => f.id === id);
-        if (!folder) return;
-        const newName = prompt("변경할 폴더 이름을 입력하세요:", folder.name);
-        if (newName && newName.trim()) {
-            folder.name = newName.trim();
-            saveData();
-            renderFolders();
-        }
-    }
-
-    function deleteFolder(id) {
-        if (confirm("정말 삭제하시겠습니까? 학생들의 과제도 함께 삭제됩니다.")) {
-            folders = folders.filter(f => f.id !== id);
-            posts = posts.filter(p => p.folderId !== id);
-            saveData();
-            renderFolders();
-        }
-    }
-
-    function openFolder(id, name) {
-        currentFolderId = id;
-        document.getElementById('currentFolderName').innerText = name;
-        renderPosts();
-        showView('view-folder-detail');
-    }
-
-    // 도면 및 상세 렌더링 기능 (생략 없이 모두 포함)
     function renderPosts() {
         const postList = document.getElementById('postList');
         postList.innerHTML = '';
         const folderPosts = posts.filter(p => p.folderId === currentFolderId);
 
         if (folderPosts.length === 0) {
-            postList.innerHTML = `<div class="empty-state" style="grid-column: span 2;">등록된 도면이 없습니다.</div>`;
-            return;
+            postList.innerHTML = `<div class="empty-state" style="grid-column: span 2;">등록된 도면이 없습니다.</div>`; return;
         }
 
         folderPosts.forEach(post => {
             const card = document.createElement('div');
             card.className = 'post-card';
             card.onclick = () => openPost(post.id);
-            card.innerHTML = `
-                <img src="${post.imageUrl}" class="post-thumb">
-                <div class="post-meta">
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-author">${post.author} • 댓글 ${post.comments ? post.comments.length : 0}</div>
-                </div>
-            `;
+            card.innerHTML = `<img src="${post.imageUrl}" class="post-thumb">
+                              <div class="post-meta"><div class="post-title">${post.title}</div><div class="post-author">${post.author} • 댓글 ${post.comments.length}</div></div>`;
             postList.appendChild(card);
         });
     }
 
-    function showUploadPost() {
-        document.getElementById('uploadAuthor').value = '';
-        document.getElementById('uploadTitle').value = '';
-        document.getElementById('uploadFile').value = '';
-        showView('view-upload');
+    // 이미지 용량 압축 함수 (DB 부하 방지)
+    function compressImage(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                let width = img.width; let height = img.height;
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                callback(canvas.toDataURL('image/jpeg', 0.8)); // 80% 화질로 압축
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
     }
 
     function submitUpload() {
@@ -506,66 +309,63 @@
         const title = document.getElementById('uploadTitle').value;
         const fileInput = document.getElementById('uploadFile');
 
-        if (!author || !title || fileInput.files.length === 0) {
-            alert("이름, 제목, 파일을 모두 입력해주세요."); return;
-        }
+        if (!author || !title || fileInput.files.length === 0) { alert("모두 입력해주세요."); return; }
+        
+        document.getElementById('btnSubmitUpload').innerText = '업로드 중...';
+        document.getElementById('btnSubmitUpload').disabled = true;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            posts.push({
-                id: Date.now().toString(), folderId: currentFolderId,
-                author, title, imageUrl: e.target.result, comments: []
+        compressImage(fileInput.files[0], function(compressedBase64) {
+            push(ref(db, 'posts'), {
+                folderId: currentFolderId,
+                author: author,
+                title: title,
+                imageUrl: compressedBase64
+            }).then(() => {
+                document.getElementById('btnSubmitUpload').innerText = '업로드 완료';
+                document.getElementById('btnSubmitUpload').disabled = false;
+                document.getElementById('uploadFile').value = '';
+                showView('view-folder-detail');
             });
-            saveData(); goBack('view-folder-detail');
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+        });
     }
 
-    function openPost(postId) {
+    // 전역 함수로 노출 (렌더링 된 리스트에서 클릭 시 호출하기 위함)
+    window.openPost = function(postId) {
         currentPostId = postId;
         const post = posts.find(p => p.id === postId);
+        if(!post) return;
         document.getElementById('detailImage').src = post.imageUrl;
         document.getElementById('detailTitle').innerText = post.title;
         document.getElementById('detailAuthor').innerText = `작성자: ${post.author}`;
-        renderComments(); showView('view-post-detail');
-    }
-
-    function renderComments() {
-        const post = posts.find(p => p.id === currentPostId);
+        
         const commentList = document.getElementById('commentList');
         commentList.innerHTML = '';
-
-        if (!post.comments || post.comments.length === 0) {
-            commentList.innerHTML = `<div class="empty-state" style="padding:10px;">피드백이 없습니다.</div>`; return;
+        if (post.comments.length === 0) {
+            commentList.innerHTML = `<div class="empty-state" style="padding:10px;">피드백이 없습니다.</div>`;
+        } else {
+            post.comments.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'comment-item';
+                div.innerHTML = `<div class="comment-author">${c.author} <span style="color:#999; font-weight:normal; font-size:0.75rem;">${c.date}</span></div>
+                                 <div class="comment-text">${c.text}</div>`;
+                commentList.appendChild(div);
+            });
         }
-
-        post.comments.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'comment-item';
-            div.innerHTML = `<div class="comment-author">${c.author} <span style="color:#999; font-weight:normal; font-size:0.75rem;">${c.date}</span></div>
-                             <div class="comment-text">${c.text}</div>`;
-            commentList.appendChild(div);
-        });
+        showView('view-post-detail');
     }
 
     function addComment() {
         const authorInput = document.getElementById('commentAuthor').value;
         const textInput = document.getElementById('commentText').value;
         if (!authorInput || !textInput) { alert("입력해주세요."); return; }
-
-        const pIndex = posts.findIndex(p => p.id === currentPostId);
-        if (!posts[pIndex].comments) posts[pIndex].comments = [];
         
         const now = new Date();
         const dateString = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
         
-        posts[pIndex].comments.push({ id: Date.now().toString(), author: authorInput, text: textInput, date: dateString });
-        saveData(); document.getElementById('commentText').value = ''; renderComments();
+        push(ref(db, `posts/${currentPostId}/comments`), { author: authorInput, text: textInput, date: dateString }).then(() => {
+            document.getElementById('commentText').value = '';
+        });
     }
-
-    // 실행
-    window.onload = initApp;
 </script>
-
 </body>
 </html>

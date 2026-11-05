@@ -63,8 +63,8 @@
         .modal-hint{pointer-events:none;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:999px}
 
         /* 교사용 현황 표시 */
-        .teacher-only{display:none}
-        .is-teacher .teacher-only{display:block}
+        .teacher-only{display:block}   /* 현황 표시: 학생·교사 모두 보임. 교사만 보이게 하려면 이 줄을 display:none 으로 바꾸고 아래 줄 주석을 해제 */
+        /* .is-teacher .teacher-only{display:block} */
         .folder-item .teacher-only{flex-basis:100%}
         .status-row{border-top:1px dashed var(--border);padding-top:8px}
         .status-title{font-size:.8rem;font-weight:700;color:var(--text-muted);margin-bottom:4px}

@@ -79,6 +79,7 @@
         .summary-table{width:100%;border-collapse:collapse;font-size:.85rem}
         .summary-table th,.summary-table td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left}
         .summary-table td{font-weight:600}
+        .summary-table td.who{font-weight:400;font-size:.78rem;color:var(--text-muted)}
         .form-group select{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;background:#fff}
         #commentAuthor{width:100%;border:1px solid var(--border);border-radius:8px;font-size:1rem;background:#fff}
         .modal-hint{position:absolute;z-index:5;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);color:#d1d5db;font-size:.85rem;white-space:nowrap}
@@ -246,7 +247,7 @@
         box.appendChild(el('div', 'status-title', '학생별 현황 (게시 / 다른 학생 글에 쓴 댓글)'));
         const table = el('table', 'summary-table');
         const head = el('tr');
-        ['학생', '게시', '댓글'].forEach(t => head.appendChild(el('th', '', t)));
+        ['학생', '게시', '댓글', '누구 글에 썼나'].forEach(t => head.appendChild(el('th', '', t)));
         table.appendChild(head);
 
         STUDENTS.forEach((n) => {
@@ -257,6 +258,9 @@
             tr.appendChild(el('td', posted.has(n) ? 'ok' : 'no', posted.has(n) ? '✓ 게시' : '✕ 미게시'));
             if (others.length === 0) tr.appendChild(el('td', '', '-'));
             else tr.appendChild(el('td', written === others.length ? 'ok' : written === 0 ? 'no' : 'part', `${written}/${others.length}`));
+            // 이 학생이 댓글을 쓴 상대 (명단 순서)
+            const to = STUDENTS.filter(x => others.some(q => norm(q.author) === x && commenterSet(q).has(n)));
+            tr.appendChild(el('td', 'who', to.length ? to.join(', ') : '-'));
             table.appendChild(tr);
         });
         box.appendChild(table);

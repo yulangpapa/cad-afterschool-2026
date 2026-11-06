@@ -153,6 +153,108 @@
         #imgModalImg{display:block;max-width:95vw;max-height:90vh;transform-origin:0 0;will-change:transform;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
         #imgModalClose{position:absolute;right:10px;top:calc(10px + env(safe-area-inset-top,0px));z-index:5;background:rgba(0,0,0,.55);color:#fff;border:0;padding:8px 12px;border-radius:8px;font-size:1rem;cursor:pointer}
         .modal-hint{position:absolute;z-index:5;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);color:#d1d5db;font-size:.85rem;white-space:nowrap;pointer-events:none;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:999px}
+    
+        /* Modern UI refresh: 기존 기능과 정보 구조를 유지하면서 가독성·터치 편의성 개선 */
+        :root {
+            --primary:#16834a;
+            --primary-dark:#11653a;
+            --primary-soft:#eaf7ef;
+            --bg-color:#f5f7f6;
+            --card-bg:#ffffff;
+            --text-main:#17231c;
+            --text-muted:#718078;
+            --border:#e6ece8;
+            --radius-card:20px;
+        }
+        body { letter-spacing:-.02em; background:var(--bg-color); }
+        #app { max-width:680px; padding-bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px)); }
+        .topbar {
+            padding:14px 20px;
+            background:rgba(255,255,255,.88);
+            border-bottom:1px solid rgba(225,233,228,.8);
+            box-shadow:0 4px 20px rgba(22,45,31,.035);
+        }
+        .brand b { font-size:1.25rem; letter-spacing:-.045em; }
+        .brand small { display:block; margin-top:3px; font-size:.78rem; }
+        .role-switch, select, input[type="text"] {
+            min-height:46px; border:1px solid var(--border); border-radius:12px;
+            background:#fff; color:var(--text-main); padding:0 13px; font-size:15px;
+        }
+        main { padding:18px 16px 28px; }
+        .hero {
+            overflow:hidden; border-radius:24px; padding:27px 22px;
+            background:linear-gradient(135deg,#123f2b 0%,#167346 58%,#26945b 100%);
+            box-shadow:0 14px 34px rgba(18,90,51,.16);
+        }
+        .hero h1 { font-size:clamp(1.35rem,5vw,1.8rem); line-height:1.3; letter-spacing:-.055em; }
+        .hero-sub { opacity:.78; letter-spacing:.12em; font-size:.72rem; }
+        .mission { margin-top:20px; border:1px solid rgba(255,255,255,.2); border-radius:14px; background:rgba(255,255,255,.11); padding:12px 14px; }
+        .card, .folder-card, .post-card, .comment-item, .summary-card {
+            border:1px solid var(--border); border-radius:var(--radius-card);
+            background:var(--card-bg); box-shadow:0 5px 18px rgba(23,45,32,.045);
+        }
+        .card { padding:22px 18px; }
+        .view-header { margin:8px 2px 18px; }
+        .view-header h2 { font-size:1.45rem; letter-spacing:-.05em; font-weight:800; }
+        .btn {
+            min-height:46px; border-radius:13px; padding:0 17px;
+            font-size:.94rem; font-weight:700; transition:transform .15s,background .15s,box-shadow .15s;
+        }
+        .btn:active, .nav-btn:active { transform:scale(.98); }
+        .btn-primary { background:var(--primary); box-shadow:0 5px 12px rgba(22,131,74,.16); }
+        .btn-primary:hover { background:var(--primary-dark); }
+        .btn-ghost { border:1px solid var(--border); background:#fff; }
+        .seg { display:flex; gap:6px; padding:5px; border-radius:14px; background:#eaf0ec; }
+        .seg button { flex:1; min-height:42px; border-radius:10px; font-weight:700; }
+        .seg button.on { background:#fff; color:var(--primary-dark); box-shadow:0 2px 8px rgba(20,50,32,.08); }
+        .form-group { margin-bottom:20px; }
+        .form-group label { display:block; margin-bottom:9px; font-size:.9rem; font-weight:750; color:#34443a; }
+        input[type="text"], .form-group select { width:100%; }
+        input:focus, select:focus { outline:3px solid rgba(22,131,74,.13); border-color:var(--primary); }
+        .bottom-nav {
+            height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+            padding-bottom:env(safe-area-inset-bottom,0px);
+            background:rgba(255,255,255,.94); backdrop-filter:blur(18px);
+            border-top:1px solid var(--border); box-shadow:0 -8px 24px rgba(25,45,33,.05);
+        }
+        .nav-btn { font-weight:700; color:#829087; }
+        .nav-btn.on { color:var(--primary-dark); }
+        .detail-img { border-radius:18px; background:#eef2ef; }
+        .comment-form { border:1px solid var(--border); border-radius:16px; padding:12px; background:#fff; }
+        .upload-file-group { margin-top:2px; }
+        .visually-hidden { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
+        .file-dropzone {
+            min-height:148px; display:flex!important; flex-direction:column; align-items:center; justify-content:center;
+            gap:8px; padding:20px; border:1.5px dashed #b8c9be; border-radius:17px;
+            background:linear-gradient(180deg,#f8fcf9,#f1f8f3); text-align:center;
+            cursor:pointer; transition:border-color .18s,background .18s;
+        }
+        .file-dropzone:hover { border-color:var(--primary); background:#edf8f0; }
+        .file-dropzone strong { font-size:1rem; color:var(--primary-dark); }
+        .file-dropzone small { color:var(--text-muted); font-size:.78rem; font-weight:500; }
+        .file-drop-icon {
+            display:grid; place-items:center; width:38px; height:38px; border-radius:12px;
+            background:#dff2e5; color:var(--primary-dark); font-size:1.5rem; line-height:1;
+        }
+        .upload-preview {
+            display:flex; align-items:center; gap:12px; margin-top:12px; padding:10px;
+            border:1px solid var(--border); border-radius:14px; background:#fbfdfb;
+        }
+        .upload-preview img { width:68px; height:68px; object-fit:cover; border-radius:10px; background:#eef2ef; }
+        .upload-preview-meta { min-width:0; flex:1; }
+        .upload-preview-meta strong, .upload-preview-meta small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .upload-preview-meta strong { font-size:.85rem; }
+        .upload-preview-meta small { margin-top:4px; color:var(--text-muted); font-size:.75rem; }
+        #btnSubmitUpload { width:100%; min-height:52px; margin-top:4px; font-size:1rem; }
+        @media (min-width:600px) {
+            main { padding:24px 22px 36px; }
+            .hero { padding:34px 30px; }
+            .card { padding:26px; }
+        }
+        @media (prefers-reduced-motion:reduce) {
+            *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; }
+        }
+
     </style>
 </head>
 <body>
@@ -210,7 +312,23 @@
             <div class="card">
                 <div class="form-group"><label>작성자 이름 (학생명)</label><select id="uploadAuthor"></select></div>
                 <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
-                <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
+                <div class="form-group upload-file-group">
+                    <label for="uploadFile">도면 이미지 파일 (JPG, PNG)</label>
+                    <label class="file-dropzone" for="uploadFile">
+                        <span class="file-drop-icon">＋</span>
+                        <strong>이미지 선택하기</strong>
+                        <small>JPG, PNG 등 이미지 파일 · 원본에 가까운 화질로 저장</small>
+                    </label>
+                    <input type="file" id="uploadFile" accept="image/*" class="visually-hidden">
+                    <div id="uploadPreview" class="upload-preview" hidden>
+                        <img id="uploadPreviewImage" alt="업로드할 도면 미리보기">
+                        <div class="upload-preview-meta">
+                            <strong id="uploadFileName"></strong>
+                            <small id="uploadFileInfo"></small>
+                        </div>
+                        <button type="button" id="clearUploadFile" class="btn btn-small btn-ghost">파일 변경</button>
+                    </div>
+                </div>
                 <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료</button>
             </div>
         </div>
@@ -403,6 +521,39 @@
     $('roleSelect').onchange = (e) => toggleRole(e.target.value);
     $('btnShowUpload').onclick = () => showView('view-upload');
     $('btnSubmitUpload').onclick = submitUpload;
+
+    // 업로드 전 이미지 미리보기 및 파일 정보 표시
+    $('uploadFile').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일을 선택해주세요.');
+            e.target.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            $('uploadPreviewImage').src = event.target.result;
+            $('uploadFileName').textContent = file.name;
+            const previewImg = new Image();
+            previewImg.onload = () => {
+                const size = file.size >= 1024 * 1024
+                    ? (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+                    : (file.size / 1024).toFixed(0) + ' KB';
+                $('uploadFileInfo').textContent = `${previewImg.naturalWidth} × ${previewImg.naturalHeight}px · ${size}`;
+            };
+            previewImg.src = event.target.result;
+            $('uploadPreview').hidden = false;
+        };
+        reader.readAsDataURL(file);
+    });
+    $('clearUploadFile').onclick = () => {
+        $('uploadFile').value = '';
+        $('uploadPreview').hidden = true;
+        $('uploadPreviewImage').removeAttribute('src');
+        $('uploadFileName').textContent = '';
+        $('uploadFileInfo').textContent = '';
+    };
     $('btnAddComment').onclick = addComment;
     $('commentText').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) addComment(); });
 
@@ -688,10 +839,10 @@
     }
 
     // ---------- 업로드 ----------
-    const FULL_SIDE = 3000;                 // 원본: 긴 변 최대 픽셀 (기존 1800)
-    const FULL_BYTES = 2.5 * 1024 * 1024;   // 원본 목표 용량 약 1.5MB (기존 700KB)
-    const THUMB_SIDE = 520;                 // 목록용 썸네일
-    const THUMB_BYTES = 50 * 1024;
+    const FULL_SIDE = 4096;                 // 상세/확대 보기용: 긴 변 최대 4096px
+    const FULL_BYTES = 5.5 * 1024 * 1024;   // 원본에 가깝게 보존하되 DB 용량을 고려한 목표치
+    const THUMB_SIDE = 640;                 // 목록용 썸네일
+    const THUMB_BYTES = 90 * 1024;
 
     // 긴 변 maxSide 이하로 줄이고, 목표 용량을 넘으면 화질 → 크기 순으로 조금씩 낮춤
     function compressImage(img, maxSide, targetBytes, qualities){
@@ -730,15 +881,15 @@
             const img = new Image();
             img.onerror = () => { alert('이미지 파일이 아닙니다.'); resetBtn(); };
             img.onload = () => {
-                const imageUrl = compressImage(img, FULL_SIDE, FULL_BYTES, [0.95, 0.92, 0.88, 0.84]);
-                const thumbUrl = compressImage(img, THUMB_SIDE, THUMB_BYTES, [0.8, 0.7, 0.6]);
+                const imageUrl = compressImage(img, FULL_SIDE, FULL_BYTES, [0.98, 0.96, 0.94, 0.92]);
+                const thumbUrl = compressImage(img, THUMB_SIDE, THUMB_BYTES, [0.88, 0.82, 0.76]);
                 const key = push(ref(db, 'posts')).key;   // 키만 먼저 만듦 (아직 저장 안 됨)
                 const updates = {};
                 updates[`posts/${key}`] = { folderId: currentFolderId, author, title, thumbUrl, createdAt: Date.now() };
                 updates[`images/${key}`] = imageUrl;       // 원본은 별도 경로 → 목록 열 때 내려받지 않음
                 update(ref(db), updates)
                 .then(() => {
-                    $('uploadTitle').value = ''; $('uploadFile').value = '';   // 이름은 남겨 두어 연속 업로드 편하게
+                    $('uploadTitle').value = ''; $('clearUploadFile').click();   // 이름은 남겨 두어 연속 업로드 편하게
                     resetBtn();
                     showView('view-folder-detail');
                 })

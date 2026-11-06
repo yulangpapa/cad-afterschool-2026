@@ -28,9 +28,14 @@
         .hero-sub{font-size:.75rem;letter-spacing:.08em;opacity:.75;font-weight:600}
         .hero h1{font-size:1.5rem;margin:2px 0 4px;font-weight:800}
         .hero p{font-size:.85rem;opacity:.8}
-        .hero-stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-        .hero-stats span{background:rgba(255,255,255,.14);border-radius:999px;padding:4px 12px;font-size:.78rem}
-        .hero-stats b{font-size:.95rem;margin-right:3px}
+
+        /* 이번 과제 미션 강조 */
+        .mission{position:relative;display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:inset 4px 0 0 #bef264}
+        .mission-tag{flex:none;font-size:.68rem;font-weight:800;letter-spacing:.08em;color:#14532d;background:#bef264;padding:3px 9px;border-radius:999px;animation:missionGlow 2.4s ease-in-out infinite}
+        .mission-text{font-size:1.02rem;font-weight:700;line-height:1.35}
+        .mission-text em{font-style:normal;color:#ecfccb;background:linear-gradient(transparent 60%,rgba(190,242,100,.5) 60%);padding:0 2px}
+        @keyframes missionGlow{0%,100%{box-shadow:0 0 0 0 rgba(190,242,100,.55)}50%{box-shadow:0 0 0 6px rgba(190,242,100,0)}}
+        @media (prefers-reduced-motion:reduce){.mission-tag{animation:none}}
 
         /* 버튼 */
         .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:0;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .1s,background .15s}
@@ -116,6 +121,31 @@
         .nav-btn.on{color:var(--primary-dark);background:var(--primary-soft)}
         .nav-btn:disabled{opacity:.35;cursor:default}
 
+        /* 폴더 계층 */
+        .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:14px}
+        .crumbs button{border:0;background:var(--primary-soft);color:var(--primary-dark);font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:.9rem}
+        .crumbs button:last-child{background:var(--primary);color:#fff}
+        .crumbs span{color:var(--text-muted)}
+        .crumb-note{font-size:.8rem;color:var(--text-muted);margin-bottom:2px}
+        .folder-text{min-width:0}
+        .folder-sub{font-size:.8rem;color:var(--text-muted);margin-top:2px}
+        .btn-ghost{background:#e4ebe7;color:var(--text-main)}
+        .create-wrap .btn-primary{flex:1;width:auto}
+        .select-bar{display:flex;align-items:center;gap:8px;background:#fff7e6;border:1px solid #fde1a6;border-radius:12px;padding:8px 12px;margin-bottom:12px;font-weight:600;font-size:.9rem}
+        .select-bar span{flex:1}
+        .folder-item.selectable{cursor:pointer}
+        .folder-item.picked{border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,163,74,.25);background:var(--primary-soft)}
+        .pick-box{width:22px;height:22px;border-radius:6px;border:2px solid #b8c4bd;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;flex:none}
+        .picked .pick-box{background:var(--primary);border-color:var(--primary)}
+        .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150;display:flex;align-items:flex-end;justify-content:center}
+        .sheet{width:min(100%,600px);background:#fff;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:80vh;display:flex;flex-direction:column}
+        .sheet-title{font-weight:800;font-size:1.05rem}
+        .sheet-sub{font-size:.8rem;color:var(--text-muted);margin:2px 0 10px}
+        .sheet-list{overflow-y:auto;display:grid;gap:6px;margin-bottom:12px}
+        .sheet-item{text-align:left;border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px;font-size:.95rem;font-weight:600;cursor:pointer}
+        .sheet-item:hover{background:var(--primary-soft)}
+        .sheet-item:disabled{opacity:.45;cursor:default;background:#f5f7f6}
+
         /* 이미지 전체화면 모달 */
         #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;touch-action:none;overflow:hidden}
         #imgModal.show{display:flex}
@@ -140,25 +170,31 @@
     <main>
         <!-- 홈: 폴더 목록 -->
         <div id="view-folder-list" class="view active">
-            <section class="hero">
+            <section class="hero" id="heroBox">
                 <span class="hero-logo"></span>
                 <div class="hero-sub">2026 SMART AFTERSCHOOL</div>
                 <h1>전산응용기계제도기능사 과제</h1>
-                <p> 모든 게시글에 피드백 2개씩 달기!!!!</p>
-                <div class="hero-stats">
-                    <span><b id="statFolders">0</b>과제 폴더</span>
-                    <span><b id="statPosts">0</b>제출 도면</span>
+                <div class="mission">
+                    <span class="mission-tag">MISSION</span>
+                    <span class="mission-text">모든 게시글에 피드백 <em>2개씩</em> 달기</span>
                 </div>
             </section>
+            <div id="crumbs" class="crumbs" hidden></div>
             <div class="teacher-actions create-wrap">
-                <button class="btn btn-primary" id="btnCreateFolder">+ 새 과제 폴더 만들기</button>
+                <button class="btn btn-primary" id="btnCreateFolder">+ 새 폴더 만들기</button>
+                <button class="btn btn-ghost" id="btnSelectMode">☑ 선택해서 이동</button>
+            </div>
+            <div id="selectBar" class="select-bar" hidden>
+                <span id="selectCount">0개 선택됨</span>
+                <button class="btn btn-small btn-edit" id="btnMoveSelected">이동</button>
+                <button class="btn btn-small btn-ghost" id="btnCancelSelect">취소</button>
             </div>
             <div id="folderList" class="folder-list"><div class="loading" id="folderLoading">데이터베이스 연결 중...</div></div>
         </div>
 
         <!-- 폴더 내부 -->
         <div id="view-folder-detail" class="view">
-            <div class="view-header"><h2 id="currentFolderName">폴더명</h2></div>
+            <div class="view-header"><div id="detailCrumb" class="crumb-note"></div><h2 id="currentFolderName">폴더명</h2></div>
             <button class="btn btn-primary" id="btnShowUpload">+ 2D 도면 업로드</button>
             <div class="seg" id="segFolder">
                 <button class="on" data-seg="posts">📐 도면 <span class="n" id="cntPosts">0</span></button>
@@ -214,6 +250,16 @@
     <button class="nav-btn" id="navBack" disabled><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>뒤로</button>
 </nav>
 
+<!-- 폴더 이동 시트 -->
+<div id="moveModal" class="sheet-backdrop" hidden>
+    <div class="sheet">
+        <div class="sheet-title" id="moveTitle">폴더 이동</div>
+        <div class="sheet-sub">이동할 위치를 선택하세요</div>
+        <div class="sheet-list" id="moveList"></div>
+        <button class="btn btn-ghost" id="moveCancel">취소</button>
+    </div>
+</div>
+
 <!-- 이미지 뷰어 모달 -->
 <div id="imgModal" aria-hidden="true">
     <div id="imgModalInner">
@@ -248,6 +294,9 @@
     const fullCache = new Map();      // 게시글 id → 원본 이미지(dataURL), 한 번 받으면 재사용
     const fullLoading = new Set();    // 현재 받는 중인 id
     let currentView = 'view-folder-list';
+    let currentParentId = null;       // 홈 목록에서 지금 보고 있는 상위 폴더 (null = 최상위)
+    let selectMode = false;           // 교사용: 여러 폴더 선택 이동 모드
+    const selected = new Set();
     let viewerPostId = null;          // 확대 보기 중인 게시글 id
 
     const $ = (id) => document.getElementById(id);
@@ -263,15 +312,20 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         $(id).classList.add('active');
         currentView = id;
-        $('navBack').disabled = (id === 'view-folder-list');
-        $('navHome').classList.toggle('on', id === 'view-folder-list');
+        updateNav();
         window.scrollTo({ top: 0 });
     }
-    function goHome(){ currentFolderId = null; currentPostId = null; showView('view-folder-list'); }
+    function goHome(){ currentFolderId = null; currentPostId = null; currentParentId = null; showView('view-folder-list'); renderFolders(); }
     function goBack(){
         if (currentView === 'view-post-detail') { currentPostId = null; showView('view-folder-detail'); }
         else if (currentView === 'view-upload') showView('view-folder-detail');
-        else if (currentView === 'view-folder-detail') goHome();
+        else if (currentView === 'view-folder-detail') { currentFolderId = null; currentPostId = null; showView('view-folder-list'); renderFolders(); }   // 폴더가 있던 단계로
+        else if (currentView === 'view-folder-list' && currentParentId) { currentParentId = parentOf(folders.find(f => f.id === currentParentId)); renderFolders(); window.scrollTo({ top: 0 }); }   // 한 단계 위로
+    }
+    function updateNav(){
+        const atRoot = currentView === 'view-folder-list' && !currentParentId;
+        $('navBack').disabled = atRoot;
+        $('navHome').classList.toggle('on', atRoot);
     }
     // 세그먼트(탭) 전환: 버튼의 data-seg 이름과 같은 data-panel 만 보여줌
     function setSeg(seg, name){
@@ -356,7 +410,7 @@
     $('btnCreateFolder').onclick = () => {
         const folderName = prompt('새로운 과제 폴더의 이름을 입력하세요:\n(예: 11/4)동력전달장치04)');
         if (folderName && folderName.trim()) {
-            push(ref(db, 'folders'), { name: folderName.trim() })
+            push(ref(db, 'folders'), { name: folderName.trim(), ...(currentParentId ? { parentId: currentParentId } : {}) })   // 지금 보고 있는 폴더 안에 생성
             .catch((error) => { alert("폴더 생성 실패!\n\n원인: " + error.message); });
         }
     };
@@ -371,6 +425,7 @@
 
     function toggleRole(role){
         currentRole = role;
+        if (role !== 'teacher') { selectMode = false; selected.clear(); }
         $('app').classList.toggle('is-teacher', role === 'teacher');
         const ca = $('commentAuthor');
         if (role === 'teacher') ca.value = TEACHER;                 // 교사 모드: 댓글 작성자 기본값 '선생님'
@@ -384,14 +439,14 @@
         // ⚠️ forEach 콜백이 true로 평가되는 값을 반환하면 반복이 중단됩니다. 반드시 중괄호로 감싸세요.
         snap.forEach((c) => {
             const v = c.val();
-            if (typeof v === 'string') folders.push({ id: c.key, name: v });          // 콘솔에서 문자열로 직접 넣은 경우
+            if (typeof v === 'string') folders.push({ id: c.key, name: v, legacy: true });          // 콘솔에서 문자열로 직접 넣은 경우
             else if (v && typeof v === 'object') folders.push({ id: c.key, ...v });
         });
         renderFolders();
         // 선택된 폴더 이름이 바뀌었을 때 제목 갱신
         if (currentFolderId) {
             const f = folders.find(x => x.id === currentFolderId);
-            if (f) $('currentFolderName').textContent = f.name;
+            if (f) { $('currentFolderName').textContent = f.name; $('detailCrumb').textContent = folderPath(f.id).slice(0, -1).join(' › '); }
         }
     }, (error) => {
         console.error(error);
@@ -416,51 +471,123 @@
         alert("자료 불러오기 실패: " + error.message);
     });
 
-    // ---------- 폴더 ----------
-    function renderFolders(){
-        const list = $('folderList'); list.innerHTML = '';
-
-        const sorted = folders
-            .filter(f => f && f.name)
-            // 숫자를 숫자 크기로 비교 → 11/4 가 11/10 보다 앞에 옴
-            .sort((a, b) => String(a.name).localeCompare(String(b.name), 'ko', { numeric: true }));
-        $('statFolders').textContent = folders.filter(f => f && f.name).length;
-        $('statPosts').textContent = posts.length;
-
-        if (sorted.length === 0) { list.appendChild(el('div', 'empty-state', '생성된 과제 폴더가 없습니다.')); return; }
-
-        sorted.forEach((f) => {
-            const item = el('div', 'folder-item');
-
-            const info = el('div', 'folder-info');
-            info.appendChild(el('span', 'folder-icon', '📁'));
-            info.appendChild(el('span', 'folder-name', f.name));
-            info.addEventListener('click', () => openFolder(f.id, f.name));
-
-            const actions = el('div', 'teacher-actions');
-            const editBtn = el('button', 'btn btn-edit btn-small', '변경');
-            editBtn.addEventListener('click', () => editFolder(f.id, f.name));
-            const delBtn = el('button', 'btn btn-danger btn-small', '삭제');
-            delBtn.addEventListener('click', () => deleteFolder(f.id, f.name));
-            actions.append(editBtn, delBtn);
-
-            // 교사용: 이 폴더에 누가 게시했는지
-            const posted = new Set(posts.filter(p => p.folderId === f.id).map(p => norm(p.author)));
-            const status = el('div', 'teacher-only status-row');
-            const cnt = STUDENTS.filter(n => posted.has(n)).length;
-            status.appendChild(el('div', 'status-title', `게시 ${cnt}/${STUDENTS.length}`));
-            const bar = el('div', 'bar'), fill = el('i'); fill.style.width = (cnt / STUDENTS.length * 100) + '%'; bar.appendChild(fill); status.appendChild(bar);
-            STUDENTS.forEach(n => status.appendChild(chip(n, posted.has(n))));
-
-            item.append(info, actions, status);
-            list.appendChild(item);
-        });
+    // ---------- 폴더 (상위/하위 계층) ----------
+    const sortKo = (a, b) => String(a.name).localeCompare(String(b.name), 'ko', { numeric: true });   // 11/4 가 11/10 보다 앞에
+    function parentOf(f){ return (f && f.parentId && folders.some(x => x.id === f.parentId)) ? f.parentId : null; }   // 상위 폴더가 없어졌으면 최상위로 취급
+    function childrenOf(pid){ return folders.filter(f => f && f.name && parentOf(f) === (pid || null)).sort(sortKo); }
+    function descendantIds(id){
+        const out = [], st = [id];
+        while (st.length) { const x = st.pop(); childrenOf(x).forEach(c => { out.push(c.id); st.push(c.id); }); }
+        return out;
+    }
+    function folderPath(id){
+        const names = []; let cur = folders.find(f => f.id === id), guard = 0;
+        while (cur && guard++ < 20) { names.unshift(cur.name); cur = folders.find(f => f.id === parentOf(cur)); }
+        return names;
     }
 
-    function openFolder(id, name){
+    // 상단 경로(홈 › 11월 1주차 › ...)
+    function renderCrumbs(){
+        const box = $('crumbs'), nested = !!currentParentId;
+        $('heroBox').hidden = nested; box.hidden = !nested; box.innerHTML = '';
+        if (!nested) return;
+        const chain = []; let cur = folders.find(f => f.id === currentParentId), g = 0;
+        while (cur && g++ < 20) { chain.unshift(cur); cur = folders.find(f => f.id === parentOf(cur)); }
+        const home = el('button', '', '🏠 홈'); home.onclick = () => { currentParentId = null; renderFolders(); };
+        box.appendChild(home);
+        chain.forEach((f) => {
+            box.appendChild(el('span', '', '›'));
+            const b = el('button', '', f.name); b.onclick = () => { currentParentId = f.id; renderFolders(); };
+            box.appendChild(b);
+        });
+    }
+    function updateSelectUI(){
+        $('selectBar').hidden = !selectMode;
+        $('btnSelectMode').hidden = selectMode;
+        $('selectCount').textContent = `${selected.size}개 선택됨`;
+        $('btnMoveSelected').disabled = selected.size === 0;
+    }
+
+    function renderFolders(){
+        if (currentParentId && !folders.some(f => f.id === currentParentId)) currentParentId = null;   // 보던 폴더가 사라졌으면 홈으로
+        const list = $('folderList'); list.innerHTML = '';
+        renderCrumbs();
+        const kids = childrenOf(currentParentId);
+
+        // 이 폴더 자체에도 도면이 있으면 맨 위에 바로가기
+        const cur = folders.find(f => f.id === currentParentId);
+        if (cur && !selectMode) {
+            const own = posts.filter(p => p.folderId === cur.id).length;
+            if (own > 0) {
+                const item = el('div', 'folder-item'), info = el('div', 'folder-info'), t = el('div', 'folder-text');
+                t.appendChild(el('div', 'folder-name', '이 폴더의 도면'));
+                t.appendChild(el('div', 'folder-sub', `도면 ${own}개`));
+                info.append(el('span', 'folder-icon', '📄'), t);
+                info.addEventListener('click', () => openLeaf(cur.id, cur.name));
+                item.appendChild(info); list.appendChild(item);
+            }
+        }
+        if (kids.length === 0 && list.children.length === 0) {
+            list.appendChild(el('div', 'empty-state', currentParentId ? '이 폴더는 비어 있습니다.' : '생성된 과제 폴더가 없습니다.'));
+        }
+
+        kids.forEach((f) => {
+            const subIds = descendantIds(f.id), hasKids = subIds.length > 0;
+            const item = el('div', 'folder-item' + (selectMode ? ' selectable' : '') + (selected.has(f.id) ? ' picked' : ''));
+
+            const info = el('div', 'folder-info');
+            if (selectMode) info.appendChild(el('span', 'pick-box', selected.has(f.id) ? '✓' : ''));
+            info.appendChild(el('span', 'folder-icon', hasKids ? '📂' : '📁'));
+            const t = el('div', 'folder-text');
+            t.appendChild(el('div', 'folder-name', f.name));
+            if (hasKids) {
+                const n = posts.filter(p => p.folderId === f.id || subIds.includes(p.folderId)).length;
+                t.appendChild(el('div', 'folder-sub', `하위 폴더 ${childrenOf(f.id).length}개 · 도면 ${n}개`));
+            }
+            info.appendChild(t);
+            info.addEventListener('click', () => {
+                if (selectMode) { if (selected.has(f.id)) selected.delete(f.id); else selected.add(f.id); renderFolders(); }
+                else if (hasKids) enterFolder(f.id);
+                else openLeaf(f.id, f.name);
+            });
+            item.appendChild(info);
+
+            if (!selectMode) {
+                const actions = el('div', 'teacher-actions');
+                const editBtn = el('button', 'btn btn-edit btn-small', '변경');
+                editBtn.addEventListener('click', () => editFolder(f.id, f.name));
+                const moveBtn = el('button', 'btn btn-ghost btn-small', '이동');
+                moveBtn.addEventListener('click', () => openMoveSheet([f.id]));
+                const delBtn = el('button', 'btn btn-danger btn-small', '삭제');
+                delBtn.addEventListener('click', () => deleteFolder(f.id, f.name));
+                actions.append(editBtn, moveBtn, delBtn);
+                item.appendChild(actions);
+
+                // 맨 아래 단계 폴더만: 이 폴더에 누가 게시했는지
+                if (!hasKids) {
+                    const posted = new Set(posts.filter(p => p.folderId === f.id).map(p => norm(p.author)));
+                    const status = el('div', 'teacher-only status-row');
+                    const cnt = STUDENTS.filter(n => posted.has(n)).length;
+                    status.appendChild(el('div', 'status-title', `게시 ${cnt}/${STUDENTS.length}`));
+                    const bar = el('div', 'bar'), fill = el('i'); fill.style.width = (cnt / STUDENTS.length * 100) + '%'; bar.appendChild(fill); status.appendChild(bar);
+                    STUDENTS.forEach(n => status.appendChild(chip(n, posted.has(n))));
+                    item.appendChild(status);
+                }
+            }
+            list.appendChild(item);
+        });
+        updateSelectUI();
+        updateNav();
+    }
+
+    function enterFolder(id){ currentParentId = id; renderFolders(); window.scrollTo({ top: 0 }); }
+
+    // 맨 아래 단계 폴더(도면이 있는 곳) 열기
+    function openLeaf(id, name){
         currentFolderId = id;
         setSeg($('segFolder'), 'posts');
         $('currentFolderName').textContent = name;
+        $('detailCrumb').textContent = folderPath(id).slice(0, -1).join(' › ');
         renderPosts();
         renderFolderSummary();
         showView('view-folder-detail');
@@ -471,18 +598,59 @@
         if (n && n.trim()) update(ref(db, `folders/${id}`), { name: n.trim() }).catch(e => alert("수정 실패: " + e.message));
     }
 
+    // 삭제: 하위 폴더와 그 안의 도면(원본 포함)까지 한 번에
     function deleteFolder(id, name){
-        const related = posts.filter(p => p.folderId === id);
-        const msg = related.length
-            ? `"${name}" 폴더와 안에 있는 도면 ${related.length}개를 모두 삭제할까요?\n(되돌릴 수 없습니다)`
-            : `"${name}" 폴더를 삭제할까요?`;
+        const ids = [id, ...descendantIds(id)];
+        const related = posts.filter(p => ids.includes(p.folderId));
+        const msg = `"${name}" 폴더를 삭제할까요?`
+            + (ids.length > 1 ? `\n하위 폴더 ${ids.length - 1}개도 함께 삭제됩니다.` : '')
+            + (related.length ? `\n안에 있는 도면 ${related.length}개도 모두 삭제됩니다.` : '')
+            + '\n(되돌릴 수 없습니다)';
         if (!confirm(msg)) return;
-        // 폴더와 그 안의 도면을 한 번에 삭제 (고아 데이터 방지)
         const updates = {};
-        updates[`folders/${id}`] = null;
+        ids.forEach(i => { updates[`folders/${i}`] = null; });
         related.forEach(p => { updates[`posts/${p.id}`] = null; updates[`images/${p.id}`] = null; });
         update(ref(db), updates).catch(e => alert("삭제 실패: " + e.message));
     }
+
+    // ---------- 폴더 이동 (교사용) ----------
+    function openMoveSheet(ids){
+        if (!ids.length) return;
+        const banned = new Set(ids);                                  // 자기 자신과 그 하위로는 이동 불가 (순환 방지)
+        ids.forEach(i => descendantIds(i).forEach(d => banned.add(d)));
+        const names = ids.map(i => (folders.find(f => f.id === i) || {}).name).filter(Boolean);
+        $('moveTitle').textContent = ids.length === 1 ? `"${names[0]}" 이동` : `폴더 ${ids.length}개 이동`;
+        const curParents = new Set(ids.map(i => parentOf(folders.find(f => f.id === i))));
+        const list = $('moveList'); list.innerHTML = '';
+        const addOpt = (label, destId, depth) => {
+            const here = curParents.size === 1 && curParents.has(destId);
+            const b = el('button', 'sheet-item', here ? label + '  (현재 위치)' : label);
+            b.style.paddingLeft = (12 + depth * 18) + 'px';
+            b.disabled = here;
+            b.addEventListener('click', () => moveFolders(ids, destId));
+            list.appendChild(b);
+        };
+        addOpt('🏠 최상위 (홈)', null, 0);
+        const walk = (pid, depth) => childrenOf(pid).forEach(f => { if (banned.has(f.id)) return; addOpt('📁 ' + f.name, f.id, depth); walk(f.id, depth + 1); });
+        walk(null, 1);
+        $('moveModal').hidden = false;
+    }
+    function moveFolders(ids, destId){
+        const updates = {};
+        ids.forEach((id) => {
+            const f = folders.find(x => x.id === id);
+            if (f && f.legacy) updates[`folders/${id}`] = { name: f.name, ...(destId ? { parentId: destId } : {}) };   // 콘솔에서 문자열로 넣은 폴더는 객체로 변환
+            else updates[`folders/${id}/parentId`] = destId || null;                                                   // null 이면 최상위로
+        });
+        update(ref(db), updates)
+        .then(() => { $('moveModal').hidden = true; selectMode = false; selected.clear(); renderFolders(); })
+        .catch(e => alert("이동 실패: " + e.message));
+    }
+    $('btnSelectMode').onclick = () => { selectMode = true; selected.clear(); renderFolders(); };
+    $('btnCancelSelect').onclick = () => { selectMode = false; selected.clear(); renderFolders(); };
+    $('btnMoveSelected').onclick = () => openMoveSheet([...selected]);
+    $('moveCancel').onclick = () => { $('moveModal').hidden = true; };
+    $('moveModal').addEventListener('click', (e) => { if (e.target === $('moveModal')) $('moveModal').hidden = true; });
 
     // ---------- 도면 목록 ----------
     function renderPosts(){

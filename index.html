@@ -688,8 +688,8 @@
     }
 
     // ---------- 업로드 ----------
-    const FULL_SIDE = 2400;                 // 원본: 긴 변 최대 픽셀 (기존 1800)
-    const FULL_BYTES = 1.5 * 1024 * 1024;   // 원본 목표 용량 약 1.5MB (기존 700KB)
+    const FULL_SIDE = 3000;                 // 원본: 긴 변 최대 픽셀 (기존 1800)
+    const FULL_BYTES = 2.5 * 1024 * 1024;   // 원본 목표 용량 약 1.5MB (기존 700KB)
     const THUMB_SIDE = 520;                 // 목록용 썸네일
     const THUMB_BYTES = 50 * 1024;
 
@@ -708,7 +708,7 @@
                 url = cvs.toDataURL('image/jpeg', q);
                 if (url.length * 0.75 <= targetBytes) return url;
             }
-            scale *= 0.85;
+            scale *= 0.95;
         }
         return url;
     }

@@ -839,9 +839,9 @@
     }
 
     // ---------- 업로드 ----------
-    const FULL_SIDE = 4096;                 // 상세/확대 보기용: 긴 변 최대 4096px
-    const FULL_BYTES = 5.5 * 1024 * 1024;   // 원본에 가깝게 보존하되 DB 용량을 고려한 목표치
-    const THUMB_SIDE = 640;                 // 목록용 썸네일
+    const FULL_SIDE = 3000;                 // 상세/확대 보기용: 긴 변 최대 4096px
+    const FULL_BYTES = 2.5 * 1024 * 1024;   // 원본에 가깝게 보존하되 DB 용량을 고려한 목표치
+    const THUMB_SIDE = 520;                 // 목록용 썸네일
     const THUMB_BYTES = 90 * 1024;
 
     // 긴 변 maxSide 이하로 줄이고, 목표 용량을 넘으면 화질 → 크기 순으로 조금씩 낮춤

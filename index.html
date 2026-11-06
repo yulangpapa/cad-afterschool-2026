@@ -143,7 +143,7 @@
             <section class="hero">
                 <span class="hero-logo"></span>
                 <div class="hero-sub">2026 SMART AFTERSCHOOL</div>
-                <h1>전산응용기계제도기능사 도면 과제</h1>
+                <h1>전산응용기계제도기능사 과제</h1>
                 <p> 모든 게시글에 피드백 2개씩 달기!!!!</p>
                 <div class="hero-stats">
                     <span><b id="statFolders">0</b>과제 폴더</span>
@@ -320,7 +320,7 @@
         box.appendChild(el('div', 'status-title', '학생별 현황 (게시 / 다른 학생 글에 쓴 댓글)'));
         const table = el('table', 'summary-table');
         const head = el('tr');
-        ['학생', '게시', '댓글', '누구 글에 썼나'].forEach(t => head.appendChild(el('th', '', t)));
+        ['학생', '게시', '댓글', '댓글 현황'].forEach(t => head.appendChild(el('th', '', t)));
         table.appendChild(head);
 
         STUDENTS.forEach((n) => {

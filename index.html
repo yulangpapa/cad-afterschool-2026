@@ -78,8 +78,8 @@
         .post-card:active{transform:scale(.98)}
         .post-thumb{width:100%;height:120px;object-fit:cover;background:#e5e7eb;display:block}
         .post-meta{padding:10px}
-        .post-title{font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .post-author{font-size:.8rem;color:var(--text-muted);margin-top:4px}
+        .post-title{font-weight:800;font-size:1.12rem;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .post-author{font-size:.8rem;color:var(--text-muted);margin-top:5px}
         .post-time{font-size:.72rem;color:#9ca3af;margin-top:6px}
         .detail-img{width:100%;border-radius:14px;border:1px solid var(--border);margin-bottom:8px;cursor:zoom-in;background:#fff}
         .detail-title{font-size:1.15rem;font-weight:800;margin:4px 0}
@@ -311,7 +311,6 @@
             <div class="view-header"><h2>과제 업로드</h2></div>
             <div class="card">
                 <div class="form-group"><label>작성자 이름 (학생명)</label><select id="uploadAuthor"></select></div>
-                <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
                 <div class="form-group upload-file-group">
                     <label for="uploadFile">도면 이미지 파일 (JPG, PNG)</label>
                     <label class="file-dropzone" for="uploadFile">
@@ -338,7 +337,6 @@
             <div class="view-header"><h2>도면 상세</h2></div>
             <img id="detailImage" class="detail-img" src="" alt="도면 이미지">
             <div id="detailNote" class="detail-time"></div>
-            <div id="detailTitle" class="detail-title">제목</div>
             <div id="detailAuthor" class="detail-author">
                 <span id="detailAuthorName">작성자</span>
                 <span class="detail-time" id="detailCreatedAt"></span>
@@ -827,8 +825,8 @@
             img.alt = p.title || '';
 
             const meta = el('div', 'post-meta');
-            meta.appendChild(el('div', 'post-title', p.title || '(제목 없음)'));
-            meta.appendChild(el('div', 'post-author', `${p.author || '이름 없음'} • 댓글 ${p.comments.length}`));
+            meta.appendChild(el('div', 'post-title', p.author || '이름 없음'));
+            meta.appendChild(el('div', 'post-author', `댓글 ${p.comments.length}`));
             meta.appendChild(el('div', 'post-time', p.createdAt ? formatDate(p.createdAt) : ''));
             const cs = commentStatus(p);   // 교사용: 댓글 작성 현황
             meta.appendChild(el('div', 'teacher-only post-status ' + (cs.done.length === cs.targets.length ? 'full' : cs.done.length === 0 ? 'zero' : 'part'), `💬 댓글 ${cs.done.length}/${cs.targets.length}`));
@@ -866,9 +864,8 @@
 
     function submitUpload(){
         const author = $('uploadAuthor').value.trim();
-        const title = $('uploadTitle').value.trim();
         const file = $('uploadFile').files[0];
-        if (!author || !title || !file) return alert('모두 입력해주세요!');
+        if (!author || !file) return alert('작성자 이름과 이미지 파일을 확인해주세요!');
         if (!currentFolderId) return alert('폴더를 먼저 선택해주세요.');
 
         const btn = $('btnSubmitUpload');
@@ -885,11 +882,11 @@
                 const thumbUrl = compressImage(img, THUMB_SIDE, THUMB_BYTES, [0.88, 0.82, 0.76]);
                 const key = push(ref(db, 'posts')).key;   // 키만 먼저 만듦 (아직 저장 안 됨)
                 const updates = {};
-                updates[`posts/${key}`] = { folderId: currentFolderId, author, title, thumbUrl, createdAt: Date.now() };
+                updates[`posts/${key}`] = { folderId: currentFolderId, author, thumbUrl, createdAt: Date.now() };
                 updates[`images/${key}`] = imageUrl;       // 원본은 별도 경로 → 목록 열 때 내려받지 않음
                 update(ref(db), updates)
                 .then(() => {
-                    $('uploadTitle').value = ''; $('clearUploadFile').click();   // 이름은 남겨 두어 연속 업로드 편하게
+                    $('clearUploadFile').click();   // 작성자 이름은 남겨 두어 연속 업로드 편하게
                     resetBtn();
                     showView('view-folder-detail');
                 })
@@ -918,7 +915,6 @@
         dimg.onclick = () => { viewerPostId = id; openImageViewer(fullCache.get(id) || p.imageUrl || p.thumbUrl); };
         if (p.thumbUrl && !fullCache.has(id)) { $('detailNote').textContent = '원본 화질 불러오는 중...'; loadFull(id); }
         else $('detailNote').textContent = '';
-        $('detailTitle').textContent = p.title || '';
         $('detailAuthorName').textContent = p.author || '';
         $('detailCreatedAt').textContent = p.createdAt ? formatDate(p.createdAt) : '';
 

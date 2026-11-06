@@ -2,930 +2,308 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CAD 방과후 과제 업로드</title>
-    <meta name="theme-color" content="#14532d">
+    <meta name="theme-color" content="#0f2f24">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
     <style>
-        :root{--primary:#16a34a;--primary-dark:#166534;--primary-soft:#ecfdf3;--bg-color:#f2f5f3;--card-bg:#fff;--text-main:#14201a;--text-muted:#667085;--border:#e3e9e5;--danger:#ef4444;--warning:#f59e0b;--nav-h:64px;--logo:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPQAAAEBCAMAAAB42XjSAAABIFBMVEVGZB4bJx2Er1lmoFVdqSMcXh87iEM+wUqh02dxyFbI94OEtzg7dEJGdkNoyzctgiO37IGZ3C7A53E7wT4UFAAWGRQvqDZcy2xl0nIZJRNizG+19FRIxFMzszoXNxGp6U0oNycumDNIuU8nSBcqVhgwZyoZRhQudywvRiothy8tVycmNxfF+WqO1zc7uURMp04iKhgxZhlPhy5yty5Mdy1Tlyxppy0aVRiV2Em69WZe0G9JmEmFyTWOx1N6xTBzp0ub5EY7pkNYumSy6WsiKyIEBwLD+FuIuFJIaSpLhxtpmDKZ5Dc2dRpsmEkbZyRVpSxFeBp2tk+p12qk6zWRyGWr8zUbZRtKiUZUlhyX1mek2lM7mENliTUddSQbWCJDWijN9FJbAAAAYHRSTlP/+P///////////////////////wD////////////+///////////////////////////////////////////////////////////////////////////////////////R0na1AABHkElEQVR42u2dC0Pa2Nb3abWd9nRu55wqDWgi5AaJCAlJCHJV2oIICurUa/X7f4t3/ddOuInaznTmdJ53Mp3Wu/yy7muvvZN4+//hlfgH+h/of6D/gf4H+h/of6D/gf4HeuGSNc/1Xdd11P/j0KqqaY6jqfJbWQ+aIV1KO2weO/L/XWjHLzcbYVivlwOfkJV0Wklvb2+nlfDY+b8Ebat02SxI1W0q1Wp1u1ol2DYh07/pdJWotz8qBff/CvQzvR+UcQWeZetBXdmeXERbTSuFQiFUlI94v+DLf2PoZ7Iavfyc31DE1W6Ug3JIzASKi8RLzIVy4Lp+UC5Axz+2/b8VtKw65JwM4akGRBEErp7L6f2GwhpMQgVphzgPyZxJ+gXS83a9T99FF1k6TDv9Z2v4t4SWndUmqWmhfKHJshkUFPinMHw9boTErLQPC+02PkTvtOv+CJwDvxyG5QNN1RzTpA8MAgg73XT+JtCytloQLjjdbvoEk45MVmH4QjPok+jZU6fbZU+LrpF/MSIZ5/1stuiamubC3tvH8t8CWj6oK+mJc4K1CoUW12HzQCjwiAJUuxA4qqbn/bxp4oOqqrvZ1+/epcZFV9Po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")}
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-        [hidden]{display:none!important}
-        body{background:var(--bg-color);color:var(--text-main);line-height:1.5;-webkit-tap-highlight-color:transparent}
-        #app{max-width:600px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+        :root {
+            --primary: #16a34a;
+            --primary-dark: #14532d;
+            --primary-soft: #f0fdf4;
+            --bg-color: #f8faf9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --nav-h: 64px;
+        }
 
-        /* 상단바 */
-        .topbar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-        .brand{display:flex;align-items:center;gap:10px}
-        .brand b{display:block;font-size:1.45rem;font-weight:800;line-height:1.2;letter-spacing:-.01em}
-        .brand small{color:var(--text-muted);font-size:.85rem}
-        .role-switch{display:none;border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 8px;font-size:.85rem}
-        main{padding:16px;padding-bottom:calc(var(--nav-h) + 28px + env(safe-area-inset-bottom,0px));flex:1}
-        .view{display:none}.view.active{display:block}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-        /* 홈 히어로 (로고는 오른쪽 위 구석에 연하게) */
-        .hero{position:relative;overflow:hidden;border-radius:20px;padding:22px 20px;color:#fff;background:linear-gradient(135deg,#0f2f24 0%,#14532d 60%,#166534 100%);margin-bottom:16px;box-shadow:0 8px 24px rgba(20,83,45,.25)}
-        .hero-logo{position:absolute;right:-16px;top:-12px;width:128px;height:128px;background:var(--logo) center/contain no-repeat;opacity:.22;transform:rotate(8deg);pointer-events:none}
-        .hero-sub{font-size:.75rem;letter-spacing:.08em;opacity:.75;font-weight:600}
-        .hero h1{font-size:1.5rem;margin:2px 0 4px;font-weight:800}
-        .hero p{font-size:.85rem;opacity:.8}
+        [hidden] { display: none !important; }
 
-        /* 이번 과제 미션 강조 */
-        .mission{position:relative;display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:inset 4px 0 0 #bef264}
-        .mission-tag{flex:none;font-size:.68rem;font-weight:800;letter-spacing:.08em;color:#14532d;background:#bef264;padding:3px 9px;border-radius:999px;animation:missionGlow 2.4s ease-in-out infinite}
-        .mission-text{font-size:1.02rem;font-weight:700;line-height:1.35}
-        .mission-text em{font-style:normal;color:#fff;background:#e11d48;padding:1px 9px;margin:0 1px;border-radius:8px;box-shadow:0 2px 8px rgba(225,29,72,.45);white-space:nowrap}   /* 초록의 보색(붉은 계열) */
-        @keyframes missionGlow{0%,100%{box-shadow:0 0 0 0 rgba(190,242,100,.55)}50%{box-shadow:0 0 0 6px rgba(190,242,100,0)}}
-        @media (prefers-reduced-motion:reduce){.mission-tag{animation:none}}
+        body {
+            background: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* 버튼 */
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:0;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .1s,background .15s}
-        .btn:active{transform:scale(.98)}
-        .btn:disabled{opacity:.6;cursor:not-allowed}
-        .btn-primary{background:var(--primary);color:#fff;width:100%;box-shadow:0 4px 12px rgba(22,163,74,.25)}.btn-primary:hover{background:var(--primary-dark)}
-        .btn-small{padding:6px 10px;font-size:.82rem;border-radius:8px}
-        .btn-edit{background:var(--warning);color:#fff}.btn-danger{background:var(--danger);color:#fff}
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+        }
 
-        /* 세그먼트(탭) */
-        .seg{display:flex;gap:4px;background:#e4ebe7;border-radius:12px;padding:4px;margin:14px 0}
-        .seg button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font-size:.88rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .15s}
-        .seg button.on{background:#fff;color:var(--primary-dark);box-shadow:0 1px 4px rgba(0,0,0,.12)}
-        .seg .n{display:inline-block;min-width:18px;padding:0 5px;margin-left:3px;border-radius:999px;background:var(--primary-soft);color:var(--primary-dark);font-size:.72rem}
+        /* 상단 네비게이션바 (Modern Glassmorphism) */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+        }
 
-        .view-header{margin-bottom:14px}
-        .view-header h2{font-size:1.25rem;font-weight:800;word-break:break-all}
-        .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px}
+        .brand b {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+        }
 
-        /* 폴더 */
-        .folder-list{display:grid;gap:12px}
-        .folder-item{background:var(--card-bg);border:1px solid var(--border);padding:14px;border-radius:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(16,24,20,.04)}
-        .folder-info{display:flex;align-items:center;gap:12px;flex:1;cursor:pointer;min-width:0}
-        .folder-icon{width:42px;height:42px;border-radius:12px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none}
-        .folder-name{font-weight:700;word-break:break-all}
-        .teacher-actions{display:none;gap:6px}
-        .is-teacher .teacher-actions{display:flex}
-        .create-wrap{margin-bottom:12px}
+        .brand small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
 
-        /* 폼 */
-        .form-group{margin-bottom:16px}
-        .form-group label{display:block;margin-bottom:6px;font-size:.85rem;font-weight:600;color:var(--text-muted)}
-        input,select{outline:none}
-        .form-group input,.form-group select,.comment-form select,.comment-form input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:1rem;background:#fff}
-        input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+        main {
+            padding: 18px;
+            padding-bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px));
+            flex: 1;
+        }
 
-        /* 도면 목록 / 상세 */
-        .post-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .post-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;box-shadow:0 1px 3px rgba(16,24,20,.04);transition:transform .12s}
-        .post-card:active{transform:scale(.98)}
-        .post-thumb{width:100%;height:120px;object-fit:cover;background:#e5e7eb;display:block}
-        .post-meta{padding:10px}
-        .post-title{font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .post-author{font-size:.8rem;color:var(--text-muted);margin-top:4px}
-        .post-time{font-size:.72rem;color:#9ca3af;margin-top:6px}
-        .detail-img{width:100%;border-radius:14px;border:1px solid var(--border);margin-bottom:8px;cursor:zoom-in;background:#fff}
-        .detail-title{font-size:1.15rem;font-weight:800;margin:4px 0}
-        .detail-author{color:var(--text-muted);font-size:.9rem;display:flex;justify-content:space-between;align-items:center}
-        .detail-time{font-size:.78rem;color:#9ca3af}
-        .comment-item{background:#fff;border:1px solid var(--border);padding:12px;border-radius:12px;margin-bottom:8px}
-        .comment-author{font-weight:700;font-size:.85rem;margin-bottom:4px;color:var(--primary-dark)}
-        .comment-date{font-size:.7rem;color:#999;font-weight:400;margin-left:4px}
-        .comment-form{display:grid;gap:8px;margin-top:12px}
-        .comment-input-area{display:flex;gap:8px}
-        .comment-input-area input{flex:1}
-        .empty-state{text-align:center;color:var(--text-muted);padding:40px 20px}
-        .loading{text-align:center;padding:20px;color:var(--text-muted)}
+        /* 히어로 영역 */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            color: #fff;
+            background: linear-gradient(135deg, #0f2f24 0%, #166534 100%);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px -5px rgba(20, 83, 45, 0.3);
+        }
 
-        /* 현황 표시 (학생·교사 모두 보임) */
-        .teacher-only{display:block}
-        .folder-item .teacher-only{flex-basis:100%}
-        .status-row{border-top:1px dashed var(--border);padding-top:10px}
-        .status-title{font-size:.78rem;font-weight:700;color:var(--text-muted);margin-bottom:6px}
-        .bar{height:6px;border-radius:999px;background:#e8eeea;overflow:hidden;margin-bottom:8px}
-        .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#22c55e,#16a34a)}
-        .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;margin:2px 4px 2px 0}
-        .chip.ok{background:#dcfce7;color:#166534}
-        .chip.no{background:#fee2e2;color:#991b1b}
-        .post-status{font-size:.75rem;font-weight:600;margin-top:6px}
-        .post-status.full,.summary-table .ok{color:#166534}
-        .post-status.part,.summary-table .part{color:#b45309}
-        .post-status.zero,.summary-table .no{color:#991b1b}
-        #folderSummary,#commentStatus{background:#fff;border:1px solid var(--border);border-radius:16px;padding:12px}
-        .summary-table{width:100%;border-collapse:collapse;font-size:.85rem}
-        .summary-table th,.summary-table td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left}
-        .summary-table td{font-weight:600}
-        .summary-table td.who{font-weight:400;font-size:.78rem;color:var(--text-muted)}
+        .hero h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+        .hero p { font-size: 0.88rem; opacity: 0.85; }
 
-        /* 하단 내비게이션 (홈 / 뒤로) */
-        .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,600px);z-index:60;display:flex;gap:10px;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border)}
-        .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:0;background:none;border-radius:12px;color:var(--text-muted);font-size:.72rem;font-weight:600;cursor:pointer}
-        .nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-        .nav-btn.on{color:var(--primary-dark);background:var(--primary-soft)}
-        .nav-btn:disabled{opacity:.35;cursor:default}
+        .mission {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-        /* 폴더 계층 */
-        .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:14px}
-        .crumbs button{border:0;background:var(--primary-soft);color:var(--primary-dark);font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:.9rem}
-        .crumbs button:last-child{background:var(--primary);color:#fff}
-        .crumbs span{color:var(--text-muted)}
-        .crumb-note{font-size:.8rem;color:var(--text-muted);margin-bottom:2px}
-        .folder-text{min-width:0}
-        .folder-sub{font-size:.8rem;color:var(--text-muted);margin-top:2px}
-        .btn-ghost{background:#e4ebe7;color:var(--text-main)}
-        .create-wrap .btn-primary{flex:1;width:auto}
-        .select-bar{display:flex;align-items:center;gap:8px;background:#fff7e6;border:1px solid #fde1a6;border-radius:12px;padding:8px 12px;margin-bottom:12px;font-weight:600;font-size:.9rem}
-        .select-bar span{flex:1}
-        .folder-item.selectable{cursor:pointer}
-        .folder-item.picked{border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,163,74,.25);background:var(--primary-soft)}
-        .pick-box{width:22px;height:22px;border-radius:6px;border:2px solid #b8c4bd;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;flex:none}
-        .picked .pick-box{background:var(--primary);border-color:var(--primary)}
-        .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150;display:flex;align-items:flex-end;justify-content:center}
-        .sheet{width:min(100%,600px);background:#fff;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:80vh;display:flex;flex-direction:column}
-        .sheet-title{font-weight:800;font-size:1.05rem}
-        .sheet-sub{font-size:.8rem;color:var(--text-muted);margin:2px 0 10px}
-        .sheet-list{overflow-y:auto;display:grid;gap:6px;margin-bottom:12px}
-        .sheet-item{text-align:left;border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px;font-size:.95rem;font-weight:600;cursor:pointer}
-        .sheet-item:hover{background:var(--primary-soft)}
-        .sheet-item:disabled{opacity:.45;cursor:default;background:#f5f7f6}
+        .mission-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #14532d;
+            background: #bef264;
+            padding: 4px 8px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
 
-        /* 이미지 전체화면 모달 */
-        #imgModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;touch-action:none;overflow:hidden}
-        #imgModal.show{display:flex}
-        #imgModalInner{position:relative;flex:none;max-width:95%;max-height:95%;overflow:hidden;touch-action:none;border-radius:8px}
-        #imgModalImg{display:block;max-width:95vw;max-height:90vh;transform-origin:0 0;will-change:transform;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
-        #imgModalClose{position:absolute;right:10px;top:calc(10px + env(safe-area-inset-top,0px));z-index:5;background:rgba(0,0,0,.55);color:#fff;border:0;padding:8px 12px;border-radius:8px;font-size:1rem;cursor:pointer}
-        .modal-hint{position:absolute;z-index:5;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);color:#d1d5db;font-size:.85rem;white-space:nowrap;pointer-events:none;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:999px}
+        .mission-text { font-size: 0.95rem; font-weight: 700; }
+        .mission-text em {
+            font-style: normal;
+            background: #ef4444;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        /* 버튼 컴포넌트 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            border: 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        /* 게시글 카드 리드 (고화질 이미지 대응) */
+        .post-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .post-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 고화질 이미지 보율 렌더링 */
+        .post-thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            background: #f1f5f9;
+            display: block;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .post-meta { padding: 12px; }
+        .post-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 2px; }
+        .post-author { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* 이미지 업로드 미리보기 */
+        .upload-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-<div id="app">
-    <header class="topbar">
-        <div class="brand">
-            <div><b>CAD 방과후</b><small>도면 제출 · 피드백</small></div>
-        </div>
-        <select id="roleSelect" class="role-switch">
-            <option value="student">학생 모드</option>
-            <option value="teacher">교사 모드</option>
-        </select>
-    </header>
+    <div id="app">
+        <header class="topbar">
+            <div class="brand">
+                <b>CAD 과제제출</b>
+                <small>유한공업고등학교</small>
+            </div>
+        </header>
 
-    <main>
-        <!-- 홈: 폴더 목록 -->
-        <div id="view-folder-list" class="view active">
-            <section class="hero" id="heroBox">
-                <span class="hero-logo"></span>
-                <div class="hero-sub">2026 SMART AFTERSCHOOL</div>
-                <h1>전산응용기계제도기능사 과제</h1>
+        <main>
+            <section class="hero">
+                <span class="hero-sub">방과후 컴퓨터응용도면</span>
+                <h1>오늘의 도면 제출하기</h1>
+                <p>완성된 캐드 도면 캡처 이미지를 올려주세요.</p>
                 <div class="mission">
-                    <span class="mission-tag">MISSION</span>
-                    <span class="mission-text">모든 게시글에 피드백 <em>2개씩</em> 달기</span>
+                    <span class="mission-tag">오늘의 미션</span>
+                    <div class="mission-text">치수 <em>오차 ±0.5</em> 이내 맞춰 제출</div>
                 </div>
             </section>
-            <div id="crumbs" class="crumbs" hidden></div>
-            <div class="teacher-actions create-wrap">
-                <button class="btn btn-primary" id="btnCreateFolder">+ 새 폴더 만들기</button>
-                <button class="btn btn-ghost" id="btnSelectMode">☑ 선택해서 이동</button>
-            </div>
-            <div id="selectBar" class="select-bar" hidden>
-                <span id="selectCount">0개 선택됨</span>
-                <button class="btn btn-small btn-edit" id="btnMoveSelected">이동</button>
-                <button class="btn btn-small btn-ghost" id="btnCancelSelect">취소</button>
-            </div>
-            <div id="folderList" class="folder-list"><div class="loading" id="folderLoading">데이터베이스 연결 중...</div></div>
-        </div>
 
-        <!-- 폴더 내부 -->
-        <div id="view-folder-detail" class="view">
-            <div class="view-header"><div id="detailCrumb" class="crumb-note"></div><h2 id="currentFolderName">폴더명</h2></div>
-            <button class="btn btn-primary" id="btnShowUpload">+ 2D 도면 업로드</button>
-            <div class="seg" id="segFolder">
-                <button class="on" data-seg="posts">📐 도면 <span class="n" id="cntPosts">0</span></button>
-                <button data-seg="status">📊 학생별 현황</button>
-            </div>
-            <div data-panel-of="segFolder" data-panel="posts"><div id="postList" class="post-list"></div></div>
-            <div data-panel-of="segFolder" data-panel="status" hidden><div id="folderSummary" class="teacher-only"></div></div>
-        </div>
-
-        <!-- 업로드 -->
-        <div id="view-upload" class="view">
-            <div class="view-header"><h2>과제 업로드</h2></div>
-            <div class="card">
-                <div class="form-group"><label>작성자 이름 (학생명)</label><select id="uploadAuthor"></select></div>
-                <div class="form-group"><label>도면 제목 (또는 설명)</label><input type="text" id="uploadTitle" placeholder="예: 1주차 부품 도면 완성"></div>
-                <div class="form-group"><label>도면 이미지 파일 (JPG, PNG)</label><input type="file" id="uploadFile" accept="image/*"></div>
-                <button class="btn btn-primary" id="btnSubmitUpload">업로드 완료</button>
-            </div>
-        </div>
-
-        <!-- 상세 -->
-        <div id="view-post-detail" class="view">
-            <div class="view-header"><h2>도면 상세</h2></div>
-            <img id="detailImage" class="detail-img" src="" alt="도면 이미지">
-            <div id="detailNote" class="detail-time"></div>
-            <div id="detailTitle" class="detail-title">제목</div>
-            <div id="detailAuthor" class="detail-author">
-                <span id="detailAuthorName">작성자</span>
-                <span class="detail-time" id="detailCreatedAt"></span>
-            </div>
-            <div class="seg" id="segPost">
-                <button class="on" data-seg="comments">💬 댓글 <span class="n" id="cntComments">0</span></button>
-                <button data-seg="status">✅ 작성 현황</button>
-            </div>
-            <div data-panel-of="segPost" data-panel="comments">
-                <div id="commentList"></div>
-                <div class="comment-form">
-                    <select id="commentAuthor"></select>
-                    <div class="comment-input-area">
-                        <input type="text" id="commentText" placeholder="피드백을 남겨주세요">
-                        <button class="btn btn-primary" style="width:auto" id="btnAddComment">등록</button>
+            <!-- 과제 업로드 폼 예시 영역 -->
+            <div class="card" style="padding:16px; border:1px solid var(--border); border-radius:var(--radius-lg);">
+                <form id="uploadForm">
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">도면 이미지 첨부 (고화질 자동개선)</label>
+                        <input type="file" id="imageInput" accept="image/*" style="margin-top:6px; width:100%;">
                     </div>
-                </div>
+                    <img id="preview" class="upload-preview" hidden>
+                    <button type="submit" class="btn btn-primary" style="margin-top:14px;">과제 제출하기</button>
+                </form>
             </div>
-            <div data-panel-of="segPost" data-panel="status" hidden><div id="commentStatus" class="teacher-only"></div></div>
-        </div>
-    </main>
-</div>
-
-<!-- 하단 내비게이션 -->
-<nav class="bottom-nav">
-    <button class="nav-btn on" id="navHome"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>홈</button>
-    <button class="nav-btn" id="navBack" disabled><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>뒤로</button>
-</nav>
-
-<!-- 폴더 이동 시트 -->
-<div id="moveModal" class="sheet-backdrop" hidden>
-    <div class="sheet">
-        <div class="sheet-title" id="moveTitle">폴더 이동</div>
-        <div class="sheet-sub">이동할 위치를 선택하세요</div>
-        <div class="sheet-list" id="moveList"></div>
-        <button class="btn btn-ghost" id="moveCancel">취소</button>
+        </main>
     </div>
-</div>
 
-<!-- 이미지 뷰어 모달 -->
-<div id="imgModal" aria-hidden="true">
-    <div id="imgModalInner">
-        <img id="imgModalImg" src="" alt="확대 이미지">
-    </div>
-    <button id="imgModalClose" aria-label="닫기">✕</button>
-    <div class="modal-hint" id="imgModalHint">핀치로 확대 · 드래그로 이동 · 두 번 탭</div>
-</div>
+    <script>
+        /**
+         * CAD 도면 이미지 최적화 업로드 기능
+         * 원본 도면의 얇은 선과 치수 텍스트가 뭉개지지 않도록 최상급 캔버스 렌더링 옵션 사용
+         */
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        let processedBase64Image = '';
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-    // ⚠️ Realtime Database 규칙(테스트 모드)은 만료일(2026-12-4) 이후 읽기/쓰기가 모두 막힙니다.
-    //    그 전에 Firebase 콘솔 > Realtime Database > 규칙에서 갱신하세요.
-    // ⚠️ databaseURL은 콘솔 '데이터' 탭 맨 위에 표시된 주소와 똑같아야 합니다.
-    const firebaseConfig = {
-      apiKey: "AIzaSyBgIWWbJrWLm75UUIxLo1HnpEZdcfAeejg",
-      authDomain: "cad-afterschool-2026.firebaseapp.com",
-      databaseURL: "https://cad-afterschool-2026-default-rtdb.firebaseio.com/",
-      projectId: "cad-afterschool-2026",
-      storageBucket: "cad-afterschool-2026.firebasestorage.app",
-      messagingSenderId: "812762265008",
-      appId: "1:812762265008:web:3dcf0dc1bbbd184d201275"
-    };
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // 고화질 처리를 위한 캔버스 세팅
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+                    // 1. 최대 해상도를 2048px (FHD+) 수준으로 유지하여 디테일 보존
+                    const MAX_WIDTH = 2048;
+                    const MAX_HEIGHT = 2048;
+                    let width = img.width;
+                    let height = img.height;
 
-    let folders = []; let posts = []; let currentRole = 'student';
-    let currentFolderId = null; let currentPostId = null;
-    const fullCache = new Map();      // 게시글 id → 원본 이미지(dataURL), 한 번 받으면 재사용
-    const fullLoading = new Set();    // 현재 받는 중인 id
-    let currentView = 'view-folder-list';
-    let currentParentId = null;       // 홈 목록에서 지금 보고 있는 상위 폴더 (null = 최상위)
-    let selectMode = false;           // 교사용: 여러 폴더 선택 이동 모드
-    const selected = new Set();
-    let viewerPostId = null;          // 확대 보기 중인 게시글 id
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
 
-    const $ = (id) => document.getElementById(id);
-    function el(tag, cls, text){
-        const e = document.createElement(tag);
-        if (cls) e.className = cls;
-        if (text !== undefined) e.textContent = text;   // textContent → HTML/스크립트 입력이 실행되지 않음
-        return e;
-    }
-    const pad = (n) => String(n).padStart(2, '0');
-    function formatDate(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${pad(d.getMinutes())}`; }
-    function showView(id){
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        $(id).classList.add('active');
-        currentView = id;
-        updateNav();
-        window.scrollTo({ top: 0 });
-    }
-    function goHome(){ currentFolderId = null; currentPostId = null; currentParentId = null; showView('view-folder-list'); renderFolders(); }
-    function goBack(){
-        if (currentView === 'view-post-detail') { currentPostId = null; showView('view-folder-detail'); }
-        else if (currentView === 'view-upload') showView('view-folder-detail');
-        else if (currentView === 'view-folder-detail') { currentFolderId = null; currentPostId = null; showView('view-folder-list'); renderFolders(); }   // 폴더가 있던 단계로
-        else if (currentView === 'view-folder-list' && currentParentId) { currentParentId = parentOf(folders.find(f => f.id === currentParentId)); renderFolders(); window.scrollTo({ top: 0 }); }   // 한 단계 위로
-    }
-    function updateNav(){
-        const atRoot = currentView === 'view-folder-list' && !currentParentId;
-        $('navBack').disabled = atRoot;
-        $('navHome').classList.toggle('on', atRoot);
-    }
-    // 세그먼트(탭) 전환: 버튼의 data-seg 이름과 같은 data-panel 만 보여줌
-    function setSeg(seg, name){
-        seg.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.seg === name));
-        document.querySelectorAll(`[data-panel-of="${seg.id}"]`).forEach(p => { p.hidden = p.dataset.panel !== name; });
-    }
+                    canvas.width = width;
+                    canvas.height = height;
 
-    // 학생 명단 (명단을 바꾸려면 여기만 수정하세요)
-    const STUDENTS = ['김하율','임도윤','박재홍','윤부남','이수현','최현식','한지성','황인호'];
-    const TEACHER = '선생님';
-    const norm = (s) => String(s || '').replace(/\s+/g, '');
+                    // 2. 선명도 및 보정 픽셀 스케일링 설정 (High Quality)
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
 
-    function fillNameSelect(sel, names){
-        sel.innerHTML = '';
-        const first = el('option', '', '이름을 선택하세요'); first.value = ''; sel.appendChild(first);
-        names.forEach(n => { const o = el('option', '', n); o.value = n; sel.appendChild(o); });
-    }
-    fillNameSelect($('uploadAuthor'), STUDENTS);
-    fillNameSelect($('commentAuthor'), [...STUDENTS, TEACHER]);
+                    // 3. 캔버스에 원본 이미지 그리기
+                    ctx.drawImage(img, 0, 0, width, height);
 
-    // 마지막으로 선택한 이름 기억 (폰에서 매번 고르지 않도록)
-    function saveName(v){ try { if (STUDENTS.includes(v)) localStorage.setItem('cad_name', v); } catch (e) {} }
-    function loadName(){ try { return localStorage.getItem('cad_name') || ''; } catch (e) { return ''; } }
-    const savedName = loadName();
-    if (STUDENTS.includes(savedName)) { $('uploadAuthor').value = savedName; $('commentAuthor').value = savedName; }
-    $('uploadAuthor').addEventListener('change', (e) => saveName(e.target.value));
-    $('commentAuthor').addEventListener('change', (e) => saveName(e.target.value));
+                    // 4. 고품질 JPEG/PNG 인코딩 (압축률 0.95로 세팅하여 화질 저하 방지)
+                    processedBase64Image = canvas.toDataURL('image/jpeg', 0.95);
 
-    // 현황 계산
-    function chip(name, ok){ return el('span', 'chip ' + (ok ? 'ok' : 'no'), (ok ? '✓ ' : '✕ ') + name); }
-    function commenterSet(p){ return new Set(p.comments.map(c => norm(c.author))); }
-    // 게시글 하나에 대해: 댓글을 써야 하는 학생(본인 제외) 중 누가 썼는지
-    function commentStatus(p){
-        const done = commenterSet(p), me = norm(p.author);
-        const targets = STUDENTS.filter(n => n !== me);
-        return { targets, done: targets.filter(n => done.has(n)) };
-    }
-
-    // 교사용: 폴더 안 학생별 현황표
-    function renderFolderSummary(){
-        const box = $('folderSummary'); box.innerHTML = '';
-        if (!currentFolderId) return;
-        const fp = posts.filter(p => p.folderId === currentFolderId);
-        const posted = new Set(fp.map(p => norm(p.author)));
-
-        box.appendChild(el('div', 'status-title', '학생별 현황 (게시 / 다른 학생 글에 쓴 댓글)'));
-        const table = el('table', 'summary-table');
-        const head = el('tr');
-        ['학생', '게시', '댓글', '댓글 현황'].forEach(t => head.appendChild(el('th', '', t)));
-        table.appendChild(head);
-
-        STUDENTS.forEach((n) => {
-            const others = fp.filter(p => norm(p.author) !== n);
-            const written = others.filter(p => commenterSet(p).has(n)).length;
-            const tr = el('tr');
-            tr.appendChild(el('td', '', n));
-            tr.appendChild(el('td', posted.has(n) ? 'ok' : 'no', posted.has(n) ? '✓ 게시' : '✕ 미게시'));
-            if (others.length === 0) tr.appendChild(el('td', '', '-'));
-            else tr.appendChild(el('td', written === others.length ? 'ok' : written === 0 ? 'no' : 'part', `${written}/${others.length}`));
-            // 이 학생이 댓글을 쓴 상대 (명단 순서)
-            const to = STUDENTS.filter(x => others.some(q => norm(q.author) === x && commenterSet(q).has(n)));
-            tr.appendChild(el('td', 'who', to.length ? to.join(', ') : '-'));
-            table.appendChild(tr);
-        });
-        box.appendChild(table);
-    }
-
-    // ---------- 이벤트 바인딩 ----------
-    $('navHome').onclick = goHome;
-    $('navBack').onclick = goBack;
-    document.querySelectorAll('.seg').forEach((seg) => seg.addEventListener('click', (e) => {
-        const b = e.target.closest('button[data-seg]'); if (!b) return;
-        setSeg(seg, b.dataset.seg);
-    }));
-    $('roleSelect').onchange = (e) => toggleRole(e.target.value);
-    $('btnShowUpload').onclick = () => showView('view-upload');
-    $('btnSubmitUpload').onclick = submitUpload;
-    $('btnAddComment').onclick = addComment;
-    $('commentText').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) addComment(); });
-
-    // 폴더 생성
-    $('btnCreateFolder').onclick = () => {
-        const folderName = prompt('새로운 과제 폴더의 이름을 입력하세요:\n(예: 11/4)동력전달장치04)');
-        if (folderName && folderName.trim()) {
-            push(ref(db, 'folders'), { name: folderName.trim(), ...(currentParentId ? { parentId: currentParentId } : {}) })   // 지금 보고 있는 폴더 안에 생성
-            .catch((error) => { alert("폴더 생성 실패!\n\n원인: " + error.message); });
-        }
-    };
-
-    // 초기 모드 설정 (?mode=teacher)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('mode') === 'teacher') {
-        $('roleSelect').style.display = 'inline-block';
-        $('roleSelect').value = 'teacher';
-        toggleRole('teacher');
-    } else toggleRole('student');
-
-    function toggleRole(role){
-        currentRole = role;
-        if (role !== 'teacher') { selectMode = false; selected.clear(); }
-        $('app').classList.toggle('is-teacher', role === 'teacher');
-        const ca = $('commentAuthor');
-        if (role === 'teacher') ca.value = TEACHER;                 // 교사 모드: 댓글 작성자 기본값 '선생님'
-        else if (ca.value === TEACHER) ca.value = STUDENTS.includes(savedName) ? savedName : '';
-    }
-
-    // ---------- 데이터 수신 ----------
-    onValue(ref(db, 'folders'), (snap) => {
-        console.log('folders:', snap.val());   // 콘솔에서 실제 받아온 데이터 확인용
-        folders = [];
-        // ⚠️ forEach 콜백이 true로 평가되는 값을 반환하면 반복이 중단됩니다. 반드시 중괄호로 감싸세요.
-        snap.forEach((c) => {
-            const v = c.val();
-            if (typeof v === 'string') folders.push({ id: c.key, name: v, legacy: true });          // 콘솔에서 문자열로 직접 넣은 경우
-            else if (v && typeof v === 'object') folders.push({ id: c.key, ...v });
-        });
-        renderFolders();
-        // 선택된 폴더 이름이 바뀌었을 때 제목 갱신
-        if (currentFolderId) {
-            const f = folders.find(x => x.id === currentFolderId);
-            if (f) { $('currentFolderName').textContent = f.name; $('detailCrumb').textContent = folderPath(f.id).slice(0, -1).join(' › '); }
-        }
-    }, (error) => {
-        console.error(error);
-        const loading = $('folderLoading');
-        if (loading) loading.textContent = "데이터 연결 실패!";
-        alert("폴더를 불러오지 못했습니다.\n원인: " + error.message + "\n\nFirebase Rules(만료일)와 databaseURL을 확인해주세요.");
-    });
-
-    onValue(ref(db, 'posts'), (snap) => {
-        console.log('posts:', snap.size, '개');
-        posts = [];
-        snap.forEach((c) => {
-            const data = c.val() || {};
-            const comments = data.comments ? Object.keys(data.comments).map(k => ({ id: k, ...data.comments[k] })) : [];
-            posts.push({ id: c.key, ...data, comments });
-        });
-        renderFolders();                                       // 폴더별 게시 현황 갱신
-        if (currentFolderId) { renderPosts(); renderFolderSummary(); }
-        if (currentPostId) renderPostDetail(currentPostId);   // 화면 전환 없이 내용만 갱신
-    }, (error) => {
-        console.error(error);
-        alert("자료 불러오기 실패: " + error.message);
-    });
-
-    // ---------- 폴더 (상위/하위 계층) ----------
-    const sortKo = (a, b) => String(a.name).localeCompare(String(b.name), 'ko', { numeric: true });   // 11/4 가 11/10 보다 앞에
-    function parentOf(f){ return (f && f.parentId && folders.some(x => x.id === f.parentId)) ? f.parentId : null; }   // 상위 폴더가 없어졌으면 최상위로 취급
-    function childrenOf(pid){ return folders.filter(f => f && f.name && parentOf(f) === (pid || null)).sort(sortKo); }
-    function descendantIds(id){
-        const out = [], st = [id];
-        while (st.length) { const x = st.pop(); childrenOf(x).forEach(c => { out.push(c.id); st.push(c.id); }); }
-        return out;
-    }
-    function folderPath(id){
-        const names = []; let cur = folders.find(f => f.id === id), guard = 0;
-        while (cur && guard++ < 20) { names.unshift(cur.name); cur = folders.find(f => f.id === parentOf(cur)); }
-        return names;
-    }
-
-    // 상단 경로(홈 › 11월 1주차 › ...)
-    function renderCrumbs(){
-        const box = $('crumbs'), nested = !!currentParentId;
-        $('heroBox').hidden = nested; box.hidden = !nested; box.innerHTML = '';
-        if (!nested) return;
-        const chain = []; let cur = folders.find(f => f.id === currentParentId), g = 0;
-        while (cur && g++ < 20) { chain.unshift(cur); cur = folders.find(f => f.id === parentOf(cur)); }
-        const home = el('button', '', '🏠 홈'); home.onclick = () => { currentParentId = null; renderFolders(); };
-        box.appendChild(home);
-        chain.forEach((f) => {
-            box.appendChild(el('span', '', '›'));
-            const b = el('button', '', f.name); b.onclick = () => { currentParentId = f.id; renderFolders(); };
-            box.appendChild(b);
-        });
-    }
-    function updateSelectUI(){
-        $('selectBar').hidden = !selectMode;
-        $('btnSelectMode').hidden = selectMode;
-        $('selectCount').textContent = `${selected.size}개 선택됨`;
-        $('btnMoveSelected').disabled = selected.size === 0;
-    }
-
-    function renderFolders(){
-        if (currentParentId && !folders.some(f => f.id === currentParentId)) currentParentId = null;   // 보던 폴더가 사라졌으면 홈으로
-        const list = $('folderList'); list.innerHTML = '';
-        renderCrumbs();
-        const kids = childrenOf(currentParentId);
-
-        // 이 폴더 자체에도 도면이 있으면 맨 위에 바로가기
-        const cur = folders.find(f => f.id === currentParentId);
-        if (cur && !selectMode) {
-            const own = posts.filter(p => p.folderId === cur.id).length;
-            if (own > 0) {
-                const item = el('div', 'folder-item'), info = el('div', 'folder-info'), t = el('div', 'folder-text');
-                t.appendChild(el('div', 'folder-name', '이 폴더의 도면'));
-                t.appendChild(el('div', 'folder-sub', `도면 ${own}개`));
-                info.append(el('span', 'folder-icon', '📄'), t);
-                info.addEventListener('click', () => openLeaf(cur.id, cur.name));
-                item.appendChild(info); list.appendChild(item);
-            }
-        }
-        if (kids.length === 0 && list.children.length === 0) {
-            list.appendChild(el('div', 'empty-state', currentParentId ? '이 폴더는 비어 있습니다.' : '생성된 과제 폴더가 없습니다.'));
-        }
-
-        kids.forEach((f) => {
-            const subIds = descendantIds(f.id), hasKids = subIds.length > 0;
-            const item = el('div', 'folder-item' + (selectMode ? ' selectable' : '') + (selected.has(f.id) ? ' picked' : ''));
-
-            const info = el('div', 'folder-info');
-            if (selectMode) info.appendChild(el('span', 'pick-box', selected.has(f.id) ? '✓' : ''));
-            info.appendChild(el('span', 'folder-icon', hasKids ? '📂' : '📁'));
-            const t = el('div', 'folder-text');
-            t.appendChild(el('div', 'folder-name', f.name));
-            if (hasKids) {
-                const n = posts.filter(p => p.folderId === f.id || subIds.includes(p.folderId)).length;
-                t.appendChild(el('div', 'folder-sub', `하위 폴더 ${childrenOf(f.id).length}개 · 도면 ${n}개`));
-            }
-            info.appendChild(t);
-            info.addEventListener('click', () => {
-                if (selectMode) { if (selected.has(f.id)) selected.delete(f.id); else selected.add(f.id); renderFolders(); }
-                else if (hasKids) enterFolder(f.id);
-                else openLeaf(f.id, f.name);
-            });
-            item.appendChild(info);
-
-            if (!selectMode) {
-                const actions = el('div', 'teacher-actions');
-                const editBtn = el('button', 'btn btn-edit btn-small', '변경');
-                editBtn.addEventListener('click', () => editFolder(f.id, f.name));
-                const moveBtn = el('button', 'btn btn-ghost btn-small', '이동');
-                moveBtn.addEventListener('click', () => openMoveSheet([f.id]));
-                const delBtn = el('button', 'btn btn-danger btn-small', '삭제');
-                delBtn.addEventListener('click', () => deleteFolder(f.id, f.name));
-                actions.append(editBtn, moveBtn, delBtn);
-                item.appendChild(actions);
-
-                // 맨 아래 단계 폴더만: 이 폴더에 누가 게시했는지
-                if (!hasKids) {
-                    const posted = new Set(posts.filter(p => p.folderId === f.id).map(p => norm(p.author)));
-                    const status = el('div', 'teacher-only status-row');
-                    const cnt = STUDENTS.filter(n => posted.has(n)).length;
-                    status.appendChild(el('div', 'status-title', `게시 ${cnt}/${STUDENTS.length}`));
-                    const bar = el('div', 'bar'), fill = el('i'); fill.style.width = (cnt / STUDENTS.length * 100) + '%'; bar.appendChild(fill); status.appendChild(bar);
-                    STUDENTS.forEach(n => status.appendChild(chip(n, posted.has(n))));
-                    item.appendChild(status);
-                }
-            }
-            list.appendChild(item);
-        });
-        updateSelectUI();
-        updateNav();
-    }
-
-    function enterFolder(id){ currentParentId = id; renderFolders(); window.scrollTo({ top: 0 }); }
-
-    // 맨 아래 단계 폴더(도면이 있는 곳) 열기
-    function openLeaf(id, name){
-        currentFolderId = id;
-        setSeg($('segFolder'), 'posts');
-        $('currentFolderName').textContent = name;
-        $('detailCrumb').textContent = folderPath(id).slice(0, -1).join(' › ');
-        renderPosts();
-        renderFolderSummary();
-        showView('view-folder-detail');
-    }
-
-    function editFolder(id, old){
-        const n = prompt('새 이름:', old);
-        if (n && n.trim()) update(ref(db, `folders/${id}`), { name: n.trim() }).catch(e => alert("수정 실패: " + e.message));
-    }
-
-    // 삭제: 하위 폴더와 그 안의 도면(원본 포함)까지 한 번에
-    function deleteFolder(id, name){
-        const ids = [id, ...descendantIds(id)];
-        const related = posts.filter(p => ids.includes(p.folderId));
-        const msg = `"${name}" 폴더를 삭제할까요?`
-            + (ids.length > 1 ? `\n하위 폴더 ${ids.length - 1}개도 함께 삭제됩니다.` : '')
-            + (related.length ? `\n안에 있는 도면 ${related.length}개도 모두 삭제됩니다.` : '')
-            + '\n(되돌릴 수 없습니다)';
-        if (!confirm(msg)) return;
-        const updates = {};
-        ids.forEach(i => { updates[`folders/${i}`] = null; });
-        related.forEach(p => { updates[`posts/${p.id}`] = null; updates[`images/${p.id}`] = null; });
-        update(ref(db), updates).catch(e => alert("삭제 실패: " + e.message));
-    }
-
-    // ---------- 폴더 이동 (교사용) ----------
-    function openMoveSheet(ids){
-        if (!ids.length) return;
-        const banned = new Set(ids);                                  // 자기 자신과 그 하위로는 이동 불가 (순환 방지)
-        ids.forEach(i => descendantIds(i).forEach(d => banned.add(d)));
-        const names = ids.map(i => (folders.find(f => f.id === i) || {}).name).filter(Boolean);
-        $('moveTitle').textContent = ids.length === 1 ? `"${names[0]}" 이동` : `폴더 ${ids.length}개 이동`;
-        const curParents = new Set(ids.map(i => parentOf(folders.find(f => f.id === i))));
-        const list = $('moveList'); list.innerHTML = '';
-        const addOpt = (label, destId, depth) => {
-            const here = curParents.size === 1 && curParents.has(destId);
-            const b = el('button', 'sheet-item', here ? label + '  (현재 위치)' : label);
-            b.style.paddingLeft = (12 + depth * 18) + 'px';
-            b.disabled = here;
-            b.addEventListener('click', () => moveFolders(ids, destId));
-            list.appendChild(b);
-        };
-        addOpt('🏠 최상위 (홈)', null, 0);
-        const walk = (pid, depth) => childrenOf(pid).forEach(f => { if (banned.has(f.id)) return; addOpt('📁 ' + f.name, f.id, depth); walk(f.id, depth + 1); });
-        walk(null, 1);
-        $('moveModal').hidden = false;
-    }
-    function moveFolders(ids, destId){
-        const updates = {};
-        ids.forEach((id) => {
-            const f = folders.find(x => x.id === id);
-            if (f && f.legacy) updates[`folders/${id}`] = { name: f.name, ...(destId ? { parentId: destId } : {}) };   // 콘솔에서 문자열로 넣은 폴더는 객체로 변환
-            else updates[`folders/${id}/parentId`] = destId || null;                                                   // null 이면 최상위로
-        });
-        update(ref(db), updates)
-        .then(() => { $('moveModal').hidden = true; selectMode = false; selected.clear(); renderFolders(); })
-        .catch(e => alert("이동 실패: " + e.message));
-    }
-    $('btnSelectMode').onclick = () => { selectMode = true; selected.clear(); renderFolders(); };
-    $('btnCancelSelect').onclick = () => { selectMode = false; selected.clear(); renderFolders(); };
-    $('btnMoveSelected').onclick = () => openMoveSheet([...selected]);
-    $('moveCancel').onclick = () => { $('moveModal').hidden = true; };
-    $('moveModal').addEventListener('click', (e) => { if (e.target === $('moveModal')) $('moveModal').hidden = true; });
-
-    // ---------- 도면 목록 ----------
-    function renderPosts(){
-        const list = $('postList'); list.innerHTML = '';
-        const filtered = posts
-            .filter(p => p.folderId === currentFolderId)
-            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));   // 최신순
-        $('cntPosts').textContent = filtered.length;
-
-        if (filtered.length === 0) {
-            const empty = el('div', 'empty-state', '과제가 없습니다.');
-            empty.style.gridColumn = 'span 2';
-            list.appendChild(empty);
-            return;
-        }
-
-        filtered.forEach((p) => {
-            const card = el('div', 'post-card');
-            card.addEventListener('click', () => openPost(p.id));
-
-            const img = el('img', 'post-thumb');
-            img.src = p.thumbUrl || p.imageUrl || '';
-            img.alt = p.title || '';
-
-            const meta = el('div', 'post-meta');
-            meta.appendChild(el('div', 'post-title', p.title || '(제목 없음)'));
-            meta.appendChild(el('div', 'post-author', `${p.author || '이름 없음'} • 댓글 ${p.comments.length}`));
-            meta.appendChild(el('div', 'post-time', p.createdAt ? formatDate(p.createdAt) : ''));
-            const cs = commentStatus(p);   // 교사용: 댓글 작성 현황
-            meta.appendChild(el('div', 'teacher-only post-status ' + (cs.done.length === cs.targets.length ? 'full' : cs.done.length === 0 ? 'zero' : 'part'), `💬 댓글 ${cs.done.length}/${cs.targets.length}`));
-
-            card.append(img, meta);
-            list.appendChild(card);
-        });
-    }
-
-    // ---------- 업로드 ----------
-    const FULL_SIDE = 2400;                 // 원본: 긴 변 최대 픽셀 (기존 1800)
-    const FULL_BYTES = 1.5 * 1024 * 1024;   // 원본 목표 용량 약 1.5MB (기존 700KB)
-    const THUMB_SIDE = 520;                 // 목록용 썸네일
-    const THUMB_BYTES = 50 * 1024;
-
-    // 긴 변 maxSide 이하로 줄이고, 목표 용량을 넘으면 화질 → 크기 순으로 조금씩 낮춤
-    function compressImage(img, maxSide, targetBytes, qualities){
-        let scale = Math.min(1, maxSide / Math.max(img.width, img.height));   // 작은 이미지는 키우지 않음
-        let url = '';
-        for (let attempt = 0; attempt < 4; attempt++) {
-            const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
-            const cvs = document.createElement('canvas'); cvs.width = w; cvs.height = h;
-            const ctx = cvs.getContext('2d');
-            ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);   // 투명 PNG가 검게 저장되는 것 방지
-            ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(img, 0, 0, w, h);
-            for (const q of qualities) {
-                url = cvs.toDataURL('image/jpeg', q);
-                if (url.length * 0.75 <= targetBytes) return url;
-            }
-            scale *= 0.85;
-        }
-        return url;
-    }
-
-    function submitUpload(){
-        const author = $('uploadAuthor').value.trim();
-        const title = $('uploadTitle').value.trim();
-        const file = $('uploadFile').files[0];
-        if (!author || !title || !file) return alert('모두 입력해주세요!');
-        if (!currentFolderId) return alert('폴더를 먼저 선택해주세요.');
-
-        const btn = $('btnSubmitUpload');
-        const resetBtn = () => { btn.disabled = false; btn.textContent = '업로드 완료'; };
-        btn.disabled = true; btn.textContent = '업로드 중...';
-
-        const r = new FileReader();
-        r.onerror = () => { alert('파일을 읽지 못했습니다.'); resetBtn(); };
-        r.onload = (e) => {
-            const img = new Image();
-            img.onerror = () => { alert('이미지 파일이 아닙니다.'); resetBtn(); };
-            img.onload = () => {
-                const imageUrl = compressImage(img, FULL_SIDE, FULL_BYTES, [0.95, 0.92, 0.88, 0.84]);
-                const thumbUrl = compressImage(img, THUMB_SIDE, THUMB_BYTES, [0.8, 0.7, 0.6]);
-                const key = push(ref(db, 'posts')).key;   // 키만 먼저 만듦 (아직 저장 안 됨)
-                const updates = {};
-                updates[`posts/${key}`] = { folderId: currentFolderId, author, title, thumbUrl, createdAt: Date.now() };
-                updates[`images/${key}`] = imageUrl;       // 원본은 별도 경로 → 목록 열 때 내려받지 않음
-                update(ref(db), updates)
-                .then(() => {
-                    $('uploadTitle').value = ''; $('uploadFile').value = '';   // 이름은 남겨 두어 연속 업로드 편하게
-                    resetBtn();
-                    showView('view-folder-detail');
-                })
-                .catch((error) => { alert("업로드 실패!\n원인: " + error.message); resetBtn(); });
+                    // 미리보기 출력
+                    preview.src = processedBase64Image;
+                    preview.hidden = false;
+                };
+                img.src = event.target.result;
             };
-            img.src = e.target.result;
-        };
-        r.readAsDataURL(file);
-    }
-
-    // ---------- 상세 / 댓글 ----------
-    function openPost(id){
-        currentPostId = id;
-        setSeg($('segPost'), 'comments');
-        if (renderPostDetail(id)) showView('view-post-detail');
-        else currentPostId = null;
-    }
-
-    // 내용만 그림 (화면 전환 없음) → DB가 바뀌어도 다른 화면으로 끌려가지 않음
-    function renderPostDetail(id){
-        const p = posts.find(x => x.id === id);
-        if (!p) return false;
-        const dimg = $('detailImage');
-        const shown = fullCache.get(id) || p.thumbUrl || p.imageUrl || '';
-        if (dimg.getAttribute('src') !== shown) dimg.src = shown;   // 실시간 갱신 때 깜빡이지 않게
-        dimg.onclick = () => { viewerPostId = id; openImageViewer(fullCache.get(id) || p.imageUrl || p.thumbUrl); };
-        if (p.thumbUrl && !fullCache.has(id)) { $('detailNote').textContent = '원본 화질 불러오는 중...'; loadFull(id); }
-        else $('detailNote').textContent = '';
-        $('detailTitle').textContent = p.title || '';
-        $('detailAuthorName').textContent = p.author || '';
-        $('detailCreatedAt').textContent = p.createdAt ? formatDate(p.createdAt) : '';
-
-        // 교사용: 누가 댓글을 썼는지 / 안 썼는지
-        const cs = commentStatus(p), sbox = $('commentStatus'); sbox.innerHTML = '';
-        sbox.appendChild(el('div', 'status-title', `댓글 작성 현황 ${cs.done.length}/${cs.targets.length}`));
-        cs.targets.forEach(n => sbox.appendChild(chip(n, cs.done.includes(n))));
-
-        $('cntComments').textContent = p.comments.length;
-        const cList = $('commentList'); cList.innerHTML = '';
-        if (p.comments.length === 0) cList.appendChild(el('div', 'empty-state', '피드백이 없습니다.'));
-        else p.comments.forEach((c) => {
-            const d = el('div', 'comment-item');
-            const head = el('div', 'comment-author', c.author || '');
-            head.appendChild(el('span', 'comment-date', c.date || ''));
-            d.append(head, el('div', 'comment-text', c.text || ''));
-            cList.appendChild(d);
+            reader.readAsDataURL(file);
         });
-        return true;
-    }
 
-    // 원본 이미지는 필요할 때만 받아옴 (images/<id>)
-    function loadFull(id){
-        if (fullCache.has(id) || fullLoading.has(id)) return;
-        fullLoading.add(id);
-        get(ref(db, `images/${id}`)).then((snap) => {
-            const v = snap.val();
-            if (typeof v !== 'string') throw new Error('원본 이미지가 없습니다');
-            fullCache.set(id, v);
-            if (currentPostId === id) { $('detailImage').src = v; $('detailNote').textContent = ''; }
-            if (viewerPostId === id && m.classList.contains('show')) mi.src = v;   // 확대 보기 중이면 원본으로 교체
-        }).catch((e) => {
-            console.error(e);
-            if (currentPostId === id) $('detailNote').textContent = '원본을 불러오지 못했습니다 (축소본 표시 중)';
-        }).finally(() => { fullLoading.delete(id); });
-    }
-
-    function addComment(){
-        const a = $('commentAuthor').value.trim();
-        const t = $('commentText').value.trim();
-        if (!a || !t || !currentPostId) return;
-        const now = new Date();
-        const ds = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${pad(now.getMinutes())}`;
-        push(ref(db, `posts/${currentPostId}/comments`), { author: a, text: t, date: ds })
-        .then(() => { $('commentText').value = ''; })
-        .catch(e => alert("댓글 달기 실패: " + e.message));
-    }
-
-    // ---------- 이미지 확대 보기 (핀치 줌 / 드래그 / 두 번 탭) ----------
-    const m = $('imgModal'); const mi = $('imgModalImg'); const inner = $('imgModalInner');
-    let scale = 1, tx = 0, ty = 0;
-    let rot = 0, wantLandscape = false;   // rot: 0 또는 90 (세로 화면에서 가로 도면을 눕혀 보여줄 때)
-    const toLocal = (dx, dy) => rot ? [dy, -dx] : [dx, dy];   // 화면 이동량 → 이미지 기준 이동량
-    const MIN_SCALE = 1, MAX_SCALE = 8;
-
-    function updateT(){
-        const W = mi.offsetWidth, H = mi.offsetHeight;
-        if (scale <= 1.001) { scale = 1; tx = 0; ty = 0; }
-        else {   // 이미지가 화면 밖으로 사라지지 않게 이동 범위 제한
-            tx = Math.min(0, Math.max(W - W * scale, tx));
-            ty = Math.min(0, Math.max(H - H * scale, ty));
-        }
-        mi.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
-    }
-    // 화면 좌표 (cx, cy)를 기준점으로 확대/축소
-    function zoomAt(newScale, cx, cy){
-        newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
-        const r = inner.getBoundingClientRect();
-        const [lx, ly] = toLocal(cx - (r.left + r.width / 2), cy - (r.top + r.height / 2));
-        const px = mi.offsetWidth / 2 + lx, py = mi.offsetHeight / 2 + ly, k = newScale / scale;
-        tx = px - (px - tx) * k; ty = py - (py - ty) * k;
-        scale = newScale; updateT();
-    }
-    // 폰에서만 동작: 가로로 긴 도면은 가로 화면에 꽉 차게
-    function isPhone(){ return matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600; }
-
-    async function tryLockLandscape(){   // 안드로이드 크롬: 전체화면 + 가로 고정 (iOS 사파리는 미지원 → 아래 CSS 회전으로 대체)
-        try {
-            if (m.requestFullscreen && !document.fullscreenElement) await m.requestFullscreen();
-            if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
-        } catch (e) { /* 미지원/거부 시 무시 */ }
-    }
-
-    function layoutViewer(force){
-        if (!m.classList.contains('show')) return;
-        const vw = window.innerWidth, vh = window.innerHeight;
-        // 세로 화면 + 가로로 긴 이미지 → 90도 눕혀서 폰을 돌리면 꽉 차게. 폰이 가로가 되면(자동 회전) 회전을 풀어줌
-        const newRot = (wantLandscape && mi.naturalWidth > mi.naturalHeight && vh > vw) ? 90 : 0;
-        const changed = force || newRot !== rot;
-        rot = newRot;
-        inner.style.maxWidth = inner.style.maxHeight = wantLandscape ? 'none' : '';
-        inner.style.transform = rot ? 'rotate(90deg)' : '';
-        if (wantLandscape) { mi.style.maxWidth = (rot ? vh : vw) + 'px'; mi.style.maxHeight = (rot ? vw : vh) + 'px'; }
-        else { mi.style.maxWidth = ''; mi.style.maxHeight = ''; }
-        $('imgModalHint').textContent = rot ? '📱 폰을 옆으로 돌려 보세요 · 핀치로 확대 · 두 번 탭' : '핀치로 확대 · 드래그로 이동 · 두 번 탭';
-        if (changed) { scale = 1; tx = 0; ty = 0; }
-        updateT();
-    }
-    mi.addEventListener('load', () => layoutViewer(true));
-    window.addEventListener('resize', () => layoutViewer(false));
-
-    function openImageViewer(s){
-        wantLandscape = isPhone();
-        if (wantLandscape) tryLockLandscape();   // 클릭 직후에 호출해야 전체화면 허용됨
-        mi.src = s; scale = 1; tx = 0; ty = 0; pts.clear();
-        m.classList.add('show');
-        layoutViewer(true);
-    }
-    function closeViewer(){
-        m.classList.remove('show');
-        viewerPostId = null;
-        wantLandscape = false;
-        try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
-        try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {}
-    }
-
-    $('imgModalClose').onclick = closeViewer;
-    m.addEventListener('click', (e) => { if (e.target === m) closeViewer(); });
-    ['gesturestart', 'gesturechange'].forEach(t => m.addEventListener(t, (e) => e.preventDefault()));   // iOS 사파리 기본 확대 방지
-
-    // 마우스 휠 (PC)
-    mi.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(scale * (e.deltaY < 0 ? 1.1 : 0.9), e.clientX, e.clientY); }, { passive: false });
-
-    // 터치/마우스 포인터: 한 손가락 = 이동, 두 손가락 = 핀치 줌, 두 번 탭 = 확대/원래대로
-    const pts = new Map();
-    let lastDist = 0, lastCx = 0, lastCy = 0, lastTap = 0;
-    function pinchInfo(){
-        const [a, b] = [...pts.values()];
-        return { d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
-    }
-    mi.addEventListener('pointerdown', (e) => {
-        mi.setPointerCapture(e.pointerId);
-        pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-        if (pts.size === 2) {
-            const i = pinchInfo(); lastDist = i.d; lastCx = i.cx; lastCy = i.cy; lastTap = 0;
-        } else if (pts.size === 1) {
-            const now = Date.now();
-            if (now - lastTap < 300) {
-                if (scale > 1) { scale = 1; updateT(); } else zoomAt(2.5, e.clientX, e.clientY);
-                lastTap = 0;
-            } else lastTap = now;
-        }
-    });
-    mi.addEventListener('pointermove', (e) => {
-        const p = pts.get(e.pointerId); if (!p) return;
-        if (pts.size === 1 && scale > 1) { const [ddx, ddy] = toLocal(e.clientX - p.x, e.clientY - p.y); tx += ddx; ty += ddy; updateT(); }
-        p.x = e.clientX; p.y = e.clientY;
-        if (pts.size === 2 && lastDist > 0) {
-            const i = pinchInfo();
-            { const [ddx, ddy] = toLocal(i.cx - lastCx, i.cy - lastCy); tx += ddx; ty += ddy; }               // 두 손가락 중심 이동 = 화면 이동
-            zoomAt(scale * i.d / lastDist, i.cx, i.cy);             // 손가락 간격 변화 = 확대/축소
-            lastDist = i.d; lastCx = i.cx; lastCy = i.cy;
-        }
-    });
-    const endPointer = (e) => { pts.delete(e.pointerId); };
-    mi.addEventListener('pointerup', endPointer);
-    mi.addEventListener('pointercancel', endPointer);
-    mi.addEventListener('dragstart', (e) => e.preventDefault());
-</script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!processedBase64Image) {
+                alert('이미지를 선택해 주세요.');
+                return;
+            }
+            alert('고화질 도면 이미지가 정상적으로 등록되었습니다.');
+        });
+    </script>
 </body>
 </html>

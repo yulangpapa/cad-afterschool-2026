@@ -256,24 +256,22 @@
         }
 
 
-        /* 홈: 최신 게시글 / 최근 댓글 */
-        .recent-section{margin-bottom:18px}
-        .section-title{display:flex;align-items:center;gap:6px;font-size:1.02rem;font-weight:800;letter-spacing:-.03em;margin:4px 2px 10px}
-        .recent-list{display:grid;gap:8px}
-        .recent-item{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 3px 12px rgba(23,45,32,.04);cursor:pointer;transition:transform .12s}
+        /* 홈: 최신 게시글 / 최근 댓글 (좌우 2단, 작은 글씨) */
+        .recent-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:10px;align-items:start;margin-bottom:14px}
+        .recent-section{min-width:0}
+        .section-title{font-size:.84rem;font-weight:800;letter-spacing:-.03em;margin:0 2px 6px}
+        .recent-list{display:grid;gap:5px}
+        .recent-item{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(23,45,32,.04);cursor:pointer;transition:transform .12s}
         .recent-item:active{transform:scale(.985)}
-        .recent-thumb{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#e5e7eb;flex:none}
-        .recent-icon{width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
+        .recent-thumb{width:36px;height:36px;border-radius:8px;object-fit:cover;background:#e5e7eb;flex:none}
         .recent-body{min-width:0;flex:1}
-        .recent-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-        .recent-name{min-width:0;font-weight:800;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .recent-name small{font-weight:600;font-size:.78rem;color:var(--text-muted);margin-left:4px}
-        .recent-time{flex:none;font-size:.78rem;color:#667085;font-weight:600}
-        .recent-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px}
-        .recent-meta .recent-folder{margin-top:0;min-width:0;flex:1}
-        .recent-text{font-size:.88rem;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .recent-folder{font-size:.76rem;color:var(--primary-dark);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .recent-empty{background:#fff;border:1px dashed var(--border);border-radius:16px;padding:16px;text-align:center;color:var(--text-muted);font-size:.85rem}
+        .recent-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
+        .recent-name{min-width:0;font-weight:800;font-size:.8rem;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .recent-name small{font-weight:600;font-size:.66rem;color:var(--text-muted);margin-left:3px}
+        .recent-time{flex:none;font-size:.66rem;color:#667085;font-weight:600}
+        .recent-text{font-size:.74rem;line-height:1.3;color:var(--text-main);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all}
+        .recent-folder{font-size:.66rem;line-height:1.3;color:var(--primary-dark);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .recent-empty{background:#fff;border:1px dashed var(--border);border-radius:12px;padding:10px;text-align:center;color:var(--text-muted);font-size:.74rem}
     </style>
 </head>
 <body>
@@ -301,15 +299,16 @@
                 </div>
             </section>
             <div id="recentBox" hidden>
-                <section class="recent-section">
-                    <div class="section-title">🆕 최신 게시글</div>
-                    <div id="recentPosts" class="recent-list"></div>
-                </section>
-                <section class="recent-section">
-                    <div class="section-title">💬 최근 댓글</div>
-                    <div id="recentComments" class="recent-list"></div>
-                </section>
-                <div class="section-title">📁 과제 폴더</div>
+                <div class="recent-grid">
+                    <section class="recent-section">
+                        <div class="section-title">🆕 최신 게시글</div>
+                        <div id="recentPosts" class="recent-list"></div>
+                    </section>
+                    <section class="recent-section">
+                        <div class="section-title">💬 최근 댓글</div>
+                        <div id="recentComments" class="recent-list"></div>
+                    </section>
+                </div>
             </div>
             <div id="crumbs" class="crumbs" hidden></div>
             <div class="teacher-actions create-wrap">
@@ -739,31 +738,30 @@
         recentSig = sig;
 
         const pBox = $('recentPosts'); pBox.innerHTML = '';
-        if (!topPosts.length) pBox.appendChild(el('div', 'recent-empty', '아직 올라온 게시글이 없습니다.'));
+        if (!topPosts.length) pBox.appendChild(el('div', 'recent-empty', '게시글이 없습니다.'));
         topPosts.forEach((p) => {
             const item = el('div', 'recent-item');
             const img = el('img', 'recent-thumb'); img.alt = '';
             const src = p.thumbUrl || p.imageUrl; if (src) img.src = src;
-            const body = el('div', 'recent-body'), meta = el('div', 'recent-meta');
-            meta.append(el('div', 'recent-folder', '📁 ' + fname(p.folderId)), el('div', 'recent-time', p.createdAt ? '🕒 ' + formatDate(p.createdAt) : ''));
-            body.append(el('div', 'recent-name', p.author || '이름 없음'), meta);
+            const body = el('div', 'recent-body'), top = el('div', 'recent-top');
+            top.append(el('div', 'recent-name', p.author || '이름 없음'), el('div', 'recent-time', p.createdAt ? formatDate(p.createdAt) : ''));
+            body.append(top, el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
             item.append(img, body);
             item.addEventListener('click', () => openPostFrom(p));
             pBox.appendChild(item);
         });
 
         const cBox = $('recentComments'); cBox.innerHTML = '';
-        if (!topComments.length) cBox.appendChild(el('div', 'recent-empty', '아직 달린 댓글이 없습니다.'));
+        if (!topComments.length) cBox.appendChild(el('div', 'recent-empty', '댓글이 없습니다.'));
         topComments.forEach(({ c, p, t }) => {
             const item = el('div', 'recent-item');
-            const body = el('div', 'recent-body');
+            const body = el('div', 'recent-body'), top = el('div', 'recent-top');
             const name = el('div', 'recent-name', c.author || '이름 없음');
-            name.appendChild(el('small', '', `→ ${p.author || ''} 도면`));
+            name.appendChild(el('small', '', `→ ${p.author || ''}`));
             const when = c.date || (t ? formatDate(t) : '');   // 저장된 날짜가 없으면 댓글 ID에 담긴 시각 사용
-            const meta = el('div', 'recent-meta');
-            meta.append(el('div', 'recent-folder', '📁 ' + fname(p.folderId)), el('div', 'recent-time', when ? '🕒 ' + when : ''));
-            body.append(name, el('div', 'recent-text', c.text || ''), meta);
-            item.append(el('span', 'recent-icon', '💬'), body);
+            top.append(name, el('div', 'recent-time', when));
+            body.append(top, el('div', 'recent-text', c.text || ''), el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
+            item.appendChild(body);
             item.addEventListener('click', () => openPostFrom(p));
             cBox.appendChild(item);
         });

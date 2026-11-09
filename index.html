@@ -263,7 +263,12 @@
         .recent-list{display:grid;gap:5px}
         .recent-item{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(23,45,32,.04);cursor:pointer;transition:transform .12s}
         .recent-item:active{transform:scale(.985)}
-        #recentPosts .recent-time{line-height:1.3}
+        #recentPosts .recent-item{padding:6px}
+        .recent-group{display:block;cursor:default}
+        .recent-group:active{transform:none}
+        .recent-group .recent-name{margin-bottom:2px}
+        .recent-sub{padding:4px 0 2px;border-top:1px solid var(--border);cursor:pointer}
+        .recent-target{min-width:0;font-size:.66rem;color:var(--text-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         #recentPosts .recent-folder{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all}
         .recent-body{min-width:0;flex:1}
         .recent-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
@@ -725,15 +730,22 @@
             }
             return out;
         };
-        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 5);
+        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 4);
         const all = [];
         live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
         all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));
-        const topComments = onePerAuthor(all, x => x.c.author, 5);
+        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 4명 × 2개)
+        const gmap = new Map();
+        for (const x of all) {
+            const k = norm(x.c.author) || ('?' + groups.length);
+            let g = gmap.get(k);
+            if (!g) { if (groups.length >= 4) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
+            if (g.items.length < 2) g.items.push(x);
+        }
 
         const sig = JSON.stringify([
             topPosts.map(p => [p.id, p.author, fname(p.folderId)]),
-            topComments.map(x => [x.c.id, x.c.author, x.c.text, x.p.author, fname(x.p.folderId)])
+            groups.map(g => [g.author, g.items.map(x => [x.c.id, x.c.text, x.p.author, fname(x.p.folderId)])])
         ]);
         if (sig === recentSig) return;             // 바뀐 게 없으면 다시 그리지 않음 (이미지 깜빡임 방지)
         recentSig = sig;
@@ -742,25 +754,27 @@
         if (!topPosts.length) pBox.appendChild(el('div', 'recent-empty', '게시글이 없습니다.'));
         topPosts.forEach((p) => {
             const item = el('div', 'recent-item');
-            const body = el('div', 'recent-body');
-            body.append(el('div', 'recent-name', p.author || '이름 없음'), el('div', 'recent-time', p.createdAt ? formatDate(p.createdAt) : ''), el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
+            const body = el('div', 'recent-body'), top = el('div', 'recent-top');
+            top.append(el('div', 'recent-name', p.author || '이름 없음'), el('div', 'recent-time', p.createdAt ? formatDate(p.createdAt) : ''));
+            body.append(top, el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
             item.appendChild(body);
             item.addEventListener('click', () => openPostFrom(p));
             pBox.appendChild(item);
         });
 
         const cBox = $('recentComments'); cBox.innerHTML = '';
-        if (!topComments.length) cBox.appendChild(el('div', 'recent-empty', '댓글이 없습니다.'));
-        topComments.forEach(({ c, p, t }) => {
-            const item = el('div', 'recent-item');
-            const body = el('div', 'recent-body'), top = el('div', 'recent-top');
-            const name = el('div', 'recent-name', c.author || '이름 없음');
-            name.appendChild(el('small', '', `→ ${p.author || ''}`));
-            const when = c.date || (t ? formatDate(t) : '');   // 저장된 날짜가 없으면 댓글 ID에 담긴 시각 사용
-            top.append(name, el('div', 'recent-time', when));
-            body.append(top, el('div', 'recent-text', c.text || ''), el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
-            item.appendChild(body);
-            item.addEventListener('click', () => openPostFrom(p));
+        if (!groups.length) cBox.appendChild(el('div', 'recent-empty', '댓글이 없습니다.'));
+        groups.forEach((g) => {
+            const item = el('div', 'recent-item'); item.classList.add('recent-group');
+            item.appendChild(el('div', 'recent-name', g.author || '이름 없음'));
+            g.items.forEach(({ c, p, t }) => {
+                const row = el('div', 'recent-sub'), top = el('div', 'recent-top');
+                const when = c.date || (t ? formatDate(t) : '');   // 저장된 날짜가 없으면 댓글 ID에 담긴 시각 사용
+                top.append(el('div', 'recent-target', `→ ${p.author || ''}`), el('div', 'recent-time', when));
+                row.append(top, el('div', 'recent-text', c.text || ''), el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
+                row.addEventListener('click', () => openPostFrom(p));
+                item.appendChild(row);
+            });
             cBox.appendChild(item);
         });
     }

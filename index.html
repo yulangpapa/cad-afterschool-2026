@@ -255,6 +255,25 @@
             *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; }
         }
 
+
+        /* 홈: 최신 게시글 / 최근 댓글 */
+        .recent-section{margin-bottom:18px}
+        .section-title{display:flex;align-items:center;gap:6px;font-size:1.02rem;font-weight:800;letter-spacing:-.03em;margin:4px 2px 10px}
+        .recent-list{display:grid;gap:8px}
+        .recent-item{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 3px 12px rgba(23,45,32,.04);cursor:pointer;transition:transform .12s}
+        .recent-item:active{transform:scale(.985)}
+        .recent-thumb{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#e5e7eb;flex:none}
+        .recent-icon{width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
+        .recent-body{min-width:0;flex:1}
+        .recent-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+        .recent-name{min-width:0;font-weight:800;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .recent-name small{font-weight:600;font-size:.78rem;color:var(--text-muted);margin-left:4px}
+        .recent-time{flex:none;font-size:.78rem;color:#667085;font-weight:600}
+        .recent-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px}
+        .recent-meta .recent-folder{margin-top:0;min-width:0;flex:1}
+        .recent-text{font-size:.88rem;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+        .recent-folder{font-size:.76rem;color:var(--primary-dark);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .recent-empty{background:#fff;border:1px dashed var(--border);border-radius:16px;padding:16px;text-align:center;color:var(--text-muted);font-size:.85rem}
     </style>
 </head>
 <body>
@@ -281,6 +300,17 @@
                     <span class="mission-text">모든 게시글에 피드백 <em>2개씩</em> 달기</span>
                 </div>
             </section>
+            <div id="recentBox" hidden>
+                <section class="recent-section">
+                    <div class="section-title">🆕 최신 게시글</div>
+                    <div id="recentPosts" class="recent-list"></div>
+                </section>
+                <section class="recent-section">
+                    <div class="section-title">💬 최근 댓글</div>
+                    <div id="recentComments" class="recent-list"></div>
+                </section>
+                <div class="section-title">📁 과제 폴더</div>
+            </div>
             <div id="crumbs" class="crumbs" hidden></div>
             <div class="teacher-actions create-wrap">
                 <button class="btn btn-primary" id="btnCreateFolder">+ 새 폴더 만들기</button>
@@ -316,7 +346,7 @@
                     <label class="file-dropzone" for="uploadFile">
                         <span class="file-drop-icon">＋</span>
                         <strong>이미지 선택하기</strong>
-                        <small>JPG, PNG 등 이미지 파일</small>
+                        <small>JPG, PNG 등 이미지 파일 · 원본에 가까운 화질로 저장</small>
                     </label>
                     <input type="file" id="uploadFile" accept="image/*" class="visually-hidden">
                     <div id="uploadPreview" class="upload-preview" hidden>
@@ -657,10 +687,93 @@
         $('btnMoveSelected').disabled = selected.size === 0;
     }
 
+    // ---------- 홈: 최신 게시글 3개 / 최근 댓글 3개 ----------
+    const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+    // Firebase push ID 앞 8글자에 생성 시각(ms)이 들어 있음 → 댓글에 시간값이 없어도 최신순 정렬 가능
+    function pushIdTime(id){
+        if (typeof id !== 'string' || id.length !== 20) return 0;
+        let t = 0;
+        for (let i = 0; i < 8; i++) { const k = PUSH_CHARS.indexOf(id.charAt(i)); if (k < 0) return 0; t = t * 64 + k; }
+        return t;
+    }
+    // 홈 목록에서 바로 해당 게시글 열기 (뒤로 가면 그 게시글이 있는 폴더로)
+    function openPostFrom(p){
+        const f = folders.find(x => x.id === p.folderId); if (!f) return;
+        currentFolderId = f.id;
+        setSeg($('segFolder'), 'posts');
+        $('currentFolderName').textContent = f.name;
+        $('detailCrumb').textContent = folderPath(f.id).slice(0, -1).join(' › ');
+        renderPosts(); renderFolderSummary();
+        openPost(p.id);
+    }
+    let recentSig = '';
+    function renderRecent(){
+        const box = $('recentBox');
+        box.hidden = !!currentParentId;            // 최상위 홈에서만 보임
+        if (currentParentId) return;
+        const fname = (id) => { const f = folders.find(x => x.id === id); return f && f.name ? f.name : ''; };
+        const live = posts.filter(p => fname(p.folderId));   // 폴더가 사라진 게시글은 제외
+
+        // 작성자별로 가장 최근 1개씩만 (한 학생이 연달아 올려도 목록이 한 사람으로 채워지지 않게)
+        const onePerAuthor = (arr, getAuthor, limit) => {
+            const seen = new Set(), out = [];
+            for (const x of arr) {
+                const k = norm(getAuthor(x)) || ('?' + out.length);
+                if (seen.has(k)) continue;
+                seen.add(k); out.push(x);
+                if (out.length >= limit) break;
+            }
+            return out;
+        };
+        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 3);
+        const all = [];
+        live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
+        all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));
+        const topComments = onePerAuthor(all, x => x.c.author, 5);
+
+        const sig = JSON.stringify([
+            topPosts.map(p => [p.id, p.author, fname(p.folderId)]),
+            topComments.map(x => [x.c.id, x.c.author, x.c.text, x.p.author, fname(x.p.folderId)])
+        ]);
+        if (sig === recentSig) return;             // 바뀐 게 없으면 다시 그리지 않음 (이미지 깜빡임 방지)
+        recentSig = sig;
+
+        const pBox = $('recentPosts'); pBox.innerHTML = '';
+        if (!topPosts.length) pBox.appendChild(el('div', 'recent-empty', '아직 올라온 게시글이 없습니다.'));
+        topPosts.forEach((p) => {
+            const item = el('div', 'recent-item');
+            const img = el('img', 'recent-thumb'); img.alt = '';
+            const src = p.thumbUrl || p.imageUrl; if (src) img.src = src;
+            const body = el('div', 'recent-body'), meta = el('div', 'recent-meta');
+            meta.append(el('div', 'recent-folder', '📁 ' + fname(p.folderId)), el('div', 'recent-time', p.createdAt ? '🕒 ' + formatDate(p.createdAt) : ''));
+            body.append(el('div', 'recent-name', p.author || '이름 없음'), meta);
+            item.append(img, body);
+            item.addEventListener('click', () => openPostFrom(p));
+            pBox.appendChild(item);
+        });
+
+        const cBox = $('recentComments'); cBox.innerHTML = '';
+        if (!topComments.length) cBox.appendChild(el('div', 'recent-empty', '아직 달린 댓글이 없습니다.'));
+        topComments.forEach(({ c, p, t }) => {
+            const item = el('div', 'recent-item');
+            const body = el('div', 'recent-body');
+            const name = el('div', 'recent-name', c.author || '이름 없음');
+            name.appendChild(el('small', '', `→ ${p.author || ''} 도면`));
+            const when = c.date || (t ? formatDate(t) : '');   // 저장된 날짜가 없으면 댓글 ID에 담긴 시각 사용
+            const meta = el('div', 'recent-meta');
+            meta.append(el('div', 'recent-folder', '📁 ' + fname(p.folderId)), el('div', 'recent-time', when ? '🕒 ' + when : ''));
+            body.append(name, el('div', 'recent-text', c.text || ''), meta);
+            item.append(el('span', 'recent-icon', '💬'), body);
+            item.addEventListener('click', () => openPostFrom(p));
+            cBox.appendChild(item);
+        });
+    }
+
     function renderFolders(){
         if (currentParentId && !folders.some(f => f.id === currentParentId)) currentParentId = null;   // 보던 폴더가 사라졌으면 홈으로
         const list = $('folderList'); list.innerHTML = '';
         renderCrumbs();
+        renderRecent();
         const kids = childrenOf(currentParentId);
 
         // 이 폴더 자체에도 도면이 있으면 맨 위에 바로가기
@@ -826,7 +939,6 @@
 
             const meta = el('div', 'post-meta');
             meta.appendChild(el('div', 'post-title', p.author || '이름 없음'));
-            meta.appendChild(el('div', 'post-author', `댓글 ${p.comments.length}`));
             meta.appendChild(el('div', 'post-time', p.createdAt ? formatDate(p.createdAt) : ''));
             const cs = commentStatus(p);   // 교사용: 댓글 작성 현황
             meta.appendChild(el('div', 'teacher-only post-status ' + (cs.done.length === cs.targets.length ? 'full' : cs.done.length === 0 ? 'zero' : 'part'), `💬 댓글 ${cs.done.length}/${cs.targets.length}`));

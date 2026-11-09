@@ -264,6 +264,8 @@
         .recent-item{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px rgba(23,45,32,.04);cursor:pointer;transition:transform .12s}
         .recent-item:active{transform:scale(.985)}
         #recentPosts .recent-item{padding:6px}
+        #recentComments{grid-template-columns:repeat(2,minmax(0,1fr))}
+        #recentComments .recent-empty{grid-column:1/-1}
         .recent-group{display:block;cursor:default}
         .recent-group:active{transform:none}
         .recent-group .recent-name{margin-bottom:2px}

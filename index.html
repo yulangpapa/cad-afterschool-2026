@@ -724,7 +724,7 @@
             }
             return out;
         };
-        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 3);
+        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 5);
         const all = [];
         live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
         all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));

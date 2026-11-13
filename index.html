@@ -277,6 +277,9 @@
         .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
         .stat-head{font-size:.76rem;font-weight:800;margin:0 2px 2px}
         .stat-note{font-size:.64rem;color:var(--text-muted);margin:6px 2px 14px}
+        .stat-hint{font-size:.62rem;font-weight:600;color:var(--text-muted);letter-spacing:-.02em}
+        .hint-mouse{display:none}
+        @media (hover:hover){.hint-mouse{display:inline}.hint-touch{display:none}}
         #statPosts tr{cursor:help}
         #statPosts tr:hover td{background:var(--primary-soft)}
         #statTip{position:fixed;z-index:200;max-width:240px;background:rgba(20,32,26,.96);color:#fff;border-radius:10px;padding:8px 10px;font-size:.74rem;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
@@ -334,6 +337,7 @@
             .stat-grid{gap:14px}
             .stat-box{padding:10px 14px;border-radius:14px}
             .stat-head{font-size:.95rem;margin-bottom:4px}
+            .stat-hint{font-size:.74rem}
             .stat-table{font-size:.95rem}
             .stat-table td{padding:8px 4px}
             .stat-note{font-size:.8rem;margin:10px 2px 24px}
@@ -383,7 +387,7 @@
                     <section class="recent-section">
                         <div class="section-title">📊 학생별 현황</div>
                         <div class="stat-grid">
-                            <div class="stat-box"><div class="stat-head">📝 게시글</div><table class="stat-table" id="statPosts"></table></div>
+                            <div class="stat-box"><div class="stat-head">📝 게시글 <small class="stat-hint">(<span class="hint-touch">탭하면</span><span class="hint-mouse">마우스를 올리면</span> 안 올린 과제 표시)</small></div><table class="stat-table" id="statPosts"></table></div>
                             <div class="stat-box"><div class="stat-head">💬 댓글</div><table class="stat-table" id="statComments"></table></div>
                         </div>
                     </section>

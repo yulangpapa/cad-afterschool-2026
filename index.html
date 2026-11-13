@@ -276,8 +276,8 @@
         .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
         .stat-head{font-size:.76rem;font-weight:800;margin:0 2px 2px}
         .stat-note{font-size:.64rem;color:var(--text-muted);margin:6px 2px 14px}
-        .stat-table tr{cursor:help}
-        .stat-table tr:hover td{background:var(--primary-soft)}
+        #statPosts tr{cursor:help}
+        #statPosts tr:hover td{background:var(--primary-soft)}
         #statTip{position:fixed;z-index:200;max-width:240px;background:rgba(20,32,26,.96);color:#fff;border-radius:10px;padding:8px 10px;font-size:.74rem;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
         #statTip b{display:block;margin-bottom:3px;font-size:.78rem}
         #statTip .tip-ok{color:#86efac}
@@ -751,7 +751,7 @@
         let top = r.bottom + 6; if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
         statTip.style.left = left + 'px'; statTip.style.top = top + 'px';
     }
-    document.addEventListener('click', (e) => { if (!(e.target.closest && e.target.closest('.stat-table tr'))) hideStatTip(); });
+    document.addEventListener('click', (e) => { if (!(e.target.closest && e.target.closest('#statPosts tr'))) hideStatTip(); });
     window.addEventListener('scroll', hideStatTip, true);
 
     // 학생별 현황: 게시글/댓글 수 + 퍼센트
@@ -760,7 +760,6 @@
     function renderStats(){
         hideStatTip();
         const fids = new Set(folders.filter(f => f && f.name).map(f => f.id));
-        const fname = new Map(folders.filter(f => f && f.name).map(f => [f.id, f.name]));
         const live = posts.filter(p => fids.has(p.folderId));
         const leaves = folders.filter(f => f && f.name && childrenOf(f.id).length === 0).sort(sortKo);
         const rows = STUDENTS.map((n, i) => {
@@ -772,14 +771,11 @@
                 n, i,
                 post: [doneLeaves, leaves.length],
                 cmt: [others.length - todo.length, others.length],
-                miss: {   // 마우스 올렸을 때 보여줄 '안 한 것'
-                    post: leaves.filter(f => !mine.some(p => p.folderId === f.id)).map(f => f.name),
-                    cmt: todo.sort((x, y) => (y.createdAt || 0) - (x.createdAt || 0)).map(p => `${p.author || '?'} · ${fname.get(p.folderId) || ''}`)
-                }
+                missPosts: leaves.filter(f => !mine.some(p => p.folderId === f.id)).map(f => f.name)   // 마우스 올렸을 때 보여줄 '안 올린 과제'
             };
         });
         // 비율 높은 순 → 같으면 개수 많은 순 → 같으면 명단 순서
-        const fill = (tableId, key, label) => {
+        const fill = (tableId, key) => {
             const table = $(tableId); table.innerHTML = '';
             const ratio = (r) => r[key][1] ? r[key][0] / r[key][1] : 0;
             rows.slice().sort((x, y) => (ratio(y) - ratio(x)) || (y[key][0] - x[key][0]) || (x.i - y.i)).forEach((r) => {
@@ -791,14 +787,16 @@
                     td.appendChild(el('span', 'pct ' + (pct >= 100 ? 'ok' : pct === 0 ? 'no' : 'part'), `(${pct}%)`));
                 }
                 tr.appendChild(td);
-                const show = () => showStatTip(tr, `${r.n} · ${label}`, r.miss[key]);
-                tr.addEventListener('mouseenter', show);
-                tr.addEventListener('click', show);
-                tr.addEventListener('mouseleave', hideStatTip);
+                if (key === 'post') {   // 말풍선은 게시글 표에만
+                    const show = () => showStatTip(tr, `${r.n} · 안 올린 과제`, r.missPosts);
+                    tr.addEventListener('mouseenter', show);
+                    tr.addEventListener('click', show);
+                    tr.addEventListener('mouseleave', hideStatTip);
+                }
                 table.appendChild(tr);
             });
         };
-        fill('statPosts', 'post', '안 올린 과제'); fill('statComments', 'cmt', '댓글 안 단 글');
+        fill('statPosts', 'post'); fill('statComments', 'cmt');
     }
     let recentSig = '';
     function renderRecent(){

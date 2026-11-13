@@ -872,16 +872,16 @@
             }
             return out;
         };
-        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 4);
+        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 5);
         const all = [];
         live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
         all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));
-        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 3명 × 2개)
+        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 4명 × 2개)
         const gmap = new Map();
         for (const x of all) {
             const k = norm(x.c.author) || ('?' + groups.length);
             let g = gmap.get(k);
-            if (!g) { if (groups.length >= 3) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
+            if (!g) { if (groups.length >= 4) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
             if (g.items.length < 2) g.items.push(x);
         }
 

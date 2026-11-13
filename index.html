@@ -266,6 +266,14 @@
         #recentPosts .recent-item{padding:6px}
         #recentComments{grid-template-columns:repeat(2,minmax(0,1fr))}
         #recentComments .recent-empty{grid-column:1/-1}
+        .stat-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:6px 8px;margin-bottom:14px}
+        .stat-table{width:100%;border-collapse:collapse;font-size:.76rem}
+        .stat-table th{color:var(--text-muted);font-weight:700;font-size:.68rem;text-align:right;padding:3px 4px}
+        .stat-table td{padding:5px 4px;text-align:right;border-top:1px solid var(--border);white-space:nowrap}
+        .stat-table th:first-child,.stat-table td:first-child{text-align:left;font-weight:800}
+        .stat-table .pct{margin-left:5px;font-weight:700;color:var(--text-muted)}
+        .stat-table .pct.ok{color:#166534}.stat-table .pct.part{color:#b45309}.stat-table .pct.no{color:#991b1b}
+        .stat-note{font-size:.64rem;color:var(--text-muted);margin-top:4px}
         .recent-group{display:block;cursor:default}
         .recent-group:active{transform:none}
         .recent-group .recent-name{margin-bottom:2px}
@@ -316,6 +324,11 @@
                         <div class="section-title">💬 최근 댓글</div>
                         <div id="recentComments" class="recent-list"></div>
                     </section>
+                </div>
+                <div class="section-title">📊 학생별 현황</div>
+                <div class="stat-box">
+                    <table class="stat-table" id="statTable"></table>
+                    <div class="stat-note">게시글: 올린 과제 폴더 / 전체 과제 폴더 · 댓글: 댓글 단 다른 학생 글 / 다른 학생 글 전체 · ( )는 비율</div>
                 </div>
             </div>
             <div id="crumbs" class="crumbs" hidden></div>
@@ -713,11 +726,43 @@
         renderPosts(); renderFolderSummary();
         openPost(p.id);
     }
+    // 학생별 현황: 게시글/댓글 수 + 퍼센트
+    //  게시글 % = (글을 올린 과제 폴더 수) / (전체 과제 폴더 수)   ※ 과제 폴더 = 하위 폴더가 없는 폴더
+    //  댓글 %   = (댓글을 단 다른 학생 글 수) / (다른 학생 글 전체 수)
+    function renderStats(){
+        const table = $('statTable'); table.innerHTML = '';
+        const fids = new Set(folders.filter(f => f && f.name).map(f => f.id));
+        const live = posts.filter(p => fids.has(p.folderId));
+        const leaves = folders.filter(f => f && f.name && childrenOf(f.id).length === 0);
+        const head = el('tr');
+        ['학생', '게시글', '댓글'].forEach(t => head.appendChild(el('th', '', t)));
+        table.appendChild(head);
+        const cell = (num, den) => {          // "5/8 (63%)" 형태
+            const td = el('td', '', den ? `${num}/${den}` : '-');
+            if (den) {
+                const pct = Math.round(num / den * 100);
+                td.appendChild(el('span', 'pct ' + (pct >= 100 ? 'ok' : pct === 0 ? 'no' : 'part'), `(${pct}%)`));
+            }
+            return td;
+        };
+        STUDENTS.forEach((n) => {
+            const mine = live.filter(p => norm(p.author) === n);
+            const doneLeaves = leaves.filter(f => mine.some(p => p.folderId === f.id)).length;
+            const others = live.filter(p => norm(p.author) !== n);
+            const written = others.filter(p => commenterSet(p).has(n)).length;
+            const tr = el('tr');
+            tr.appendChild(el('td', '', n));
+            tr.appendChild(cell(doneLeaves, leaves.length));
+            tr.appendChild(cell(written, others.length));
+            table.appendChild(tr);
+        });
+    }
     let recentSig = '';
     function renderRecent(){
         const box = $('recentBox');
         box.hidden = !!currentParentId;            // 최상위 홈에서만 보임
         if (currentParentId) return;
+        renderStats();
         const fname = (id) => { const f = folders.find(x => x.id === id); return f && f.name ? f.name : ''; };
         const live = posts.filter(p => fname(p.folderId));   // 폴더가 사라진 게시글은 제외
 
@@ -732,16 +777,16 @@
             }
             return out;
         };
-        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 5);
+        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 4);
         const all = [];
         live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
         all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));
-        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 4명 × 2개)
+        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 3명 × 2개)
         const gmap = new Map();
         for (const x of all) {
             const k = norm(x.c.author) || ('?' + groups.length);
             let g = gmap.get(k);
-            if (!g) { if (groups.length >= 4) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
+            if (!g) { if (groups.length >= 3) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
             if (g.items.length < 2) g.items.push(x);
         }
 

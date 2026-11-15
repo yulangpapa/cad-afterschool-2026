@@ -915,7 +915,7 @@
     }
     // ---------- 홈 캘린더 ----------
     const DAY = 86400000;
-    let calFirst = null, calThisIdx = 0, calTopRow = null, calSig = '';
+    let calFirst = null, calThisIdx = 0, calTopRow = null, calTopWeek = null, calSig = '';   // calTopWeek: 사용자가 옮겨 둔 주(날짜). null이면 항상 오늘이 있는 주가 맨 위
     const dkey = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
     function commentTime(c){                       // 댓글 작성 시각: 댓글 ID에 담긴 시각 → 없으면 'M/D H:mm' 문자열 해석
         const t = pushIdTime(c.id); if (t) return t;
@@ -926,25 +926,31 @@
     }
     function updateCalTitle(){
         if (!calFirst || calTopRow == null) return;
-        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + (calTopRow + 1) * 7 + 3);
+        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + calTopRow * 7 + 3);
         $('calTitle').textContent = `📅 ${d.getFullYear()}년 ${d.getMonth() + 1}월`;
     }
-    function ensureCalScroll(){                    // 다시 그려져도 보던 주차 위치 유지 (처음엔 지난주+이번주)
+    function ensureCalScroll(){                    // 다시 그려져도 위치 유지. 기본은 오늘이 있는 주가 맨 위
         const sc = $('calScroll'), row = sc.firstElementChild, h = row ? row.offsetHeight : 0;
-        if (!h) return;
-        if (calTopRow == null) calTopRow = Math.max(0, calThisIdx - 1);
-        const want = calTopRow * h;
+        if (!h || !calFirst) return;
+        let idx = calTopWeek == null ? calThisIdx : Math.round((calTopWeek - calFirst.getTime()) / (7 * DAY));
+        idx = Math.min(Math.max(idx, 0), Math.max(0, sc.children.length - 2));
+        calTopRow = idx;
+        const want = idx * h;
         if (Math.abs(sc.scrollTop - want) > 1) sc.scrollTop = want;
         updateCalTitle();
     }
     $('calScroll').addEventListener('scroll', () => {
         const sc = $('calScroll'), row = sc.firstElementChild, h = row ? row.offsetHeight : 0;
-        if (!h) return;
-        calTopRow = Math.round(sc.scrollTop / h); updateCalTitle();
+        if (!h || !calFirst) return;
+        const idx = Math.round(sc.scrollTop / h);
+        calTopRow = idx;
+        // 위치를 '행 번호'가 아니라 '날짜'로 기억: 데이터가 늦게 들어와 시작 주가 바뀌어도 기준이 흔들리지 않음
+        calTopWeek = idx === calThisIdx ? null : new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + idx * 7).getTime();
+        updateCalTitle();
     }, { passive: true });
     $('calToday').addEventListener('click', () => {
         const sc = $('calScroll'), row = sc.firstElementChild; if (!row) return;
-        sc.scrollTo({ top: Math.max(0, calThisIdx - 1) * row.offsetHeight, behavior: 'smooth' });
+        sc.scrollTo({ top: Math.max(0, calThisIdx) * row.offsetHeight, behavior: 'smooth' });
     });
     window.addEventListener('resize', () => { if (!$('recentBox').hidden) renderCalendar(); });
 
@@ -1037,7 +1043,7 @@
         if (sig === calSig) { ensureCalScroll(); return; }
         calSig = sig;
 
-        const keep = calTopRow, selKey = calSel || dkey(today);
+        const selKey = calSel || dkey(today);
         calCells = new Map(); sc.innerHTML = ''; let maxChips = 0;
         for (let w = 0; w < weeks; w++) {
             const row = el('div', 'cal-week');
@@ -1079,7 +1085,7 @@
             sc.appendChild(row);
         }
         sc.parentElement.style.setProperty('--cal-lines', String(Math.max(2, maxChips)));   // 게시자가 많은 주는 행 높이를 키움
-        calTopRow = keep; ensureCalScroll(); renderCalDetail();
+        ensureCalScroll(); renderCalDetail();
     }
 
     function renderRecent(){

@@ -312,30 +312,28 @@
         .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
         .cal-head .section-title{margin:0}
         .cal-today{border:1px solid var(--border);background:#fff;color:var(--primary-dark);font-weight:800;font-size:.74rem;border-radius:999px;padding:4px 10px;cursor:pointer}
-        .cal-wrap{--cal-row:82px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+        .cal-wrap{--cal-min:82px;--cal-base:26px;--chip-h:18px;--cal-lines:2;--cal-row:max(var(--cal-min),calc(var(--cal-base) + var(--cal-lines)*var(--chip-h)));background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
         .cal-dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#f6faf7;border-bottom:1px solid var(--border)}
         .cal-dow span{text-align:center;font-size:.68rem;font-weight:800;color:var(--text-muted);padding:4px 0}
         .cal-dow .sun,.cal-day.sun .cal-num{color:#b91c1c}
         .cal-dow .sat,.cal-day.sat .cal-num{color:#1d4ed8}
-        .cal-scroll{height:calc(var(--cal-row)*2);overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+        .cal-scroll{height:var(--cal-row);overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
         .cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:var(--cal-row);scroll-snap-align:start;border-bottom:1px solid var(--border)}
         .cal-day{min-width:0;overflow:hidden;padding:3px 2px;border-right:1px solid #eef1ee;display:flex;flex-direction:column;gap:2px;cursor:pointer}
         .cal-day:last-child{border-right:0}
-        .cal-day.today{background:#bbf7d0;box-shadow:inset 0 0 0 2px #16a34a}
         .cal-num{font-size:.68rem;font-weight:700;line-height:1.2;padding-left:2px}
-        .cal-day.today .cal-num{color:#14532d;font-weight:900}
+        .cal-day.today .cal-num{background:#86efac;color:#14532d;font-weight:900;border-radius:6px;padding:1px 4px}
         .cal-chip{font-size:.62rem;line-height:1.25;font-weight:700;border-radius:4px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .cal-chip.post{background:#dcfce7;color:#166534;border-left:3px solid #16a34a}
-        .cal-day.today .cal-chip.post{background:#fff}
+        .cal-chip.post{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6}
         .cal-chip.cmt{background:#fef3c7;color:#92400e}
         .cal-chip.more{color:var(--text-muted)}
         .cal-chip .d-only{display:none}
         .cal-legend{font-size:.64rem;color:var(--text-muted);margin:5px 2px 0}
-        .cal-legend .lg-p{color:#16a34a}.cal-legend .lg-c{color:#f59e0b}
+        .cal-legend .lg-p{color:#3b82f6}.cal-legend .lg-c{color:#f59e0b}
         .cal-day.sel{box-shadow:inset 0 0 0 2px #14532d}
         .cal-dots{display:flex;justify-content:center;gap:5px;margin-top:6px}
         .cal-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid #cbd5d1;opacity:.5}
-        .cal-dot.post.on{background:#16a34a;border-color:#16a34a;opacity:1}
+        .cal-dot.post.on{background:#3b82f6;border-color:#3b82f6;opacity:1}
         .cal-dot.cmt.on{background:#f59e0b;border-color:#f59e0b;opacity:1}
         .cal-detail{margin-top:8px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 12px;max-height:280px;overflow-y:auto}
         .cd-title{font-size:.84rem;font-weight:800;margin-bottom:4px}
@@ -346,6 +344,7 @@
         .cd-sub{color:var(--text-muted);font-size:.68rem;font-weight:600}
         .cd-text{margin-top:2px;white-space:pre-wrap;word-break:break-word}
         .cd-empty{color:var(--text-muted);font-size:.78rem;padding:6px 2px}
+        .cd-per{color:var(--text-muted);font-size:.72rem;font-weight:600;margin-bottom:4px}
 
         /* ===== 데스크탑(화면 너비 1024px 이상) 전용: 크고 시원하게 — 폰 레이아웃은 그대로 ===== */
         @media (min-width:1024px){
@@ -389,12 +388,13 @@
             /* 상세 / 업로드 화면은 너무 퍼지지 않게 가운데 */
             #view-post-detail,#view-upload{max-width:860px;margin:0 auto}
             .home-grid{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:24px}
-            .cal-wrap{--cal-row:136px}
+            .cal-wrap{--cal-min:120px;--cal-base:40px;--chip-h:26px}
             .cal-head .section-title{font-size:1.2rem}
             .cal-today{font-size:.85rem;padding:5px 14px}
             .cal-dow span{font-size:.85rem;padding:8px 0}
             .cal-day{padding:6px 5px;gap:3px}
             .cal-num{font-size:.85rem}
+            .cal-day.today .cal-num{padding:2px 6px}
             .cal-chip{font-size:.8rem;padding:2px 6px}
             .cal-chip .d-only{display:inline}
             .cal-legend{font-size:.8rem}
@@ -406,6 +406,7 @@
             .cd-item{font-size:.92rem;padding:8px 10px}
             .cd-sub{font-size:.8rem}
             .cd-empty{font-size:.9rem}
+            .cd-per{font-size:.85rem}
         }
     </style>
 </head>
@@ -436,12 +437,12 @@
             <div id="recentBox" hidden>
                 <div class="home-grid">
                     <section class="cal-section">
-                        <div class="cal-head"><div class="section-title" id="calTitle">📅 일정</div><button type="button" class="cal-today" id="calToday">오늘</button></div>
+                        <div class="cal-head"><div class="section-title" id="calTitle">📅 달력</div><button type="button" class="cal-today" id="calToday">오늘</button></div>
                         <div class="cal-wrap">
                             <div class="cal-dow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div>
                             <div class="cal-scroll" id="calScroll"></div>
                         </div>
-                        <div class="cal-legend">최근 3일은 이름·댓글 수, 이전 날짜는 점 (<span class="lg-p">●</span>게시글 <span class="lg-c">●</span>댓글, 흐린 점은 없음) · 날짜를 누르면 아래에 자세히</div>
+                        <div class="cal-legend">최근 3일은 이름·댓글 수, 이전 날짜는 점 (<span class="lg-p">●</span>게시글 <span class="lg-c">●</span>댓글, 흐린 점은 없음) · 날짜를 누르면 아래에 그날 현황</div>
                         <div class="cal-detail" id="calDetail"></div>
                     </section>
                     <section class="recent-section">
@@ -925,13 +926,13 @@
     }
     function updateCalTitle(){
         if (!calFirst || calTopRow == null) return;
-        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + (calTopRow + 1) * 7 + 3);
+        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + calTopRow * 7 + 3);
         $('calTitle').textContent = `📅 ${d.getFullYear()}년 ${d.getMonth() + 1}월`;
     }
     function ensureCalScroll(){                    // 다시 그려져도 보던 주차 위치 유지 (처음엔 지난주+이번주)
         const sc = $('calScroll'), row = sc.firstElementChild, h = row ? row.offsetHeight : 0;
         if (!h) return;
-        if (calTopRow == null) calTopRow = Math.max(0, calThisIdx - 1);
+        if (calTopRow == null) calTopRow = Math.max(0, calThisIdx);
         const want = calTopRow * h;
         if (Math.abs(sc.scrollTop - want) > 1) sc.scrollTop = want;
         updateCalTitle();
@@ -943,9 +944,34 @@
     }, { passive: true });
     $('calToday').addEventListener('click', () => {
         const sc = $('calScroll'), row = sc.firstElementChild; if (!row) return;
-        sc.scrollTo({ top: Math.max(0, calThisIdx - 1) * row.offsetHeight, behavior: 'smooth' });
+        sc.scrollTo({ top: Math.max(0, calThisIdx) * row.offsetHeight, behavior: 'smooth' });
     });
     window.addEventListener('resize', () => { if (!$('recentBox').hidden) renderCalendar(); });
+
+    // 상세 패널을 끝까지 스크롤하면 화면을 살짝 아래로 내려서, 아래 영역(학생별 현황)으로 자연스럽게 이어지게 함
+    (function(){
+        const box = $('calDetail');
+        let last = 0, nudged = false;
+        const scrollParent = () => {
+            for (let n = box.parentElement; n && n !== document.body; n = n.parentElement) {
+                const oy = getComputedStyle(n).overflowY;
+                if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 1) return n;
+            }
+            return document.scrollingElement || document.documentElement;
+        };
+        box.addEventListener('scroll', () => {
+            const scrollable = box.scrollHeight > box.clientHeight + 4;
+            const atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 2;
+            const down = box.scrollTop > last; last = box.scrollTop;
+            if (scrollable && atEnd && down) {
+                if (!nudged) {
+                    nudged = true;
+                    const dy = Math.min(200, Math.max(100, Math.round(window.innerHeight * 0.18)));
+                    scrollParent().scrollBy({ top: dy, behavior: 'smooth' });
+                }
+            } else if (!atEnd) nudged = false;      // 위로 올리면 다시 동작
+        }, { passive: true });
+    })();
 
     // 날짜를 누르면 아래 패널에 그날의 게시글·댓글을 자세히 표시
     let calSel = null, calData = null, calCells = new Map();
@@ -955,7 +981,7 @@
         const [y, m, dd] = key.split('-').map(Number);
         const e = calData.byDay.get(key);
         box.innerHTML = '';
-        box.appendChild(el('div', 'cd-title', `📅 ${m}/${dd} (${'일월화수목금토'[new Date(y, m - 1, dd).getDay()]}) 일정`));
+        box.appendChild(el('div', 'cd-title', `📋 ${m}/${dd} (${'일월화수목금토'[new Date(y, m - 1, dd).getDay()]}) 게시글·댓글 현황`));
         if (!e || (!e.posts.length && !e.cmts.length)) { box.appendChild(el('div', 'cd-empty', '이 날은 올라온 게시글과 댓글이 없어요.')); return; }
         const hm = (t) => new Date(t).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
         const row = (head, time, text, p) => {
@@ -972,6 +998,8 @@
         }
         if (e.cmts.length) {
             box.appendChild(el('div', 'cd-group', `댓글 ${e.cmts.length}개`));
+            const per = new Map(); e.cmts.forEach(({ c }) => { const k = c.author || '?'; per.set(k, (per.get(k) || 0) + 1); });
+            box.appendChild(el('div', 'cd-per', '사람별 ' + [...per].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}개`).join(' · ')));
             e.cmts.slice().sort((a, b) => a.t - b.t).forEach(({ c, p, t }) => box.appendChild(row(`💬 ${c.author || '?'} → ${p.author || '?'}`, hm(t), c.text || '', p)));
         }
     }
@@ -999,10 +1027,9 @@
         if (first > wk(today, -1)) first = wk(today, -1);          // 최소 지난주부터
         const thisIdx = Math.round((thisWeek - first) / (7 * DAY));
         const weeks = thisIdx + 1 + 4;                              // 4주 뒤까지
-        const maxLines = window.matchMedia('(min-width:1024px)').matches ? 4 : 3;
         const DETAIL_DAYS = 3;                                      // 오늘 포함 최근 3일 전까지는 구체적으로, 그 이전은 점으로
 
-        const sig = JSON.stringify([maxLines, dkey(today), first.getTime(), weeks, [...byDay].map(([k, v]) => [k,
+        const sig = JSON.stringify([dkey(today), first.getTime(), weeks, [...byDay].map(([k, v]) => [k,
             v.posts.map(p => [p.id, p.author, fname.get(p.folderId)]),
             v.cmts.map(x => [x.c.id, x.c.author, x.c.text, x.p.author, fname.get(x.p.folderId)])])]);
         calData = { byDay, fname };
@@ -1011,7 +1038,7 @@
         calSig = sig;
 
         const keep = calTopRow, selKey = calSel || dkey(today);
-        calCells = new Map(); sc.innerHTML = '';
+        calCells = new Map(); sc.innerHTML = ''; let maxChips = 0;
         for (let w = 0; w < weeks; w++) {
             const row = el('div', 'cal-week');
             for (let i = 0; i < 7; i++) {
@@ -1027,9 +1054,14 @@
                     dots.appendChild(el('span', 'cal-dot cmt' + (e && e.cmts.length ? ' on' : '')));
                     cell.appendChild(dots);
                 } else if (e) {                                     // 최근: 누가 올렸는지 / 댓글 몇 개
-                    const lines = [];
-                    e.posts.sort((a, b) => a.createdAt - b.createdAt).forEach((p) => {
-                        const chip = el('div', 'cal-chip post', p.author || '?');
+                    const lines = [], who = new Map();
+                    e.posts.slice().sort((a, b) => a.createdAt - b.createdAt).forEach((p) => {
+                        const k = norm(p.author) || '?';
+                        if (!who.has(k)) who.set(k, { name: p.author || '?', n: 0 });
+                        who.get(k).n++;
+                    });
+                    who.forEach((v) => {
+                        const chip = el('div', 'cal-chip post', v.n > 1 ? `${v.name} ×${v.n}` : v.name);
                         chip.appendChild(el('span', 'd-only', ' 올림'));
                         lines.push(chip);
                     });
@@ -1038,15 +1070,15 @@
                         chip.appendChild(el('span', 'd-only', '개'));
                         lines.push(chip);
                     }
-                    const over = lines.length > maxLines;
-                    (over ? lines.slice(0, maxLines - 1) : lines).forEach(x => cell.appendChild(x));
-                    if (over) cell.appendChild(el('div', 'cal-chip more', `+${lines.length - (maxLines - 1)}`));
+                    lines.forEach(x => cell.appendChild(x));
+                    maxChips = Math.max(maxChips, lines.length);
                 }
                 cell.addEventListener('click', () => selectCalDay(key));
                 row.appendChild(cell);
             }
             sc.appendChild(row);
         }
+        sc.parentElement.style.setProperty('--cal-lines', String(Math.max(2, maxChips)));   // 게시자가 많은 주는 행 높이를 키움
         calTopRow = keep; ensureCalScroll(); renderCalDetail();
     }
 

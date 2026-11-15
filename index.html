@@ -306,6 +306,47 @@
         .recent-folder{font-size:.66rem;line-height:1.3;color:var(--primary-dark);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .recent-empty{background:#fff;border:1px dashed var(--border);border-radius:12px;padding:10px;text-align:center;color:var(--text-muted);font-size:.74rem}
 
+        /* ===== 홈 캘린더: 2주치가 보이고 위아래 스와이프로 다른 주차 ===== */
+        .home-grid{display:grid;gap:14px;align-items:start}
+        .cal-section,.recent-section{min-width:0}
+        .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+        .cal-head .section-title{margin:0}
+        .cal-today{border:1px solid var(--border);background:#fff;color:var(--primary-dark);font-weight:800;font-size:.74rem;border-radius:999px;padding:4px 10px;cursor:pointer}
+        .cal-wrap{--cal-row:82px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+        .cal-dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#f6faf7;border-bottom:1px solid var(--border)}
+        .cal-dow span{text-align:center;font-size:.68rem;font-weight:800;color:var(--text-muted);padding:4px 0}
+        .cal-dow .sun,.cal-day.sun .cal-num{color:#b91c1c}
+        .cal-dow .sat,.cal-day.sat .cal-num{color:#1d4ed8}
+        .cal-scroll{height:calc(var(--cal-row)*2);overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+        .cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:var(--cal-row);scroll-snap-align:start;border-bottom:1px solid var(--border)}
+        .cal-day{min-width:0;overflow:hidden;padding:3px 2px;border-right:1px solid #eef1ee;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+        .cal-day:last-child{border-right:0}
+        .cal-day.today{background:#bbf7d0;box-shadow:inset 0 0 0 2px #16a34a}
+        .cal-num{font-size:.68rem;font-weight:700;line-height:1.2;padding-left:2px}
+        .cal-day.today .cal-num{color:#14532d;font-weight:900}
+        .cal-chip{font-size:.62rem;line-height:1.25;font-weight:700;border-radius:4px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .cal-chip.post{background:#dcfce7;color:#166534;border-left:3px solid #16a34a}
+        .cal-day.today .cal-chip.post{background:#fff}
+        .cal-chip.cmt{background:#fef3c7;color:#92400e}
+        .cal-chip.more{color:var(--text-muted)}
+        .cal-chip .d-only{display:none}
+        .cal-legend{font-size:.64rem;color:var(--text-muted);margin:5px 2px 0}
+        .cal-legend .lg-p{color:#16a34a}.cal-legend .lg-c{color:#f59e0b}
+        .cal-day.sel{box-shadow:inset 0 0 0 2px #14532d}
+        .cal-dots{display:flex;justify-content:center;gap:5px;margin-top:6px}
+        .cal-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid #cbd5d1;opacity:.5}
+        .cal-dot.post.on{background:#16a34a;border-color:#16a34a;opacity:1}
+        .cal-dot.cmt.on{background:#f59e0b;border-color:#f59e0b;opacity:1}
+        .cal-detail{margin-top:8px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 12px;max-height:280px;overflow-y:auto}
+        .cd-title{font-size:.84rem;font-weight:800;margin-bottom:4px}
+        .cd-group{font-size:.7rem;font-weight:800;color:var(--text-muted);margin:8px 0 3px}
+        .cd-item{padding:6px 8px;border-radius:10px;background:#f6faf7;margin-bottom:4px;font-size:.78rem;line-height:1.4;cursor:pointer}
+        .cd-item:active{background:#dcfce7}
+        .cd-head{display:flex;justify-content:space-between;gap:8px;font-weight:800}
+        .cd-sub{color:var(--text-muted);font-size:.68rem;font-weight:600}
+        .cd-text{margin-top:2px;white-space:pre-wrap;word-break:break-word}
+        .cd-empty{color:var(--text-muted);font-size:.78rem;padding:6px 2px}
+
         /* ===== 데스크탑(화면 너비 1024px 이상) 전용: 크고 시원하게 — 폰 레이아웃은 그대로 ===== */
         @media (min-width:1024px){
             #app{max-width:1180px}
@@ -347,6 +388,24 @@
             .post-thumb{height:180px}
             /* 상세 / 업로드 화면은 너무 퍼지지 않게 가운데 */
             #view-post-detail,#view-upload{max-width:860px;margin:0 auto}
+            .home-grid{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:24px}
+            .cal-wrap{--cal-row:136px}
+            .cal-head .section-title{font-size:1.2rem}
+            .cal-today{font-size:.85rem;padding:5px 14px}
+            .cal-dow span{font-size:.85rem;padding:8px 0}
+            .cal-day{padding:6px 5px;gap:3px}
+            .cal-num{font-size:.85rem}
+            .cal-chip{font-size:.8rem;padding:2px 6px}
+            .cal-chip .d-only{display:inline}
+            .cal-legend{font-size:.8rem}
+            .cal-dots{gap:8px;margin-top:20px}
+            .cal-dot{width:13px;height:13px}
+            .cal-detail{padding:14px 16px;max-height:380px}
+            .cd-title{font-size:1rem}
+            .cd-group{font-size:.8rem}
+            .cd-item{font-size:.92rem;padding:8px 10px}
+            .cd-sub{font-size:.8rem}
+            .cd-empty{font-size:.9rem}
         }
     </style>
 </head>
@@ -375,14 +434,15 @@
                 </div>
             </section>
             <div id="recentBox" hidden>
-                <div class="recent-grid">
-                    <section class="recent-section">
-                        <div class="section-title">🆕 최신 게시글</div>
-                        <div id="recentPosts" class="recent-list"></div>
-                    </section>
-                    <section class="recent-section">
-                        <div class="section-title">💬 최근 댓글</div>
-                        <div id="recentComments" class="recent-list"></div>
+                <div class="home-grid">
+                    <section class="cal-section">
+                        <div class="cal-head"><div class="section-title" id="calTitle">📅 일정</div><button type="button" class="cal-today" id="calToday">오늘</button></div>
+                        <div class="cal-wrap">
+                            <div class="cal-dow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div>
+                            <div class="cal-scroll" id="calScroll"></div>
+                        </div>
+                        <div class="cal-legend">최근 3일은 이름·댓글 수, 이전 날짜는 점 (<span class="lg-p">●</span>게시글 <span class="lg-c">●</span>댓글, 흐린 점은 없음) · 날짜를 누르면 아래에 자세히</div>
+                        <div class="cal-detail" id="calDetail"></div>
                     </section>
                     <section class="recent-section">
                         <div class="section-title">📊 학생별 현황</div>
@@ -390,9 +450,9 @@
                             <div class="stat-box"><div class="stat-head">📝 게시글 <small class="stat-hint">(<span class="hint-touch">탭하면</span><span class="hint-mouse">마우스를 올리면</span> 안 올린 과제 표시)</small></div><table class="stat-table" id="statPosts"></table></div>
                             <div class="stat-box"><div class="stat-head">💬 댓글</div><table class="stat-table" id="statComments"></table></div>
                         </div>
+                        <div class="stat-note">게시글: 올린 과제 폴더 / 전체 과제 폴더 · 댓글: 댓글 단 다른 학생 글 / 다른 학생 글 전체 · ( )는 비율 · 높은 순</div>
                     </section>
                 </div>
-                <div class="stat-note">게시글: 올린 과제 폴더 / 전체 과제 폴더 · 댓글: 댓글 단 다른 학생 글 / 다른 학생 글 전체 · ( )는 비율 · 높은 순</div>
             </div>
             <div id="crumbs" class="crumbs" hidden></div>
             <div class="teacher-actions create-wrap">
@@ -852,73 +912,150 @@
         };
         fill('statPosts', 'post'); fill('statComments', 'cmt');
     }
-    let recentSig = '';
+    // ---------- 홈 캘린더 ----------
+    const DAY = 86400000;
+    let calFirst = null, calThisIdx = 0, calTopRow = null, calSig = '';
+    const dkey = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    function commentTime(c){                       // 댓글 작성 시각: 댓글 ID에 담긴 시각 → 없으면 'M/D H:mm' 문자열 해석
+        const t = pushIdTime(c.id); if (t) return t;
+        const m = /(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/.exec(c.date || ''); if (!m) return 0;
+        const now = new Date(); let d = new Date(now.getFullYear(), m[1] - 1, +m[2], +m[3], +m[4]);
+        if (d > now) d = new Date(now.getFullYear() - 1, m[1] - 1, +m[2], +m[3], +m[4]);
+        return d.getTime();
+    }
+    function updateCalTitle(){
+        if (!calFirst || calTopRow == null) return;
+        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + (calTopRow + 1) * 7 + 3);
+        $('calTitle').textContent = `📅 ${d.getFullYear()}년 ${d.getMonth() + 1}월`;
+    }
+    function ensureCalScroll(){                    // 다시 그려져도 보던 주차 위치 유지 (처음엔 지난주+이번주)
+        const sc = $('calScroll'), row = sc.firstElementChild, h = row ? row.offsetHeight : 0;
+        if (!h) return;
+        if (calTopRow == null) calTopRow = Math.max(0, calThisIdx - 1);
+        const want = calTopRow * h;
+        if (Math.abs(sc.scrollTop - want) > 1) sc.scrollTop = want;
+        updateCalTitle();
+    }
+    $('calScroll').addEventListener('scroll', () => {
+        const sc = $('calScroll'), row = sc.firstElementChild, h = row ? row.offsetHeight : 0;
+        if (!h) return;
+        calTopRow = Math.round(sc.scrollTop / h); updateCalTitle();
+    }, { passive: true });
+    $('calToday').addEventListener('click', () => {
+        const sc = $('calScroll'), row = sc.firstElementChild; if (!row) return;
+        sc.scrollTo({ top: Math.max(0, calThisIdx - 1) * row.offsetHeight, behavior: 'smooth' });
+    });
+    window.addEventListener('resize', () => { if (!$('recentBox').hidden) renderCalendar(); });
+
+    // 날짜를 누르면 아래 패널에 그날의 게시글·댓글을 자세히 표시
+    let calSel = null, calData = null, calCells = new Map();
+    function renderCalDetail(){
+        const box = $('calDetail'); if (!box || !calData) return;
+        const key = calSel || dkey(new Date());
+        const [y, m, dd] = key.split('-').map(Number);
+        const e = calData.byDay.get(key);
+        box.innerHTML = '';
+        box.appendChild(el('div', 'cd-title', `📅 ${m}/${dd} (${'일월화수목금토'[new Date(y, m - 1, dd).getDay()]}) 일정`));
+        if (!e || (!e.posts.length && !e.cmts.length)) { box.appendChild(el('div', 'cd-empty', '이 날은 올라온 게시글과 댓글이 없어요.')); return; }
+        const hm = (t) => new Date(t).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
+        const row = (head, time, text, p) => {
+            const it = el('div', 'cd-item'), h = el('div', 'cd-head');
+            h.append(el('span', '', head), el('span', 'cd-sub', time)); it.appendChild(h);
+            if (text) it.appendChild(el('div', 'cd-text', text));
+            it.appendChild(el('div', 'cd-sub', '📁 ' + (calData.fname.get(p.folderId) || '')));
+            it.addEventListener('click', () => openPostFrom(p));
+            return it;
+        };
+        if (e.posts.length) {
+            box.appendChild(el('div', 'cd-group', `게시글 ${e.posts.length}개`));
+            e.posts.slice().sort((a, b) => a.createdAt - b.createdAt).forEach(p => box.appendChild(row(`📝 ${p.author || '?'}`, hm(p.createdAt), '', p)));
+        }
+        if (e.cmts.length) {
+            box.appendChild(el('div', 'cd-group', `댓글 ${e.cmts.length}개`));
+            e.cmts.slice().sort((a, b) => a.t - b.t).forEach(({ c, p, t }) => box.appendChild(row(`💬 ${c.author || '?'} → ${p.author || '?'}`, hm(t), c.text || '', p)));
+        }
+    }
+    function selectCalDay(key){
+        calSel = key;
+        calCells.forEach((c, k) => c.classList.toggle('sel', k === key));
+        renderCalDetail();
+    }
+
+    function renderCalendar(){
+        const sc = $('calScroll');
+        const fname = new Map(folders.filter(f => f && f.name).map(f => [f.id, f.name]));
+        const live = posts.filter(p => fname.has(p.folderId));
+        const byDay = new Map(); let minT = Infinity;
+        const slot = (t) => { minT = Math.min(minT, t); const k = dkey(new Date(t)); if (!byDay.has(k)) byDay.set(k, { posts: [], cmts: [] }); return byDay.get(k); };
+        live.forEach(p => {
+            if (p.createdAt) slot(p.createdAt).posts.push(p);
+            p.comments.forEach(c => { const t = commentTime(c); if (t) slot(t).cmts.push({ c, p, t }); });
+        });
+        const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const wk = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + n * 7);
+        const thisWeek = wk(today, 0);
+        let first = isFinite(minT) ? wk(new Date(minT), 0) : thisWeek;
+        if (first < wk(today, -26)) first = wk(today, -26);        // 최대 26주 전까지
+        if (first > wk(today, -1)) first = wk(today, -1);          // 최소 지난주부터
+        const thisIdx = Math.round((thisWeek - first) / (7 * DAY));
+        const weeks = thisIdx + 1 + 4;                              // 4주 뒤까지
+        const maxLines = window.matchMedia('(min-width:1024px)').matches ? 4 : 3;
+        const DETAIL_DAYS = 3;                                      // 오늘 포함 최근 3일 전까지는 구체적으로, 그 이전은 점으로
+
+        const sig = JSON.stringify([maxLines, dkey(today), first.getTime(), weeks, [...byDay].map(([k, v]) => [k,
+            v.posts.map(p => [p.id, p.author, fname.get(p.folderId)]),
+            v.cmts.map(x => [x.c.id, x.c.author, x.c.text, x.p.author, fname.get(x.p.folderId)])])]);
+        calData = { byDay, fname };
+        calFirst = first; calThisIdx = thisIdx;
+        if (sig === calSig) { ensureCalScroll(); return; }
+        calSig = sig;
+
+        const keep = calTopRow, selKey = calSel || dkey(today);
+        calCells = new Map(); sc.innerHTML = '';
+        for (let w = 0; w < weeks; w++) {
+            const row = el('div', 'cal-week');
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7 + i);
+                const key = dkey(d), e = byDay.get(key);
+                const diff = Math.round((today - d) / DAY);          // 오늘 0, 어제 1, ...
+                const cell = el('div', 'cal-day' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + (diff === 0 ? ' today' : '') + (key === selKey ? ' sel' : ''));
+                calCells.set(key, cell);
+                cell.appendChild(el('div', 'cal-num', (d.getDate() === 1 || (w === 0 && i === 0)) ? `${d.getMonth() + 1}/${d.getDate()}` : String(d.getDate())));
+                if (diff > DETAIL_DAYS) {                           // 오래된 날짜: 게시글/댓글 있음·없음을 점으로
+                    const dots = el('div', 'cal-dots');
+                    dots.appendChild(el('span', 'cal-dot post' + (e && e.posts.length ? ' on' : '')));
+                    dots.appendChild(el('span', 'cal-dot cmt' + (e && e.cmts.length ? ' on' : '')));
+                    cell.appendChild(dots);
+                } else if (e) {                                     // 최근: 누가 올렸는지 / 댓글 몇 개
+                    const lines = [];
+                    e.posts.sort((a, b) => a.createdAt - b.createdAt).forEach((p) => {
+                        const chip = el('div', 'cal-chip post', p.author || '?');
+                        chip.appendChild(el('span', 'd-only', ' 올림'));
+                        lines.push(chip);
+                    });
+                    if (e.cmts.length) {
+                        const chip = el('div', 'cal-chip cmt', `💬 ${e.cmts.length}`);
+                        chip.appendChild(el('span', 'd-only', '개'));
+                        lines.push(chip);
+                    }
+                    const over = lines.length > maxLines;
+                    (over ? lines.slice(0, maxLines - 1) : lines).forEach(x => cell.appendChild(x));
+                    if (over) cell.appendChild(el('div', 'cal-chip more', `+${lines.length - (maxLines - 1)}`));
+                }
+                cell.addEventListener('click', () => selectCalDay(key));
+                row.appendChild(cell);
+            }
+            sc.appendChild(row);
+        }
+        calTopRow = keep; ensureCalScroll(); renderCalDetail();
+    }
+
     function renderRecent(){
         const box = $('recentBox');
         box.hidden = !!currentParentId;            // 최상위 홈에서만 보임
         if (currentParentId) return;
         renderStats();
-        const fname = (id) => { const f = folders.find(x => x.id === id); return f && f.name ? f.name : ''; };
-        const live = posts.filter(p => fname(p.folderId));   // 폴더가 사라진 게시글은 제외
-
-        // 작성자별로 가장 최근 1개씩만 (한 학생이 연달아 올려도 목록이 한 사람으로 채워지지 않게)
-        const onePerAuthor = (arr, getAuthor, limit) => {
-            const seen = new Set(), out = [];
-            for (const x of arr) {
-                const k = norm(getAuthor(x)) || ('?' + out.length);
-                if (seen.has(k)) continue;
-                seen.add(k); out.push(x);
-                if (out.length >= limit) break;
-            }
-            return out;
-        };
-        const topPosts = onePerAuthor(live.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), p => p.author, 5);
-        const all = [];
-        live.forEach(p => p.comments.forEach(c => all.push({ c, p, t: pushIdTime(c.id) })));
-        all.sort((a, b) => (b.t - a.t) || (a.c.id < b.c.id ? 1 : -1));
-        const groups = [];                                   // 최신 댓글 순으로 작성자별 묶음 (최대 4명 × 2개)
-        const gmap = new Map();
-        for (const x of all) {
-            const k = norm(x.c.author) || ('?' + groups.length);
-            let g = gmap.get(k);
-            if (!g) { if (groups.length >= 4) continue; g = { author: x.c.author, items: [] }; gmap.set(k, g); groups.push(g); }
-            if (g.items.length < 2) g.items.push(x);
-        }
-
-        const sig = JSON.stringify([
-            topPosts.map(p => [p.id, p.author, fname(p.folderId)]),
-            groups.map(g => [g.author, g.items.map(x => [x.c.id, x.c.text, x.p.author, fname(x.p.folderId)])])
-        ]);
-        if (sig === recentSig) return;             // 바뀐 게 없으면 다시 그리지 않음 (이미지 깜빡임 방지)
-        recentSig = sig;
-
-        const pBox = $('recentPosts'); pBox.innerHTML = '';
-        if (!topPosts.length) pBox.appendChild(el('div', 'recent-empty', '게시글이 없습니다.'));
-        topPosts.forEach((p) => {
-            const item = el('div', 'recent-item');
-            const body = el('div', 'recent-body'), top = el('div', 'recent-top');
-            top.append(el('div', 'recent-name', p.author || '이름 없음'), el('div', 'recent-time', p.createdAt ? formatDate(p.createdAt) : ''));
-            body.append(top, el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
-            item.appendChild(body);
-            item.addEventListener('click', () => openPostFrom(p));
-            pBox.appendChild(item);
-        });
-
-        const cBox = $('recentComments'); cBox.innerHTML = '';
-        if (!groups.length) cBox.appendChild(el('div', 'recent-empty', '댓글이 없습니다.'));
-        groups.forEach((g) => {
-            const item = el('div', 'recent-item'); item.classList.add('recent-group');
-            item.appendChild(el('div', 'recent-name', g.author || '이름 없음'));
-            g.items.forEach(({ c, p, t }) => {
-                const row = el('div', 'recent-sub'), top = el('div', 'recent-top');
-                const when = c.date || (t ? formatDate(t) : '');   // 저장된 날짜가 없으면 댓글 ID에 담긴 시각 사용
-                top.append(el('div', 'recent-target', `→ ${p.author || ''}`), el('div', 'recent-time', when));
-                row.append(top, el('div', 'recent-text', c.text || ''), el('div', 'recent-folder', '📁 ' + fname(p.folderId)));
-                row.addEventListener('click', () => openPostFrom(p));
-                item.appendChild(row);
-            });
-            cBox.appendChild(item);
-        });
+        renderCalendar();
     }
 
     function renderFolders(){

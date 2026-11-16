@@ -325,7 +325,10 @@
         .cal-num{font-size:.68rem;font-weight:700;line-height:1.2;padding-left:2px}
         .cal-day.today .cal-num{color:#14532d;font-weight:900}
         .cal-chip{font-size:.62rem;line-height:1.25;font-weight:700;border-radius:4px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .cal-chip.post{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6}
+        .cal-chip.post{display:flex;justify-content:space-between;align-items:baseline;gap:3px;padding:1px 2px;background:#dbeafe;color:#1e40af;border-left:2px solid #3b82f6}
+        .cal-chip .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+        .cal-chip .ct{flex:none}
+        .cal-chip.pcnt{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6}
         .cal-chip.cmt{background:#fef3c7;color:#92400e}
         .cal-chip.more{color:var(--text-muted)}
         .cal-chip .d-only{display:none}
@@ -421,6 +424,7 @@
             .cal-num{font-size:.85rem}
             .cal-chip{font-size:.8rem;padding:2px 6px}
             .cal-chip .d-only{display:inline}
+            .cal-chip.post{padding:2px 6px;border-left-width:3px}
             .cal-legend{font-size:.8rem}
             .cal-arrow{width:34px;height:34px;font-size:1.3rem}
             .cal-range{font-size:.85rem}
@@ -470,7 +474,7 @@
                             <div class="cal-scroll" id="calScroll"></div>
                         </div>
                         <div class="cal-swipe-hint"><span>◀</span> 좌우로 밀면 지난주 · 다음주를 볼 수 있어요 <span>▶</span></div>
-                        <div class="cal-legend">최근 3일은 이름·댓글 수, 이전 날짜는 점 (<span class="lg-p">●</span>게시글 <span class="lg-c">●</span>댓글, 흐린 점은 없음) · 날짜를 누르면 아래에 그날 현황</div>
+                        <div class="cal-legend">최근 3일은 올린 학생 이름 · 이전 날짜는 <span class="lg-p">📝</span>게시글 수 · <span class="lg-c">💬</span>댓글 수 · 날짜를 누르면 아래에 그날 현황</div>
                         <div class="cal-detail" id="calDetail"></div>
                     </section>
                     <section class="recent-section">
@@ -1079,11 +1083,11 @@
                 const cell = el('div', 'cal-day' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + (diff === 0 ? ' today' : '') + (key === selKey ? ' sel' : ''));
                 calCells.set(key, cell);
                 cell.appendChild(el('div', 'cal-num', (d.getDate() === 1 || (w === 0 && i === 0)) ? `${d.getMonth() + 1}/${d.getDate()}` : String(d.getDate())));
-                if (diff > DETAIL_DAYS) {                           // 오래된 날짜: 게시글/댓글 있음·없음을 점으로
-                    const dots = el('div', 'cal-dots');
-                    dots.appendChild(el('span', 'cal-dot post' + (e && e.posts.length ? ' on' : '')));
-                    dots.appendChild(el('span', 'cal-dot cmt' + (e && e.cmts.length ? ' on' : '')));
-                    cell.appendChild(dots);
+                if (diff > DETAIL_DAYS) {                           // 오래된 날짜: 이름 없이 게시글 수 / 댓글 수만
+                    let n = 0;
+                    if (e && e.posts.length) { const chip = el('div', 'cal-chip pcnt', `📝 ${e.posts.length}`); chip.appendChild(el('span', 'd-only', '개')); cell.appendChild(chip); n++; }
+                    if (e && e.cmts.length) { const chip = el('div', 'cal-chip cmt', `💬 ${e.cmts.length}`); chip.appendChild(el('span', 'd-only', '개')); cell.appendChild(chip); n++; }
+                    maxChips = Math.max(maxChips, n);
                 } else if (e) {                                     // 최근: 게시한 사람 전원 / 댓글 총 개수
                     const lines = [], who = new Map();
                     e.posts.slice().sort((a, b) => a.createdAt - b.createdAt).forEach((p) => {
@@ -1092,8 +1096,10 @@
                         who.get(k).n++;
                     });
                     who.forEach((v) => {
-                        const chip = el('div', 'cal-chip post', v.n > 1 ? `${v.name} ×${v.n}` : v.name);
-                        chip.appendChild(el('span', 'd-only', ' 올림'));
+                        const chip = el('div', 'cal-chip post');
+                        chip.appendChild(el('span', 'nm', v.name));
+                        const ct = el('span', 'ct', String(v.n)); ct.appendChild(el('span', 'd-only', '개'));
+                        chip.appendChild(ct);
                         lines.push(chip);
                     });
                     if (e.cmts.length) {

@@ -317,7 +317,7 @@
         .cal-dow span{text-align:center;font-size:.68rem;font-weight:800;color:var(--text-muted);padding:4px 0}
         .cal-dow .sun,.cal-day.sun .cal-num{color:#b91c1c}
         .cal-dow .sat,.cal-day.sat .cal-num{color:#1d4ed8}
-        .cal-scroll{box-sizing:border-box;height:calc(var(--cal-row)*2);overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+        .cal-scroll{box-sizing:border-box;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none}
         .cal-week{box-sizing:border-box;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:var(--cal-row);scroll-snap-align:start;border-bottom:1px solid var(--border)}
         .cal-day{min-width:0;overflow:hidden;padding:3px 2px;border-right:1px solid #eef1ee;display:flex;flex-direction:column;gap:2px;cursor:pointer}
         .cal-day:last-child{border-right:0}
@@ -346,6 +346,30 @@
         .cd-text{margin-top:2px;white-space:pre-wrap;word-break:break-word}
         .cd-empty{color:var(--text-muted);font-size:.78rem;padding:6px 2px}
         .cd-per{color:var(--text-muted);font-size:.72rem;font-weight:600;margin-bottom:4px}
+
+        /* 달력 좌우 이동(스와이프) 표시 */
+        .cal-nav{display:flex;align-items:center;gap:4px}
+        .cal-arrow{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--primary-dark);font-size:1.1rem;font-weight:900;line-height:1;cursor:pointer;padding:0}
+        .cal-arrow:disabled{opacity:.3;cursor:default}
+        .cal-range{font-size:.66rem;font-weight:700;color:var(--text-muted)}
+        .cal-swipe-hint{text-align:center;font-size:.7rem;font-weight:700;color:var(--primary-dark);margin-top:6px}
+        .cal-swipe-hint span{display:inline-block;animation:hintNudge 1.6s ease-in-out infinite}
+        .cal-swipe-hint span:last-child{animation-direction:reverse}
+        @keyframes hintNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+        @keyframes calNext{from{transform:translateX(28px);opacity:.3}to{transform:none;opacity:1}}
+        @keyframes calPrev{from{transform:translateX(-28px);opacity:.3}to{transform:none;opacity:1}}
+        .cal-scroll.slide-next{animation:calNext .22s ease-out}
+        .cal-scroll.slide-prev{animation:calPrev .22s ease-out}
+        /* 폴더 끌어서 이동 */
+        .folder-item .folder-info{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+        .drag-src{opacity:.35}
+        .drag-ghost{position:fixed;z-index:400;pointer-events:none;margin:0;transform:scale(1.03) rotate(-1.2deg);box-shadow:0 14px 30px rgba(0,0,0,.28);opacity:.96;border-radius:16px;background:#fff}
+        .drop-target{outline:3px dashed #16a34a;outline-offset:-3px;background:#ecfdf3 !important}
+        #crumbs button.drop-target{border-radius:8px}
+        body.dragging-folder{cursor:grabbing}
+        #dragHint{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:410;background:rgba(20,32,26,.94);color:#fff;font-size:.8rem;font-weight:700;padding:8px 14px;border-radius:999px;pointer-events:none;max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        #toastMsg{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(10px);z-index:420;background:rgba(20,32,26,.94);color:#fff;font-size:.82rem;font-weight:700;padding:9px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;max-width:92vw}
+        #toastMsg.show{opacity:1;transform:translateX(-50%)}
 
         /* ===== 데스크탑(화면 너비 1024px 이상) 전용: 크고 시원하게 — 폰 레이아웃은 그대로 ===== */
         @media (min-width:1024px){
@@ -398,6 +422,9 @@
             .cal-chip{font-size:.8rem;padding:2px 6px}
             .cal-chip .d-only{display:inline}
             .cal-legend{font-size:.8rem}
+            .cal-arrow{width:34px;height:34px;font-size:1.3rem}
+            .cal-range{font-size:.85rem}
+            .cal-swipe-hint{font-size:.85rem}
             .cal-dots{gap:8px;margin-top:20px}
             .cal-dot{width:13px;height:13px}
             .cal-detail{padding:14px 16px;max-height:380px}
@@ -437,11 +464,12 @@
             <div id="recentBox" hidden>
                 <div class="home-grid">
                     <section class="cal-section">
-                        <div class="cal-head"><div class="section-title" id="calTitle">📅 달력</div><button type="button" class="cal-today" id="calToday">오늘</button></div>
+                        <div class="cal-head"><div class="section-title" id="calTitle">📅 달력</div><div class="cal-nav"><button type="button" class="cal-arrow" id="calPrev" aria-label="이전 주">‹</button><button type="button" class="cal-today" id="calToday">오늘</button><button type="button" class="cal-arrow" id="calNext" aria-label="다음 주">›</button></div></div>
                         <div class="cal-wrap">
                             <div class="cal-dow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div>
                             <div class="cal-scroll" id="calScroll"></div>
                         </div>
+                        <div class="cal-swipe-hint"><span>◀</span> 좌우로 밀면 지난주 · 다음주를 볼 수 있어요 <span>▶</span></div>
                         <div class="cal-legend">최근 3일은 이름·댓글 수, 이전 날짜는 점 (<span class="lg-p">●</span>게시글 <span class="lg-c">●</span>댓글, 흐린 점은 없음) · 날짜를 누르면 아래에 그날 현황</div>
                         <div class="cal-detail" id="calDetail"></div>
                     </section>
@@ -816,11 +844,11 @@
         if (!nested) return;
         const chain = []; let cur = folders.find(f => f.id === currentParentId), g = 0;
         while (cur && g++ < 20) { chain.unshift(cur); cur = folders.find(f => f.id === parentOf(cur)); }
-        const home = el('button', '', '🏠 홈'); home.onclick = () => { currentParentId = null; renderFolders(); };
+        const home = el('button', '', '🏠 홈'); home.dataset.crumb = ''; home.onclick = () => { currentParentId = null; renderFolders(); };
         box.appendChild(home);
         chain.forEach((f) => {
             box.appendChild(el('span', '', '›'));
-            const b = el('button', '', f.name); b.onclick = () => { currentParentId = f.id; renderFolders(); };
+            const b = el('button', '', f.name); b.dataset.crumb = f.id; b.onclick = () => { currentParentId = f.id; renderFolders(); };
             box.appendChild(b);
         });
     }
@@ -915,7 +943,7 @@
     }
     // ---------- 홈 캘린더 ----------
     const DAY = 86400000;
-    let calFirst = null, calThisIdx = 0, calTopRow = null, calTopWeek = null, calSig = '', calUser = false, calSettle = null;   // calTopWeek: 사용자가 옮겨 둔 주(날짜). null이면 항상 오늘이 있는 주가 맨 위
+    let calOff = -1, calMin = -1, calSig = '', calSwipeAt = 0, calDir = 0;   // calOff: 맨 윗줄 주(이번주 기준 몇 주 전/후). -1이면 오늘이 있는 주가 2번째 줄
     const dkey = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
     function commentTime(c){                       // 댓글 작성 시각: 댓글 ID에 담긴 시각 → 없으면 'M/D H:mm' 문자열 해석
         const t = pushIdTime(c.id); if (t) return t;
@@ -924,50 +952,29 @@
         if (d > now) d = new Date(now.getFullYear() - 1, m[1] - 1, +m[2], +m[3], +m[4]);
         return d.getTime();
     }
-    function updateCalTitle(){
-        if (!calFirst || calTopRow == null) return;
-        const d = new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + calTopRow * 7 + 3);
-        $('calTitle').textContent = `📅 ${d.getFullYear()}년 ${d.getMonth() + 1}월`;
+    const wkStart = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + n * 7);
+    // 달력을 ±n주 이동 (좌우 스와이프 / ‹ › 버튼 / 트랙패드 가로 스크롤)
+    function calMove(n){
+        const next = Math.min(3, Math.max(calMin, calOff + n));
+        if (next === calOff) return;
+        calDir = next > calOff ? 1 : -1; calOff = next; calSig = ''; renderCalendar();
     }
-    function ensureCalScroll(){                    // 기본은 '오늘이 있는 주'가 맨 위 (사용자가 직접 넘긴 경우엔 그 주 유지)
-        const sc = $('calScroll'), rows = sc.children, row = rows[0], h = row ? row.offsetHeight : 0;
-        if (!h || !calFirst) return;
-        let idx = calTopWeek == null ? calThisIdx : Math.round((calTopWeek - calFirst.getTime()) / (7 * DAY));
-        idx = Math.min(Math.max(idx, 0), Math.max(0, rows.length - 2));
-        calTopRow = idx;
-        const want = rows[idx].offsetTop - row.offsetTop;
-        if (Math.abs(sc.scrollTop - want) > 1) sc.scrollTop = want;
-        updateCalTitle();
-    }
-    const calSc = $('calScroll');
-    ['touchstart', 'wheel', 'mousedown', 'keydown'].forEach(t => calSc.addEventListener(t, () => { calUser = true; }, { passive: true }));
-    calSc.addEventListener('scroll', () => {
-        const row = calSc.firstElementChild, h = row ? row.offsetHeight : 0;
-        if (!h || !calFirst) return;
-        calTopRow = Math.round(calSc.scrollTop / h); updateCalTitle();
-        clearTimeout(calSettle);
-        calSettle = setTimeout(() => {              // 스크롤이 멈춘 뒤 '사용자가 직접 넘긴 경우에만' 그 주를 날짜로 기억
-            if (calUser) {
-                const idx = Math.round(calSc.scrollTop / h);
-                calTopWeek = idx === calThisIdx ? null : new Date(calFirst.getFullYear(), calFirst.getMonth(), calFirst.getDate() + idx * 7).getTime();
-            }
-            calUser = false;
-        }, 160);
-    }, { passive: true });
-    $('calToday').addEventListener('click', () => {
-        const sc = $('calScroll'), rows = sc.children; if (!rows.length) return;
-        calTopWeek = null; calUser = false;
-        sc.scrollTo({ top: rows[Math.min(calThisIdx, rows.length - 1)].offsetTop - rows[0].offsetTop, behavior: 'smooth' });
-    });
-    window.addEventListener('resize', () => { if (!$('recentBox').hidden) renderCalendar(); });
-    // 레이아웃이 늦게 잡히거나 화면이 나중에 보이게 돼도 '오늘이 있는 주'로 다시 맞춤 (직접 넘기기 전까지)
-    function scheduleCalAlign(){
-        const run = () => { if (calTopWeek == null) ensureCalScroll(); };
-        requestAnimationFrame(() => requestAnimationFrame(run));
-        setTimeout(run, 150); setTimeout(run, 600);
-    }
-    if ('ResizeObserver' in window) new ResizeObserver(() => { if (calTopWeek == null) ensureCalScroll(); }).observe($('calScroll'));
-    if ('IntersectionObserver' in window) new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting) && calTopWeek == null) ensureCalScroll(); }).observe($('calScroll'));
+    (function(){
+        const sc = $('calScroll'); let sx = 0, sy = 0, sid = null, wheelAt = 0;
+        sc.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; sid = e.pointerId; });
+        sc.addEventListener('pointerup', (e) => {
+            if (sid !== e.pointerId) return; sid = null;
+            const dx = e.clientX - sx, dy = e.clientY - sy;
+            if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { calSwipeAt = Date.now(); calMove(dx < 0 ? 1 : -1); }   // 왼쪽으로 밀면 다음 주
+        });
+        sc.addEventListener('pointercancel', () => { sid = null; });
+        sc.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20 && Date.now() - wheelAt > 350) { wheelAt = Date.now(); e.preventDefault(); calMove(e.deltaX > 0 ? 1 : -1); }
+        }, { passive: false });
+        $('calPrev').addEventListener('click', () => calMove(-1));
+        $('calNext').addEventListener('click', () => calMove(1));
+        $('calToday').addEventListener('click', () => calMove(-1 - calOff));      // 오늘이 있는 주가 2번째 줄이 되는 위치로
+    })();
 
     // 상세 패널을 끝까지 스크롤하면 화면을 살짝 아래로 내려서, 아래 영역(학생별 현황)으로 자연스럽게 이어지게 함
     (function(){
@@ -1041,29 +1048,32 @@
             p.comments.forEach(c => { const t = commentTime(c); if (t) slot(t).cmts.push({ c, p, t }); });
         });
         const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const wk = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + n * 7);
-        const thisWeek = wk(today, 0);
-        let first = isFinite(minT) ? wk(new Date(minT), 0) : thisWeek;
-        if (first < wk(today, -26)) first = wk(today, -26);        // 최대 26주 전까지
-        if (first > wk(today, -1)) first = wk(today, -1);          // 최소 지난주부터
-        const thisIdx = Math.round((thisWeek - first) / (7 * DAY));
-        const weeks = thisIdx + 1 + 4;                              // 4주 뒤까지
-        const DETAIL_DAYS = 3;                                      // 오늘 포함 최근 3일 전까지는 구체적으로, 그 이전은 점으로
+        let first = isFinite(minT) ? wkStart(new Date(minT), 0) : wkStart(today, 0);
+        if (first < wkStart(today, -26)) first = wkStart(today, -26);        // 최대 26주 전까지
+        if (first > wkStart(today, -1)) first = wkStart(today, -1);          // 최소 지난주부터
+        calMin = Math.round((first - wkStart(today, 0)) / (7 * DAY));
+        calOff = Math.min(3, Math.max(calMin, calOff));                      // 최대 3주 뒤까지
+        const top = wkStart(today, calOff);
+        const DETAIL_DAYS = 3;                                               // 오늘 포함 최근 3일 전까지는 구체적으로, 그 이전은 점으로
 
-        const sig = JSON.stringify([dkey(today), first.getTime(), weeks, [...byDay].map(([k, v]) => [k,
+        const sig = JSON.stringify([dkey(today), calOff, calMin, [...byDay].map(([k, v]) => [k,
             v.posts.map(p => [p.id, p.author, fname.get(p.folderId)]),
             v.cmts.map(x => [x.c.id, x.c.author, x.c.text, x.p.author, fname.get(x.p.folderId)])])]);
         calData = { byDay, fname };
-        calFirst = first; calThisIdx = thisIdx;
-        if (sig === calSig) { ensureCalScroll(); return; }
+        if (sig === calSig) return;
         calSig = sig;
+
+        const mid = new Date(top.getFullYear(), top.getMonth(), top.getDate() + 10), end = new Date(top.getFullYear(), top.getMonth(), top.getDate() + 13);
+        const title = $('calTitle'); title.textContent = `📅 ${mid.getFullYear()}년 ${mid.getMonth() + 1}월 `;
+        title.appendChild(el('small', 'cal-range', `${top.getMonth() + 1}/${top.getDate()} ~ ${end.getMonth() + 1}/${end.getDate()}`));
+        $('calPrev').disabled = calOff <= calMin; $('calNext').disabled = calOff >= 3;
 
         const selKey = calSel || dkey(today);
         calCells = new Map(); sc.innerHTML = ''; let maxChips = 0;
-        for (let w = 0; w < weeks; w++) {
+        for (let w = 0; w < 2; w++) {
             const row = el('div', 'cal-week');
             for (let i = 0; i < 7; i++) {
-                const d = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7 + i);
+                const d = new Date(top.getFullYear(), top.getMonth(), top.getDate() + w * 7 + i);
                 const key = dkey(d), e = byDay.get(key);
                 const diff = Math.round((today - d) / DAY);          // 오늘 0, 어제 1, ...
                 const cell = el('div', 'cal-day' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + (diff === 0 ? ' today' : '') + (key === selKey ? ' sel' : ''));
@@ -1074,7 +1084,7 @@
                     dots.appendChild(el('span', 'cal-dot post' + (e && e.posts.length ? ' on' : '')));
                     dots.appendChild(el('span', 'cal-dot cmt' + (e && e.cmts.length ? ' on' : '')));
                     cell.appendChild(dots);
-                } else if (e) {                                     // 최근: 누가 올렸는지 / 댓글 몇 개
+                } else if (e) {                                     // 최근: 게시한 사람 전원 / 댓글 총 개수
                     const lines = [], who = new Map();
                     e.posts.slice().sort((a, b) => a.createdAt - b.createdAt).forEach((p) => {
                         const k = norm(p.author) || '?';
@@ -1094,13 +1104,15 @@
                     lines.forEach(x => cell.appendChild(x));
                     maxChips = Math.max(maxChips, lines.length);
                 }
-                cell.addEventListener('click', () => selectCalDay(key));
+                cell.addEventListener('click', () => { if (Date.now() - calSwipeAt < 400) return; selectCalDay(key); });   // 스와이프 직후의 클릭은 무시
                 row.appendChild(cell);
             }
             sc.appendChild(row);
         }
         sc.parentElement.style.setProperty('--cal-lines', String(Math.max(2, maxChips)));   // 게시자가 많은 주는 행 높이를 키움
-        ensureCalScroll(); scheduleCalAlign(); renderCalDetail();
+        sc.classList.remove('slide-next', 'slide-prev');
+        if (calDir) { void sc.offsetWidth; sc.classList.add(calDir > 0 ? 'slide-next' : 'slide-prev'); calDir = 0; }
+        renderCalDetail();
     }
 
     function renderRecent(){
@@ -1156,6 +1168,7 @@
             });
             item.appendChild(info);
 
+            attachFolderDrag(item, f);
             if (!selectMode) {
                 const actions = el('div', 'teacher-actions');
                 const editBtn = el('button', 'btn btn-edit btn-small', '변경');
@@ -1217,6 +1230,95 @@
         update(ref(db), updates).catch(e => alert("삭제 실패: " + e.message));
     }
 
+    // ---------- 폴더 끌어서 이동 (교사용): 꾹 누르면(마우스는 끌면) 떠오르고, 다른 폴더나 상단 경로 위에 놓으면 이동 ----------
+    let dragSuppressUntil = 0, dragTipShown = false;
+    function showToast(msg){
+        let t = $('toastMsg');
+        if (!t) { t = el('div'); t.id = 'toastMsg'; document.body.appendChild(t); }
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+    function setDragHint(text){
+        let h = $('dragHint');
+        if (!text) { if (h) h.remove(); return; }
+        if (!h) { h = el('div'); h.id = 'dragHint'; document.body.appendChild(h); }
+        h.textContent = text;
+    }
+    function attachFolderDrag(item, f){
+        item.dataset.fid = f.id;
+        const handle = item.querySelector('.folder-info'); if (!handle) return;
+        if (!dragTipShown && currentRole === 'teacher' && !selectMode) { dragTipShown = true; showToast('💡 폴더를 꾹 눌러 끌면 다른 폴더로 옮길 수 있어요'); }
+        let timer = null, st = null, sx0 = 0, sy0 = 0;
+        const canDrag = () => currentRole === 'teacher' && !selectMode;
+        const banned = () => new Set([f.id, ...descendantIds(f.id)]);
+        const targetAt = (x, y) => {
+            const e = document.elementFromPoint(x, y); if (!e || !e.closest) return null;
+            const card = e.closest('.folder-item[data-fid]');
+            if (card && card !== item && !banned().has(card.dataset.fid)) return card;
+            return e.closest('#crumbs button[data-crumb]');
+        };
+        const loop = () => {                                    // 화면 위/아래 끝에 가져가면 자동 스크롤
+            if (!st) return;
+            if (st.y < 70) window.scrollBy(0, -14); else if (st.y > window.innerHeight - 70) window.scrollBy(0, 14);
+            st.raf = requestAnimationFrame(loop);
+        };
+        const begin = (x, y) => {
+            const r = item.getBoundingClientRect(), ghost = item.cloneNode(true);
+            ghost.classList.add('drag-ghost');
+            Object.assign(ghost.style, { width: r.width + 'px', left: r.left + 'px', top: r.top + 'px' });
+            document.body.appendChild(ghost); item.classList.add('drag-src'); document.body.classList.add('dragging-folder');
+            st = { ghost, dx: x - r.left, dy: y - r.top, x, y, over: null, raf: 0 };
+            if (navigator.vibrate) navigator.vibrate(15);
+            setDragHint(`📂 "${f.name}" — 옮길 폴더 위에 놓으세요 (위 경로에 놓으면 상위로)`);
+            loop();
+        };
+        const move = (x, y) => {
+            st.x = x; st.y = y;
+            st.ghost.style.left = (x - st.dx) + 'px'; st.ghost.style.top = (y - st.dy) + 'px';
+            const t = targetAt(x, y);
+            if (t !== st.over) { if (st.over) st.over.classList.remove('drop-target'); if (t) t.classList.add('drop-target'); st.over = t; }
+        };
+        const end = (drop) => {
+            if (!st) return;
+            cancelAnimationFrame(st.raf);
+            const t = st.over; st.ghost.remove(); item.classList.remove('drag-src'); if (t) t.classList.remove('drop-target');
+            document.body.classList.remove('dragging-folder'); setDragHint(null);
+            st = null; dragSuppressUntil = Date.now() + 400;
+            if (!drop || !t) return;
+            const destId = t.matches('.folder-item') ? t.dataset.fid : (t.dataset.crumb || null);
+            const destName = t.matches('.folder-item') ? ((folders.find(x => x.id === destId) || {}).name || '') : (destId ? ((folders.find(x => x.id === destId) || {}).name || '') : '홈');
+            if ((destId || null) === (parentOf(f) || null)) { showToast('이미 그 폴더에 있어요'); return; }
+            moveFolders([f.id], destId || null, `📁 "${f.name}" → "${destName}" 이동했어요`);
+        };
+        item.addEventListener('click', (e) => { if (Date.now() < dragSuppressUntil) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+        handle.addEventListener('contextmenu', (e) => { if (timer || st) e.preventDefault(); });
+        // 터치: 350ms 꾹 누르면 떠오름 (그 전에 손가락이 움직이면 일반 스크롤)
+        handle.addEventListener('touchstart', (e) => {
+            if (!canDrag() || e.touches.length !== 1) return;
+            sx0 = e.touches[0].clientX; sy0 = e.touches[0].clientY;
+            clearTimeout(timer); timer = setTimeout(() => { timer = null; begin(sx0, sy0); }, 350);
+        }, { passive: true });
+        handle.addEventListener('touchmove', (e) => {
+            const t0 = e.touches[0];
+            if (st) { e.preventDefault(); move(t0.clientX, t0.clientY); return; }
+            if (timer && Math.hypot(t0.clientX - sx0, t0.clientY - sy0) > 10) { clearTimeout(timer); timer = null; }
+        }, { passive: false });
+        const tEnd = (drop) => () => { clearTimeout(timer); timer = null; if (st) end(drop); };
+        handle.addEventListener('touchend', tEnd(true));
+        handle.addEventListener('touchcancel', tEnd(false));
+        // 마우스: 누른 채 6px 이상 끌면 시작
+        handle.addEventListener('mousedown', (e) => {
+            if (!canDrag() || e.button !== 0) return;
+            const mx = e.clientX, my = e.clientY; let started = false;
+            const mm = (ev) => {
+                if (!started && Math.hypot(ev.clientX - mx, ev.clientY - my) > 6) { started = true; begin(mx, my); }
+                if (started) move(ev.clientX, ev.clientY);
+            };
+            const mu = () => { document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); if (st) end(true); };
+            document.addEventListener('mousemove', mm); document.addEventListener('mouseup', mu);
+        });
+    }
+
     // ---------- 폴더 이동 (교사용) ----------
     function openMoveSheet(ids){
         if (!ids.length) return;
@@ -1239,7 +1341,7 @@
         walk(null, 1);
         $('moveModal').hidden = false;
     }
-    function moveFolders(ids, destId){
+    function moveFolders(ids, destId, msg){
         const updates = {};
         ids.forEach((id) => {
             const f = folders.find(x => x.id === id);
@@ -1247,7 +1349,7 @@
             else updates[`folders/${id}/parentId`] = destId || null;                                                   // null 이면 최상위로
         });
         update(ref(db), updates)
-        .then(() => { $('moveModal').hidden = true; selectMode = false; selected.clear(); renderFolders(); })
+        .then(() => { $('moveModal').hidden = true; selectMode = false; selected.clear(); renderFolders(); if (msg) showToast(msg); })
         .catch(e => alert("이동 실패: " + e.message));
     }
     $('btnSelectMode').onclick = () => { selectMode = true; selected.clear(); renderFolders(); };

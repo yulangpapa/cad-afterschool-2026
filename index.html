@@ -329,6 +329,10 @@
         .cal-chip .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
         .cal-chip .ct{flex:none}
         .cal-chip.pcnt{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6}
+        .cal-chip.evt{background:#fee2e2;color:#991b1b;border-left:3px solid #ef4444;white-space:normal;line-height:1.15;font-weight:800}
+        .cal-day.cal-off{background:repeating-linear-gradient(135deg,#f3f4f3,#f3f4f3 6px,#eceeec 6px,#eceeec 12px);cursor:default}
+        .cd-event{margin:2px 0 6px;padding:6px 8px;border-radius:10px;background:#fee2e2;color:#991b1b;font-weight:800;font-size:.8rem}
+        .cal-legend .lg-e{color:#dc2626;font-weight:800}
         .cal-chip.cmt{background:#fef3c7;color:#92400e}
         .cal-chip.more{color:var(--text-muted)}
         .cal-chip .d-only{display:none}
@@ -438,6 +442,7 @@
             .cd-sub{font-size:.8rem}
             .cd-empty{font-size:.9rem}
             .cd-per{font-size:.85rem}
+            .cd-event{font-size:.95rem}
         }
     </style>
 </head>
@@ -474,7 +479,7 @@
                             <div class="cal-scroll" id="calScroll"></div>
                         </div>
                         <div class="cal-swipe-hint"><span>◀</span> 좌우로 밀면 지난주 · 다음주를 볼 수 있어요 <span>▶</span></div>
-                        <div class="cal-legend">최근 3일은 올린 학생 이름 · 이전 날짜는 <span class="lg-p">📝</span>게시글 수 · <span class="lg-c">💬</span>댓글 수 · 날짜를 누르면 아래에 그날 현황</div>
+                        <div class="cal-legend">최근 3일은 올린 학생 이름 · 이전 날짜는 <span class="lg-p">📝</span>게시글 수 · <span class="lg-c">💬</span>댓글 수 · <span class="lg-e">빨강</span> = 일정 · 날짜를 누르면 아래에 그날 현황</div>
                         <div class="cal-detail" id="calDetail"></div>
                     </section>
                     <section class="recent-section">
@@ -947,7 +952,7 @@
     }
     // ---------- 홈 캘린더 ----------
     const DAY = 86400000;
-    let calOff = -1, calMin = -1, calSig = '', calSwipeAt = 0, calDir = 0;   // calOff: 맨 윗줄 주(이번주 기준 몇 주 전/후). -1이면 오늘이 있는 주가 2번째 줄
+    let calOff = -1, calMin = -1, calMax = 3, calSig = '', calSwipeAt = 0, calDir = 0;   // calOff: 맨 윗줄 주(이번주 기준 몇 주 전/후). -1이면 오늘이 있는 주가 2번째 줄
     const dkey = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
     function commentTime(c){                       // 댓글 작성 시각: 댓글 ID에 담긴 시각 → 없으면 'M/D H:mm' 문자열 해석
         const t = pushIdTime(c.id); if (t) return t;
@@ -956,10 +961,12 @@
         if (d > now) d = new Date(now.getFullYear() - 1, m[1] - 1, +m[2], +m[3], +m[4]);
         return d.getTime();
     }
+    const CAL_END = new Date(2026, 10, 22);                                                   // 달력은 이 날짜(11/22)까지만 표시
+    const EVENTS = { '2026-11-18': '3일차 시험', '2026-11-22': '5일차 시험' };                // 날짜별 일정 (형식 'YYYY-M-D', 월·일 앞에 0 없이)
     const wkStart = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay() + n * 7);
     // 달력을 ±n주 이동 (좌우 스와이프 / ‹ › 버튼 / 트랙패드 가로 스크롤)
     function calMove(n){
-        const next = Math.min(3, Math.max(calMin, calOff + n));
+        const next = Math.min(calMax, Math.max(calMin, calOff + n));
         if (next === calOff) return;
         calDir = next > calOff ? 1 : -1; calOff = next; calSig = ''; renderCalendar();
     }
@@ -1014,6 +1021,7 @@
         const e = calData.byDay.get(key);
         box.innerHTML = '';
         box.appendChild(el('div', 'cd-title', `📋 ${m}/${dd} (${'일월화수목금토'[new Date(y, m - 1, dd).getDay()]}) 게시글·댓글 현황`));
+        if (EVENTS[key]) box.appendChild(el('div', 'cd-event', '🗓 ' + EVENTS[key]));
         if (!e || (!e.posts.length && !e.cmts.length)) { box.appendChild(el('div', 'cd-empty', '이 날은 올라온 게시글과 댓글이 없어요.')); return; }
         const hm = (t) => new Date(t).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
         const row = (head, time, text, p) => {
@@ -1056,7 +1064,8 @@
         if (first < wkStart(today, -26)) first = wkStart(today, -26);        // 최대 26주 전까지
         if (first > wkStart(today, -1)) first = wkStart(today, -1);          // 최소 지난주부터
         calMin = Math.round((first - wkStart(today, 0)) / (7 * DAY));
-        calOff = Math.min(3, Math.max(calMin, calOff));                      // 최대 3주 뒤까지
+        calMax = Math.max(calMin, Math.round((wkStart(CAL_END, 0) - wkStart(today, 0)) / (7 * DAY)) - 1);   // 맨 아랫줄이 22일이 있는 주가 되는 위치까지
+        calOff = Math.min(calMax, Math.max(calMin, calOff));
         const top = wkStart(today, calOff);
         const DETAIL_DAYS = 3;                                               // 오늘 포함 최근 3일 전까지는 구체적으로, 그 이전은 점으로
 
@@ -1068,9 +1077,10 @@
         calSig = sig;
 
         const mid = new Date(top.getFullYear(), top.getMonth(), top.getDate() + 10), end = new Date(top.getFullYear(), top.getMonth(), top.getDate() + 13);
+        const endD = end > CAL_END ? CAL_END : end;
         const title = $('calTitle'); title.textContent = `📅 ${mid.getFullYear()}년 ${mid.getMonth() + 1}월 `;
-        title.appendChild(el('small', 'cal-range', `${top.getMonth() + 1}/${top.getDate()} ~ ${end.getMonth() + 1}/${end.getDate()}`));
-        $('calPrev').disabled = calOff <= calMin; $('calNext').disabled = calOff >= 3;
+        title.appendChild(el('small', 'cal-range', `${top.getMonth() + 1}/${top.getDate()} ~ ${endD.getMonth() + 1}/${endD.getDate()}`));
+        $('calPrev').disabled = calOff <= calMin; $('calNext').disabled = calOff >= calMax;
 
         const selKey = calSel || dkey(today);
         calCells = new Map(); sc.innerHTML = ''; let maxChips = 0;
@@ -1078,11 +1088,14 @@
             const row = el('div', 'cal-week');
             for (let i = 0; i < 7; i++) {
                 const d = new Date(top.getFullYear(), top.getMonth(), top.getDate() + w * 7 + i);
+                if (d > CAL_END) { row.appendChild(el('div', 'cal-day cal-off')); continue; }
                 const key = dkey(d), e = byDay.get(key);
                 const diff = Math.round((today - d) / DAY);          // 오늘 0, 어제 1, ...
                 const cell = el('div', 'cal-day' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + (diff === 0 ? ' today' : '') + (key === selKey ? ' sel' : ''));
                 calCells.set(key, cell);
                 cell.appendChild(el('div', 'cal-num', (d.getDate() === 1 || (w === 0 && i === 0)) ? `${d.getMonth() + 1}/${d.getDate()}` : String(d.getDate())));
+                const evtName = EVENTS[key];
+                if (evtName) cell.appendChild(el('div', 'cal-chip evt', evtName));
                 if (diff > DETAIL_DAYS) {                           // 오래된 날짜: 이름 없이 게시글 수 / 댓글 수만
                     let n = 0;
                     if (e && e.posts.length) { const chip = el('div', 'cal-chip pcnt', `📝 ${e.posts.length}`); chip.appendChild(el('span', 'd-only', '개')); cell.appendChild(chip); n++; }
@@ -1110,6 +1123,7 @@
                     lines.forEach(x => cell.appendChild(x));
                     maxChips = Math.max(maxChips, lines.length);
                 }
+                maxChips = Math.max(maxChips, cell.querySelectorAll('.cal-chip:not(.evt)').length + (evtName ? 2 : 0));   // 일정 칩은 2줄 분량
                 cell.addEventListener('click', () => { if (Date.now() - calSwipeAt < 400) return; selectCalDay(key); });   // 스와이프 직후의 클릭은 무시
                 row.appendChild(cell);
             }
